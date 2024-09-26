@@ -1,47 +1,107 @@
-# Svelte + TS + Vite
+# WebPro Bus Booking System
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+## Overview
 
-## Recommended IDE Setup
+**WebPro Bus Booking System** is a web application built using modern web technologies like **Svelte**, **Vite**, **Tailwind CSS**, and **Express**. It is designed to manage and streamline bus ticket bookings for users, providing a fast, responsive, and user-friendly interface.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+This project leverages Svelte as its frontend framework, Vite for fast builds and hot-reload during development, Tailwind CSS for utility-first styling, and Express for handling the server-side logic and routing.
 
-## Need an official Svelte framework?
+## Features
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+- **User-friendly Interface:** Svelte ensures a reactive and smooth frontend experience.
+- **Efficient Development Workflow:** Vite offers fast builds and quick hot reload during development.
+- **Responsive Design:** Tailwind CSS provides pre-built responsive utility classes.
 
-## Technical considerations
+## Technologies Used
 
-**Why use this over SvelteKit?**
+- **[Svelte](https://svelte.dev/):** A component framework for building fast and responsive UIs.
+- **[Vite](https://vitejs.dev/):** A next-generation frontend tool for building fast and optimized web applications.
+- **[Tailwind CSS](https://tailwindcss.com/):** A utility-first CSS framework to build custom designs.
+- **[Express](https://expressjs.com/):** A minimal and flexible Node.js web application framework for backend services.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+## Getting Started
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+### Prerequisites
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+Make sure you have the following installed on your machine:
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+- **Node.js** (v14+)
+- **npm**
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+### Installation
 
-**Why include `.vscode/extensions.json`?**
+1. Clone the repository:
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+   ```bash
+   git clone https://github.com/BlackBird-Coding/webpro-bus-ticket
+   cd webpro-bus-ticket
+   ```
 
-**Why enable `allowJs` in the TS template?**
+2. Install dependencies:
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+   ```bash
+   npm install
+   ```
 
-**Why is HMR not preserving my local component state?**
+### Development
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
+To start the development server with hot reload:
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm run dev
 ```
+
+This will start the Express server and Vite in development mode with hot module reloading enabled.
+
+### Build for Production
+
+To build the project for production:
+
+```bash
+npm run build
+```
+
+This will generate production-ready assets in the `dist` directory for both the client and server.
+
+### Preview the Build
+
+To preview the production build:
+
+```bash
+npm run preview
+```
+
+This command will run the production build using Node.js and the Express server.
+
+## Vite Configuration
+
+The project is configured to use Vite for both client-side and server-side builds:
+
+- **Client-side build:** Outputs static assets to `dist/client`.
+- **Server-side build:** Outputs server-side rendered assets to `dist/server`.
+
+Refer to `vite.config.ts` for specific configuration details.
+
+## Tailwind CSS Configuration
+
+Tailwind CSS is used for styling the application. The configuration file `tailwind.config.cjs` contains all the necessary settings, such as:
+
+- Custom color palettes
+- Font settings
+- Plugins
+
+You can extend Tailwind to suit your design needs by editing this file.
+
+## Express Server
+
+The backend server is built using Express. It is responsible for:
+
+- Handling API requests.
+- Rendering the frontend via SSR (Server-side Rendering).
+- Serving static files in production.
+
+Check the `server.js` or `server.ts` file for server-related logic.
+---
+
+**Happy coding!**
+
