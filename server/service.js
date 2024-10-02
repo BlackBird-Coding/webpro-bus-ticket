@@ -155,4 +155,28 @@ const createEmployee = (fname, lname, phone, email, password, role) => {
   });
 };
 
-export { registerCustomer, login, createEmployee };
+const getRoutes = () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT * FROM ROUTES
+      JOIN BUS_STOPS
+      ON ROUTES.Origin = BUS_STOPS.BusStopID`,
+      (err, routes) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        let routesByProvince = {};
+        routes.forEach((route) => {
+          if (!routesByProvince[route.Province]) {
+            routesByProvince[route.Province] = [];
+          }
+          routesByProvince[route.Province].push(route);
+        });
+        resolve(routesByProvince);
+      }
+    );
+  });
+};
+
+export { registerCustomer, login, createEmployee, getRoutes };

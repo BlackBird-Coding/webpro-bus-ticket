@@ -1,5 +1,10 @@
 import express from "express";
-import { registerCustomer, login, createEmployee } from "./service.js";
+import {
+  registerCustomer,
+  login,
+  createEmployee,
+  getRoutes,
+} from "./service.js";
 const router = express.Router();
 
 // Define your routes
@@ -34,6 +39,16 @@ router.post("/login", (req, res) => {
       res.status(400).json({ error });
     }
   );
+});
+
+router.get("/routes", (req, res) => {
+  getRoutes()
+    .then((routes) => {
+      res.json({ routes });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
 });
 
 router.get("/mockup", (req, res) => {
