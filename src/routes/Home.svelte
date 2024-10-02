@@ -6,16 +6,27 @@
   $:console.log(myBindDate)
 </script>
 <div>
-  <div class="bg-blue-200 w-full h-screen fixed">
+  <div>
     <div class="flex justify-end m-10">
-        <img class="w-2/4 h-2/3" src="{ramen}" alt="">
+        <img class="w-2/4 mt-16 h-2/3" src="{ramen}" alt="">
         <div class="m-10 bg-white rounded-lg w-2/4">
             <div class="p-5 flex flex-col gap-5">
                 <div class="text-xl">ค้นหาเที่ยวรถ</div>
                 <hr>
-                <div class="flex gap-4">
-                    <div>ต้นทาง</div>
-                    <select class="w-4/5 ml-4 pl-2 border-2 rounded-lg">
+                <div class="flex">
+                  <h1 class="w-28">เดินทาง</h1>
+                  <div class="flex gap-10">
+                    <label class="flex items-center" for="">
+                      <input class="aspect-square w-5 mr-2" type="radio" name="triptype">ไป-กลับ
+                    </label>
+                    <label class="flex items-center" for="">
+                      <input class="aspect-square w-5 mr-2" type="radio" name="triptype">เที่ยวเดียว
+                    </label>
+                  </div>
+                </div>
+                <div class="flex">
+                    <div class="w-28">ต้นทาง</div>
+                    <select class="w-4/5 border-2 rounded-lg">
                         <option value="">--เลือกจังหวัด--</option>
                         <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
                         <option value="กระบี่">กระบี่ </option>
@@ -96,9 +107,16 @@
                         <option value="อ่างทอง">อ่างทอง </option>
                     </select>
                 </div>
-                <div class="flex gap-4">
-                    <div>ปลายทาง</div>
-                    <select class="w-4/5 pl-2 border-2 rounded-lg">
+                <div class="flex">
+                  <div class="w-28">จุดขึ้นรถ</div>
+                  <select class="w-4/5 border-2 rounded-lg">
+                      <option value="">--เลือกจุดขึ้นรถ--</option>
+                      
+                  </select>
+                </div>
+                <div class="flex">
+                    <div class="w-28">ปลายทาง</div>
+                    <select class="w-4/5 border-2 rounded-lg">
                         <option value="">--เลือกจังหวัด--</option>
                         <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
                         <option value="กระบี่">กระบี่ </option>
@@ -179,8 +197,19 @@
                         <option value="อ่างทอง">อ่างทอง </option>
                     </select>
                 </div>
-                <div class="flex gap-4">
-                  <div>วันเดินทาง</div>
+                <div class="flex">
+                  <div class="w-28">จุดลงรถ</div>
+                  <select class="w-4/5 border-2 rounded-lg">
+                      <option value="">--เลือกจุดลงรถ--</option>
+                      
+                  </select>
+                </div>
+                <div class="flex">
+                  <div class="w-28">วันเดินทางไป</div>
+                  <input  type="date" class="border-2 rounded-md px-2" value={myBindDate} on:change={e => myBindDate = e.target.value || myBindDate}>
+                </div>
+                <div class="flex">
+                  <div class="w-28">วันเดินทางกลับ</div>
                   <input  type="date" class="border-2 rounded-md px-2" value={myBindDate} on:change={e => myBindDate = e.target.value || myBindDate}>
                 </div>
                 <div>
