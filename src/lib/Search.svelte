@@ -1,19 +1,22 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
+  import { navigate } from "svelte-routing";
 
   let myBindDate = new Date().toJSON().slice(0, 10);
-  let routes = [];
+  let returnDate = ""; // For return trip
+  let routes: any[] = [];
   let originProvince = "";
   let destinationProvince = "";
-  let destinationOptions = [];
-  let originBusStops = [];
-  let destinationBusStops = [];
+  let destinationOptions: any[] = [];
+  let originBusStops: any[] = [];
+  let destinationBusStops: any[] = [];
+  let tripType = 0; // 1: One-way, 0: Round-trip
 
   onMount(async () => {
     try {
       const response = await fetch("/api/routes"); // Adjust API endpoint
       const data = await response.json();
-      routes = data.routes;
+      routes = data.routes || []; // Ensure routes exist in the response
       console.log("Routes fetched:", routes);
     } catch (err) {
       console.error("Error fetching routes:", err);
@@ -43,8 +46,8 @@
       (route) => route.OriginProvince === originProvince
     );
     originBusStops = [
-      ...new Set(matchingRoutes.map((route) => route.OriginProvince)),
-    ];
+      ...new Set(matchingRoutes.map((route) => route.OriginBusStop)),
+    ]; // Changed to map `OriginBusStop`
   }
 
   function updateDestinationBusStops() {
@@ -55,6 +58,33 @@
       ...new Set(matchingRoutes.map((route) => route.DestinationBusStop)),
     ];
   }
+
+  function searchTrips() {
+    // Filter the routes that match both origin and destination provinces
+    const matchingRoute = routes.find(
+      (route) =>
+        route.OriginProvince === originProvince &&
+        route.DestinationProvince === destinationProvince
+    );
+
+    // If a matching route is found, log the RouteID, otherwise indicate no match
+    if (matchingRoute) {
+      console.log("Found RouteID:", matchingRoute.RouteID);
+    } else {
+      console.log("No matching route found.");
+    }
+
+    console.log("Searching trips with:", {
+      originProvince,
+      destinationProvince,
+      myBindDate,
+      returnDate,
+      tripType,
+      RouteID: matchingRoute?.RouteID,
+    });
+
+    navigate(`/booking/trip/${matchingRoute?.RouteID}`); // Adjust the route to navigate to
+  }
 </script>
 
 <div class="max-w-md mx-auto p-5 bg-white rounded-lg shadow-md">
@@ -62,10 +92,12 @@
 
   <!-- Trip Type Selection -->
   <div class="mb-3">
-    <label><input type="radio" name="triptype" /> ไป-กลับ</label>
-    <label class="ml-5"
-      ><input type="radio" name="triptype" /> เที่ยวเดียว</label
-    >
+    <label>
+      <input type="radio" name="triptype" value="0" bind:group={tripType} /> ไป-กลับ
+    </label>
+    <label class="ml-5">
+      <input type="radio" name="triptype" value="1" bind:group={tripType} /> เที่ยวเดียว
+    </label>
   </div>
 
   <!-- Origin Province Selection -->
@@ -131,8 +163,7 @@
     <input
       name="outboundDate"
       type="date"
-      value={myBindDate}
-      on:change={(e) => (myBindDate = e.target.value || myBindDate)}
+      bind:value={myBindDate}
       class="border p-2 w-full"
     />
   </div>
@@ -143,8 +174,7 @@
     <input
       name="returnDate"
       type="date"
-      value={myBindDate}
-      on:change={(e) => (myBindDate = e.target.value || myBindDate)}
+      bind:value={returnDate}
       class="border p-2 w-full"
     />
   </div>
@@ -152,6 +182,7 @@
   <!-- Search Button -->
   <button
     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+    on:click={searchTrips}
   >
     ค้นหาเที่ยวรถ
   </button>
