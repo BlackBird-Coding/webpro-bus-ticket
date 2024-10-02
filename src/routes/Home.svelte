@@ -213,7 +213,7 @@
                   <input  type="date" class="border-2 rounded-md px-2" value={myBindDate} on:change={e => myBindDate = e.target.value || myBindDate}>
                 </div>
                 <div>
-                  <button class="flex justify-center items-center gap-1 bg-violet-500 rounded-lg px-4 py-2 text-white hover:bg-violet-600 hover:shadow-sm hover:scale-105 hover:shadow-violet-500 transition-transform duration-500">ค้นหาเที่ยวรถ</button>
+                  <a class="flex justify-center items-center gap-1 bg-violet-500 rounded-lg px-4 py-2 text-white hover:bg-violet-600 hover:shadow-sm hover:scale-105 hover:shadow-violet-500 transition-transform duration-500" href="/trip">ค้นหาเที่ยวรถ</a>
                 </div>
             </div>
         </div>

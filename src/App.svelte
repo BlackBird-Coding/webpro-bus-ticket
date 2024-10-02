@@ -5,6 +5,8 @@
   import Register from './routes/Register.svelte';
   import History from './routes/History.svelte';
   import Login from './routes/Login.svelte';
+  import Trip from './routes/Trip.svelte';
+  import Seat from './routes/Seat.svelte'
 </script>
 
 <main use:links>
@@ -20,6 +22,8 @@
     <Route path="/register" component={Register} />
     <Route path="/history" component={History} />
     <Route path="/login" component={Login} />
+    <Route path="/trip" component={Trip} />
+    <Route path="/seat" component={Seat} />
     <Route path="/"><Home /></Route>
   </Router>
 </main>
