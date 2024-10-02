@@ -1,5 +1,6 @@
 import express from 'express';
-
+import db from './db.js';
+import { registerCustomer } from './service.js';
 const router = express.Router();
 
 // Define your routes
@@ -10,6 +11,12 @@ router.get('/hello', (req, res) => {
 router.post('/greet', express.json(), (req, res) => {
   const { name } = req.body;
   res.json({ message: `Hello, ${name}!` });
+});
+
+router.post('/register', (req, res) => {
+  const { fname, lname, phone, email, password } = req.body;
+  registerCustomer(fname, lname, phone, email, password);
+  res.json({ message: 'Customer registration successful!' });
 });
 
 export default router;
