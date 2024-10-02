@@ -15,8 +15,14 @@ router.post('/greet', express.json(), (req, res) => {
 
 router.post('/register', (req, res) => {
   const { fname, lname, phone, email, password } = req.body;
-  registerCustomer(fname, lname, phone, email, password);
-  res.json({ message: 'Customer registration successful!' });
+  registerCustomer(fname, lname, phone, email, password).then(
+    () => {
+      res.json({ message: 'Customer registration successful!' });
+    },
+    (error) => {
+      res.status(400).json({ error });
+    }
+  );
 });
 
 export default router;
