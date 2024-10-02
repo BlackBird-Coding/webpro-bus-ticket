@@ -2,7 +2,12 @@
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {}
+    extend: {
+      fontFamily: {
+        "K2D": ["K2D", "sans-serif"],
+        "Itim": ["Itim", "cursive"],
+      }
+    }
   },
   plugins: []
 };
