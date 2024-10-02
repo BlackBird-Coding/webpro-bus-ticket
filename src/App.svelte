@@ -7,6 +7,7 @@
   import Login from './routes/Login.svelte';
   import Trip from './routes/Trip.svelte';
   import Seat from './routes/Seat.svelte'
+  import Payment from './routes/Payment.svelte'
 </script>
 
 <main use:links>
@@ -24,6 +25,7 @@
     <Route path="/login" component={Login} />
     <Route path="/trip" component={Trip} />
     <Route path="/seat" component={Seat} />
+    <Route path="/payment" component={Payment} />
     <Route path="/"><Home /></Route>
   </Router>
 </main>
