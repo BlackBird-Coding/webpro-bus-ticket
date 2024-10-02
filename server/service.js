@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import db from "./db.js";
 
 const registerCustomer = (fname, lname, phone, email, password) => {
   const saltRounds = 10;
@@ -60,4 +61,34 @@ const registerCustomer = (fname, lname, phone, email, password) => {
   });
 };
 
-export { registerCustomer };
+const login = (email, password) => {
+  return new Promise((resolve, reject) => {
+    db.get(`SELECT * FROM USERS WHERE Email = ?`, [email], (err, user) => {
+      if (err) {
+        console.error(err.message);
+        reject("Error querying the database.");
+        return;
+      }
+
+      if (!user) {
+        reject("Email not found.");
+        return;
+      }
+
+      bcrypt.compare(password, user.Password, (err, result) => {
+        if (err) {
+          console.error(err.message);
+          reject("Error comparing passwords.");
+          return;
+        }
+
+        if (result) {
+          resolve(user);
+        } else {
+          reject("Incorrect password.");
+        }
+      });
+    });
+  });
+};
+export { registerCustomer, login };
