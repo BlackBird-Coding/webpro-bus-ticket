@@ -13,9 +13,20 @@ db.serialize(() => {
   // Create ROUTES table
   db.run(`CREATE TABLE IF NOT EXISTS ROUTES (
       RouteID INTEGER PRIMARY KEY,
-      Origin TEXT NOT NULL,
-      Destination TEXT NOT NULL,
-      Distance DECIMAL NOT NULL
+      Origin INTEGER NOT NULL,
+      Destination INTEGER NOT NULL,
+      Distance DECIMAL NOT NULL,
+      FOREIGN KEY (Origin) REFERENCES BUS_STOPS(BusStopID),
+      FOREIGN KEY (Destination) REFERENCES BUS_STOPS(BusStopID)
+    );`);
+
+  // Create BUS_STOPS table
+  db.run(`CREATE TABLE IF NOT EXISTS BUS_STOPS (
+      BusStopID INTEGER PRIMARY KEY,
+      Name TEXT NOT NULL,
+      Province TEXT NOT NULL,
+      Latitude DECIMAL NOT NULL,
+      Longitude DECIMAL NOT NULL
     );`);
 
   // Create BUSES table
@@ -94,5 +105,37 @@ db.serialize(() => {
 
   console.log("Tables created successfully.");
 });
+
+//  add routes in thailand
+
+// db.serialize(() => {
+//   db.run(
+//     `INSERT INTO BUS_STOPS (Name, Province, Latitude, Longitude) VALUES ('Bangkok', 'Bangkok', 13.7563, 100.5018),
+//     ('Chiang Mai', 'Chiang Mai', 18.7061, 98.9817),
+//     ('Phuket', 'Phuket', 7.8804, 98.3923),
+//     ('Ayutthaya', 'Ayutthaya', 14.3692, 100.5877),
+//     ('Kanchanaburi', 'Kanchanaburi', 14.0223, 99.5323),
+//     ('Pattaya', 'Chon Buri', 12.9276, 100.8771),
+//     ('Hua Hin', 'Prachuap Khiri Khan', 12.5684, 99.9577),
+//     ('Chiang Rai', 'Chiang Rai', 19.9105, 99.8406),
+//     ('Ekamai', 'Bangkok', 13.7263, 100.5851),
+//     ('Mo Chit', 'Bangkok', 13.8022, 100.5531);`
+//   );
+
+//   db.run(
+//     `INSERT INTO ROUTES (Origin, Destination, Distance) VALUES (1, 2, 700),
+//     (1, 3, 850),
+//     (1, 4, 80),
+//     (2, 3, 1200),
+//     (4, 5, 150),
+//     (4, 6, 120),
+//     (6, 7, 200),
+//     (7, 8, 300),
+//     (1, 9, 10),
+//     (1, 10, 15);`
+//   );
+
+//   console.log("Routes added successfully.");
+// });
 
 export default db;
