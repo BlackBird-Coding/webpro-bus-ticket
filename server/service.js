@@ -91,4 +91,68 @@ const login = (email, password) => {
     });
   });
 };
-export { registerCustomer, login };
+
+const createEmployee = (fname, lname, phone, email, password, role) => {
+  const saltRounds = 10;
+  console.log("Creating employee...");
+  return new Promise((resolve, reject) => {
+    // First, check if the email already exists in the USERS table
+    db.get(`SELECT * FROM USERS WHERE Email = ?`, [email], (err, user) => {
+      console.log("Checking if email exists...");
+      if (err) {
+        console.error("Error querying the database:", err.message);
+        return reject("Error querying the database.");
+      }
+
+      if (user) {
+        console.log("Email already exists.");
+        return reject("Email already exists. Please use another email.");
+      }
+
+      // Hash the password before storing it
+      console.log("Hashing the password...");
+      bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+        if (err) {
+          console.error("Error hashing the password:", err.message);
+          return reject("Error hashing the password.");
+        }
+
+        // Insert the employee into the EMPLOYEES table
+        console.log("Inserting employee...");
+        db.run(
+          `INSERT INTO EMPLOYEES (Fname, Lname, Role, HireDate, DOB) 
+           VALUES (?, ?, ?, date('now'), '1990-01-01')`, // Replace '1990-01-01' with actual DOB if available
+          [fname, lname, role],
+          function (err) {
+            if (err) {
+              console.error("Error inserting employee:", err.message);
+              return reject("Error inserting employee.");
+            }
+
+            // Get the newly inserted EmployeeID
+            const employeeId = this.lastID;
+
+            console.log("Inserting user...");
+            // Insert the user's login details into the USERS table
+            db.run(
+              `INSERT INTO USERS (Username, Email, Password, UserType, EmployeeID) 
+               VALUES (?, ?, ?, 'employee', ?)`,
+              [`${fname}.${lname}`, email, hashedPassword, employeeId],
+              (err) => {
+                if (err) {
+                  console.error("Error inserting user:", err.message);
+                  return reject("Error inserting user.");
+                } else {
+                  console.log("Employee registered successfully!");
+                  return resolve("Employee registered successfully!");
+                }
+              }
+            );
+          }
+        );
+      });
+    });
+  });
+};
+
+export { registerCustomer, login, createEmployee };

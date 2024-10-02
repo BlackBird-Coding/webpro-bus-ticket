@@ -1,10 +1,12 @@
 import sqlite3 from "sqlite3";
+let dbPath = "db/main.db";
 
-let db = new sqlite3.Database("../db/main.db", (err) => {
+let db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error(err.message);
+    console.error("Error connecting to the database:", err.message);
+  } else {
+    console.log("Connected to the main database.");
   }
-  console.log("Connected to the main database.");
 });
 
 db.serialize(() => {

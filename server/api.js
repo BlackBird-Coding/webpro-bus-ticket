@@ -1,6 +1,5 @@
 import express from "express";
-import db from "./db.js";
-import { registerCustomer, login } from "./service.js";
+import { registerCustomer, login, createEmployee } from "./service.js";
 const router = express.Router();
 
 // Define your routes
@@ -35,6 +34,31 @@ router.post("/login", (req, res) => {
       res.status(400).json({ error });
     }
   );
+});
+
+router.get("/mockup", (req, res) => {
+  createEmployee(
+    "John",
+    "Doe",
+    "123456789",
+    "john.doe@example.com",
+    "password123",
+    "Driver"
+  )
+    .then((message) => {
+      console.log(message);
+      // Send a success response to the client
+      res
+        .status(200)
+        .json({ message: "Employee created successfully!", details: message });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      // Send an error response to the client
+      res
+        .status(500)
+        .json({ message: "Error creating employee", error: error });
+    });
 });
 
 export default router;

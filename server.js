@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import express from "express";
-import apiRouter from "./api.js";
+import apiRouter from "./server/api.js";
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
