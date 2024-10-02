@@ -1,21 +1,18 @@
 <script>
-  // @ts-nocheck
-  import ramen from "../assets/ramen.png";
   import { onMount } from "svelte";
 
   let myBindDate = new Date().toJSON().slice(0, 10);
-
-  let routes = []; // All routes fetched from the backend
-  let originProvince = ""; // Selected origin province
-  let destinationProvince = ""; // Selected destination province
-  let destinationOptions = []; // Filtered destination options
-  let originBusStops = []; // Filtered bus stops for the selected origin province
-  let destinationBusStops = []; // Filtered bus stops for the selected destination province
+  let routes = [];
+  let originProvince = "";
+  let destinationProvince = "";
+  let destinationOptions = [];
+  let originBusStops = [];
+  let destinationBusStops = [];
 
   onMount(async () => {
     try {
-      const response = await fetch("/api/routes"); // Adjust your API endpoint
-      const data = await response.json(); // Assuming the API returns a JSON array of routes
+      const response = await fetch("/api/routes"); // Adjust API endpoint
+      const data = await response.json();
       routes = data.routes;
       console.log("Routes fetched:", routes);
     } catch (err) {
@@ -23,7 +20,6 @@
     }
   });
 
-  // Watch for changes in originProvince and update the destination and bus stop options
   $: if (originProvince) {
     updateDestinationOptions();
     updateOriginBusStops();
@@ -33,7 +29,6 @@
     updateDestinationBusStops();
   }
 
-  // Update destination options based on selected origin province
   function updateDestinationOptions() {
     const matchingRoutes = routes.filter(
       (route) => route.OriginProvince === originProvince
@@ -43,7 +38,6 @@
     ];
   }
 
-  // Update origin bus stops based on selected origin province
   function updateOriginBusStops() {
     const matchingRoutes = routes.filter(
       (route) => route.OriginProvince === originProvince
@@ -53,7 +47,6 @@
     ];
   }
 
-  // Update destination bus stops based on selected destination province
   function updateDestinationBusStops() {
     const matchingRoutes = routes.filter(
       (route) => route.DestinationProvince === destinationProvince
@@ -64,98 +57,118 @@
   }
 </script>
 
-<div>
-  <div>
-    <div class="flex justify-end m-10">
-      <img class="w-2/4 mt-16 h-2/3" src={ramen} alt="" />
-      <div class="m-10 bg-white rounded-lg w-2/4">
-        <div class="p-5 flex flex-col gap-5">
-          <div class="text-xl">ค้นหาเที่ยวรถ</div>
-          <hr />
-          <div class="flex">
-            <h1 class="w-28">เดินทาง</h1>
-            <div class="flex gap-10">
-              <label class="flex items-center" for="">
-                <input
-                  class="aspect-square w-5 mr-2"
-                  type="radio"
-                  name="triptype"
-                />ไป-กลับ
-              </label>
-              <label class="flex items-center" for="">
-                <input
-                  class="aspect-square w-5 mr-2"
-                  type="radio"
-                  name="triptype"
-                />เที่ยวเดียว
-              </label>
-            </div>
-          </div>
-          <!-- Origin Province Select -->
-          <label for="origin">ต้นทาง</label>
-          <select id="origin" bind:value={originProvince}>
-            <option value="">--เลือกจังหวัด--</option>
-            {#each [...new Set(routes.map((route) => route.OriginProvince))] as province}
-              <option value={province}>{province}</option>
-            {/each}
-          </select>
+<div class="search-container">
+  <div class="text-xl mb-3">ค้นหาเที่ยวรถ</div>
 
-          <!-- Origin Bus Stop Select -->
-          <label for="originBusStop">จุดขึ้นรถ</label>
-          <select id="originBusStop" disabled={!originProvince}>
-            <option value="">--เลือกจุดขึ้นรถ--</option>
-            {#each originBusStops as busStop}
-              <option value={busStop}>{busStop}</option>
-            {/each}
-          </select>
-
-          <!-- Destination Province Select -->
-          <label for="destination">ปลายทาง</label>
-          <select
-            id="destination"
-            bind:value={destinationProvince}
-            disabled={!originProvince}
-          >
-            <option value="">--เลือกจังหวัด--</option>
-            {#each destinationOptions as destination}
-              <option value={destination}>{destination}</option>
-            {/each}
-          </select>
-
-          <!-- Destination Bus Stop Select -->
-          <label for="destinationBusStop">จุดลงรถ</label>
-          <select id="destinationBusStop" disabled={!destinationProvince}>
-            <option value="">--เลือกจุดลงรถ--</option>
-            {#each destinationBusStops as busStop}
-              <option value={busStop}>{busStop}</option>
-            {/each}
-          </select>
-          <div class="flex">
-            <div class="w-28">วันเดินทางไป</div>
-            <input
-              type="date"
-              class="border-2 rounded-md px-2"
-              value={myBindDate}
-              on:change={(e) => (myBindDate = e.target.value || myBindDate)}
-            />
-          </div>
-          <div class="flex">
-            <div class="w-28">วันเดินทางกลับ</div>
-            <input
-              type="date"
-              class="border-2 rounded-md px-2"
-              value={myBindDate}
-              on:change={(e) => (myBindDate = e.target.value || myBindDate)}
-            />
-          </div>
-          <div>
-            <button
-              class="flex justify-center items-center gap-1 bg-violet-500 rounded-lg px-4 py-2 text-white hover:bg-violet-600 hover:shadow-sm hover:scale-105 hover:shadow-violet-500 transition-transform duration-500"
-              >ค้นหาเที่ยวรถ</button
-            >
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Trip Type Selection -->
+  <div class="mb-3">
+    <label><input type="radio" name="triptype" /> ไป-กลับ</label>
+    <label class="ml-5"
+      ><input type="radio" name="triptype" /> เที่ยวเดียว</label
+    >
   </div>
+
+  <!-- Origin Province Selection -->
+  <div class="mb-3">
+    <label for="origin">จังหวัดต้นทาง</label>
+    <select id="origin" bind:value={originProvince} class="w-full p-2 border">
+      <option value="">--เลือกจังหวัด--</option>
+      {#each [...new Set(routes.map((route) => route.OriginProvince))] as province}
+        <option value={province}>{province}</option>
+      {/each}
+    </select>
+  </div>
+
+  <!-- Origin Bus Stop Selection -->
+  <div class="mb-3">
+    <label for="originBusStop">จุดขึ้นรถ</label>
+    <select
+      id="originBusStop"
+      class="w-full p-2 border"
+      disabled={!originProvince}
+    >
+      <option value="">--เลือกจุดขึ้นรถ--</option>
+      {#each originBusStops as busStop}
+        <option value={busStop}>{busStop}</option>
+      {/each}
+    </select>
+  </div>
+
+  <!-- Destination Province Selection -->
+  <div class="mb-3">
+    <label for="destination">จังหวัดปลายทาง</label>
+    <select
+      id="destination"
+      bind:value={destinationProvince}
+      class="w-full p-2 border"
+      disabled={!originProvince}
+    >
+      <option value="">--เลือกจังหวัด--</option>
+      {#each destinationOptions as destination}
+        <option value={destination}>{destination}</option>
+      {/each}
+    </select>
+  </div>
+
+  <!-- Destination Bus Stop Selection -->
+  <div class="mb-3">
+    <label for="destinationBusStop">จุดลงรถ</label>
+    <select
+      id="destinationBusStop"
+      class="w-full p-2 border"
+      disabled={!destinationProvince}
+    >
+      <option value="">--เลือกจุดลงรถ--</option>
+      {#each destinationBusStops as busStop}
+        <option value={busStop}>{busStop}</option>
+      {/each}
+    </select>
+  </div>
+
+  <!-- Date Picker for Outbound -->
+  <div class="mb-3 flex">
+    <label class="w-32">วันเดินทางไป</label>
+    <input
+      type="date"
+      value={myBindDate}
+      on:change={(e) => (myBindDate = e.target.value || myBindDate)}
+      class="border p-2 w-full"
+    />
+  </div>
+
+  <!-- Date Picker for Return -->
+  <div class="mb-3 flex">
+    <label class="w-32">วันเดินทางกลับ</label>
+    <input
+      type="date"
+      value={myBindDate}
+      on:change={(e) => (myBindDate = e.target.value || myBindDate)}
+      class="border p-2 w-full"
+    />
+  </div>
+
+  <!-- Search Button -->
+  <button class="search-button w-full mt-5">ค้นหาเที่ยวรถ</button>
 </div>
+
+<style>
+  .search-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .search-button {
+    background-color: #f26522;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .search-button:hover {
+    background-color: #e54d15;
+  }
+</style>
