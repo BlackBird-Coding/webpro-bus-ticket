@@ -1,32 +1,31 @@
-import sqlite3 from 'sqlite3';
+import sqlite3 from "sqlite3";
 
-let db = new sqlite3.Database('../db/main.db', (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log('Connected to the main database.');
-  });
+let db = new sqlite3.Database("../db/main.db", (err) => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log("Connected to the main database.");
+});
 
 db.serialize(() => {
-
-    // Create ROUTES table
-    db.run(`CREATE TABLE IF NOT EXISTS ROUTES (
+  // Create ROUTES table
+  db.run(`CREATE TABLE IF NOT EXISTS ROUTES (
       RouteID INTEGER PRIMARY KEY,
       Origin TEXT NOT NULL,
       Destination TEXT NOT NULL,
       Distance DECIMAL NOT NULL
     );`);
-  
-    // Create BUSES table
-    db.run(`CREATE TABLE IF NOT EXISTS BUSES (
+
+  // Create BUSES table
+  db.run(`CREATE TABLE IF NOT EXISTS BUSES (
       BusID INTEGER PRIMARY KEY,
       BusNumber TEXT NOT NULL,
       Capacity INTEGER NOT NULL,
       Type TEXT NOT NULL
     );`);
-  
-    // Create EMPLOYEES table
-    db.run(`CREATE TABLE IF NOT EXISTS EMPLOYEES (
+
+  // Create EMPLOYEES table
+  db.run(`CREATE TABLE IF NOT EXISTS EMPLOYEES (
       EmployeeID INTEGER PRIMARY KEY,
       Fname TEXT NOT NULL,
       Lname TEXT NOT NULL,
@@ -34,9 +33,9 @@ db.serialize(() => {
       HireDate DATE NOT NULL,
       DOB DATE NOT NULL
     );`);
-  
-    // Create SCHEDULES table
-    db.run(`CREATE TABLE IF NOT EXISTS SCHEDULES (
+
+  // Create SCHEDULES table
+  db.run(`CREATE TABLE IF NOT EXISTS SCHEDULES (
       ScheduleID INTEGER PRIMARY KEY,
       RouteID INTEGER NOT NULL,
       BusID INTEGER NOT NULL,
@@ -47,18 +46,18 @@ db.serialize(() => {
       FOREIGN KEY (BusID) REFERENCES BUSES(BusID),
       FOREIGN KEY (EmployeeID) REFERENCES EMPLOYEES(EmployeeID)
     );`);
-  
-    // Create CUSTOMERS table
-    db.run(`CREATE TABLE IF NOT EXISTS CUSTOMERS (
+
+  // Create CUSTOMERS table
+  db.run(`CREATE TABLE IF NOT EXISTS CUSTOMERS (
       CustomerID INTEGER PRIMARY KEY,
       Fname TEXT NOT NULL,
       Lname TEXT NOT NULL,
       Phone TEXT NOT NULL,
       Email TEXT NOT NULL
     );`);
-  
-    // Create BOOKINGS table
-    db.run(`CREATE TABLE IF NOT EXISTS BOOKINGS (
+
+  // Create BOOKINGS table
+  db.run(`CREATE TABLE IF NOT EXISTS BOOKINGS (
       BookingID INTEGER PRIMARY KEY,
       CustomerID INTEGER NOT NULL,
       ScheduleID INTEGER NOT NULL,
@@ -68,9 +67,9 @@ db.serialize(() => {
       FOREIGN KEY (CustomerID) REFERENCES CUSTOMERS(CustomerID),
       FOREIGN KEY (ScheduleID) REFERENCES SCHEDULES(ScheduleID)
     );`);
-  
-    // Create PAYMENTS table
-    db.run(`CREATE TABLE IF NOT EXISTS PAYMENTS (
+
+  // Create PAYMENTS table
+  db.run(`CREATE TABLE IF NOT EXISTS PAYMENTS (
       PaymentID INTEGER PRIMARY KEY,
       BookingID INTEGER NOT NULL,
       Amount DECIMAL NOT NULL,
@@ -79,7 +78,7 @@ db.serialize(() => {
       FOREIGN KEY (BookingID) REFERENCES BOOKINGS(BookingID)
     );`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS USERS (
+  db.run(`CREATE TABLE IF NOT EXISTS USERS (
         UserID INTEGER PRIMARY KEY,
         Username TEXT NOT NULL UNIQUE,
         Email TEXT NOT NULL UNIQUE,
@@ -90,8 +89,8 @@ db.serialize(() => {
         FOREIGN KEY (CustomerID) REFERENCES CUSTOMERS(CustomerID),
         FOREIGN KEY (EmployeeID) REFERENCES EMPLOYEES(EmployeeID)
       );`);
-  
-    console.log('Tables created successfully.');
-  });
+
+  console.log("Tables created successfully.");
+});
 
 export default db;
