@@ -158,22 +158,16 @@ const createEmployee = (fname, lname, phone, email, password, role) => {
 const getRoutes = () => {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT * FROM ROUTES
-      JOIN BUS_STOPS
-      ON ROUTES.Origin = BUS_STOPS.BusStopID`,
+      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop
+       FROM ROUTES R
+       JOIN BUS_STOPS BS1 ON R.Origin = BS1.BusStopID
+       JOIN BUS_STOPS BS2 ON R.Destination = BS2.BusStopID`,
       (err, routes) => {
         if (err) {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        let routesByProvince = {};
-        routes.forEach((route) => {
-          if (!routesByProvince[route.Province]) {
-            routesByProvince[route.Province] = [];
-          }
-          routesByProvince[route.Province].push(route);
-        });
-        resolve(routesByProvince);
+        resolve(routes);
       }
     );
   });
