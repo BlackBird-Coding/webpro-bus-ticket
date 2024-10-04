@@ -1,12 +1,14 @@
 <script>
-  import { Router, Route, links } from "svelte-routing";
-  import Home from "./routes/Home.svelte";
-  import Test from "./routes/Test.svelte";
-  import Register from "./routes/Register.svelte";
-  import History from "./routes/History.svelte";
-  import Login from "./routes/Login.svelte";
-  import Trip from "./routes/Trip.svelte";
-  import Seat from "./routes/Seat.svelte";
+  import { Router, Route, links } from 'svelte-routing';
+  import Home from './routes/Home.svelte';
+  import Test from './routes/Test.svelte';
+  import Register from './routes/Register.svelte';
+  import History from './routes/History.svelte';
+  import Login from './routes/Login.svelte';
+  import Trip from './routes/Booking/Trip.svelte';
+  import Seat from './routes/Seat.svelte'
+  import Payment from './routes/Payment.svelte'
+  import Find from "./routes/Booking/Find.svelte";
 </script>
 
 <main use:links>
@@ -75,7 +77,7 @@
             </li>
             <li class="max-lg:border-b max-lg:py-3 px-3">
               <a
-                href="/"
+                href="/history"
                 class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
                 >ตรวจสอบประวัติการจอง</a
               >
@@ -126,8 +128,10 @@
     <Route path="/register" component={Register} />
     <Route path="/history" component={History} />
     <Route path="/login" component={Login} />
-    <Route path="/trip" component={Trip} />
+    <Route path="/booking/trip" component={Trip} />
     <Route path="/seat" component={Seat} />
+    <Route path="/payment" component={Payment} />
+    <Route path="/booking/find" component={Find} />
     <Route path="/"><Home /></Route>
   </Router>
 </main>
