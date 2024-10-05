@@ -17,7 +17,8 @@
     "express": "^4.19.2",
     "sirv": "^2.0.4",
     "sqlite3": "^5.1.7",
-    "svelte-routing": "^2.13.0"
+    "svelte-routing": "^2.13.0",
+    "svelte-steps": "^2.4.1"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.0",

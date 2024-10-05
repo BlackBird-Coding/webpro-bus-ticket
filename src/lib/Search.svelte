@@ -87,7 +87,7 @@
   }
 </script>
 
-<div class="max-w-md mx-auto p-5 bg-white rounded-lg shadow-md">
+<div class="w-1/2 h-fit my-10 mx-auto p-5 bg-white rounded-lg shadow-md">
   <div class="text-xl mb-3">ค้นหาเที่ยวรถ</div>
 
   <!-- Trip Type Selection -->
