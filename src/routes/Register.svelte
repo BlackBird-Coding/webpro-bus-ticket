@@ -1,204 +1,215 @@
 <script>
     // @ts-nocheck
-    let show_password = false
+    let show_password = false;
     let value = "";
-    $: type = show_password ? 'text' : 'password'
+    $: type = show_password ? "text" : "password";
 </script>
-<div></div>
-<div>
-    <div class="flex flex-col items-center pt-5">
-        <div class="text-4xl">สร้างบัญชีของคุณ</div>
+
+<div class="max-w-4xl mx-auto font-[sans-serif] p-6">
+    <div class="text-center mb-12">
+        <h4 class="text-gray-800 text-3xl font-semibold mt-6">
+            สร้างบัญชีของคุณ
+        </h4>
     </div>
-    <div class="flex justify-center text-xl mt-5">
-        <div class="flex flex-col gap-5">
-            <div class="flex gap-4 mt-5">
-                <input class="border pl-2 py-1 rounded-sm border-gray-400" type="text" placeholder="ชื่อ">
-                <input class="border pl-2 py-1 rounded-sm border-gray-400" type="text" placeholder="นามสกุล">
+
+    <form>
+        <div class="grid sm:grid-cols-2 gap-7">
+            <div>
+                <label for="name" class="text-gray-800 text-base mb-2 block"
+                    >ชื่อจริง</label
+                >
+                <input
+                    name="name"
+                    type="text"
+                    class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                    placeholder="ป้อนชื่อจริง"
+                />
             </div>
-            <div class="ml-1">
-                <h1>เพศ</h1>
-                <div class="ml-3 mt-2 flex gap-20">
-                    <label class="flex items-center" for="ไม่ระบุ">
-                        <input class="aspect-square w-4 mr-2" type="radio" name="sex" value="non">ไม่ระบุ
-                    </label>
-                    <label class="flex items-center" for="ชาย">
-                        <input class="aspect-square w-4 mr-2" type="radio" name="sex" value="male">ชาย
-                    </label>
-                    <label class="flex items-center" for="หญิง">
-                        <input class="aspect-square w-4 mr-2" type="radio" name="sex" value="female">หญิง
-                    </label>
+            <div>
+                <label for="lname" class="text-gray-800 text-base mb-2 block"
+                    >นามสกุล</label
+                >
+                <input
+                    name="lname"
+                    type="text"
+                    class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                    placeholder="ป้อนนามสกุล"
+                />
+            </div>
+            <div>
+                <label for="lname" class="text-gray-800 text-base mb-2 block"
+                    >เพศ</label
+                >
+                <div class="flex">
+                    <div class="flex items-center me-4">
+                        <input
+                            id="inline-radio"
+                            type="radio"
+                            value=""
+                            name="inline-radio-group"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <label
+                            for="inline-radio"
+                            class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >หญิง</label
+                        >
+                    </div>
+                    <div class="flex items-center me-4">
+                        <input
+                            id="inline-2-radio"
+                            type="radio"
+                            value=""
+                            name="inline-radio-group"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <label
+                            for="inline-2-radio"
+                            class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >ชาย</label
+                        >
+                    </div>
+                    <div class="flex items-center me-4">
+                        <input
+                            checked
+                            id="inline-checked-radio"
+                            type="radio"
+                            value=""
+                            name="inline-radio-group"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <label
+                            for="inline-checked-radio"
+                            class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >ไม่ระบุ</label
+                        >
+                    </div>
                 </div>
             </div>
             <div>
-                <h1>วันเกิด</h1>
-                <div class="mt-2 flex gap-5">
-                    <select class="border border-gray-400 rounded-sm py-1 pl-2 pr-12">
-                        <option value="">วัน</option>
-                        <option value="01">01</option>
-                        <option value="02">02</option>
-                        <option value="03">03</option>
-                        <option value="04">04</option>
-                        <option value="05">05</option>
-                        <option value="06">06</option>
-                        <option value="07">07</option>
-                        <option value="08">08</option>
-                        <option value="09">09</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                        <option value="31">31</option>
-                    </select>
-                    <select class="border border-gray-400 rounded-sm py-1 pl-2 pr-24">
-                        <option value="">เดือน</option>
-                        <option value="01">มกราคม</option>
-                        <option value="02">กุมภาพันธ์</option>
-                        <option value="03">มีนาคม</option>
-                        <option value="04">เมษายน</option>
-                        <option value="05">พฤษภาคม</option>
-                        <option value="06">มิถุนายน</option>
-                        <option value="07">กรกฎาคม</option>
-                        <option value="08">สิงหาคม</option>
-                        <option value="09">กันยายน</option>
-                        <option value="10">ตุลาคม</option>
-                        <option value="11">พฤศจิกายน</option>
-                        <option value="12">ธันวาคม</option>
-                    </select>
-                    <select class="border border-gray-400 rounded-sm py-1 pl-2 pr-12">
-                        <option value="">ปี</option>
-                        <option value="2024" > 2024</option>
-                        <option value="2023" > 2023</option>
-                        <option value="2022" > 2022</option>
-                        <option value="2021" > 2021</option>
-                        <option value="2020" > 2020</option>
-                        <option value="2019" > 2019</option>
-                        <option value="2018" > 2018</option>
-                        <option value="2017" > 2017</option>
-                        <option value="2016" > 2016</option>
-                        <option value="2015" > 2015</option>
-                        <option value="2014" > 2014</option>
-                        <option value="2013" > 2013</option>
-                        <option value="2012" > 2012</option>
-                        <option value="2011" > 2011</option>
-                        <option value="2010" > 2010</option>
-                        <option value="2009" > 2009</option>
-                        <option value="2008" > 2008</option>
-                        <option value="2007" > 2007</option>
-                        <option value="2006" > 2006</option>
-                        <option value="2005" > 2005</option>
-                        <option value="2004" > 2004</option>
-                        <option value="2003" > 2003</option>
-                        <option value="2002" > 2002</option>
-                        <option value="2001" > 2001</option>
-                        <option value="2000" > 2000</option>
-                        <option value="1999" > 1999</option>
-                        <option value="1998" > 1998</option>
-                        <option value="1997" > 1997</option>
-                        <option value="1996" > 1996</option>
-                        <option value="1995" > 1995</option>
-                        <option value="1994" > 1994</option>
-                        <option value="1993" > 1993</option>
-                        <option value="1992" > 1992</option>
-                        <option value="1991" > 1991</option>
-                        <option value="1990" > 1990</option>
-                        <option value="1989" > 1989</option>
-                        <option value="1988" > 1988</option>
-                        <option value="1987" > 1987</option>
-                        <option value="1986" > 1986</option>
-                        <option value="1985" > 1985</option>
-                        <option value="1984" > 1984</option>
-                        <option value="1983" > 1983</option>
-                        <option value="1982" > 1982</option>
-                        <option value="1981" > 1981</option>
-                        <option value="1980" > 1980</option>
-                        <option value="1979" > 1979</option>
-                        <option value="1978" > 1978</option>
-                        <option value="1977" > 1977</option>
-                        <option value="1976" > 1976</option>
-                        <option value="1975" > 1975</option>
-                        <option value="1974" > 1974</option>
-                        <option value="1973" > 1973</option>
-                        <option value="1972" > 1972</option>
-                        <option value="1971" > 1971</option>
-                        <option value="1970" > 1970</option>
-                        <option value="1969" > 1969</option>
-                        <option value="1968" > 1968</option>
-                        <option value="1967" > 1967</option>
-                        <option value="1966" > 1966</option>
-                        <option value="1965" > 1965</option>
-                        <option value="1964" > 1964</option>
-                        <option value="1963" > 1963</option>
-                        <option value="1962" > 1962</option>
-                        <option value="1961" > 1961</option>
-                        <option value="1960" > 1960</option>
-                        <option value="1959" > 1959</option>
-                        <option value="1958" > 1958</option>
-                        <option value="1957" > 1957</option>
-                        <option value="1956" > 1956</option>
-                        <option value="1955" > 1955</option>
-                        <option value="1954" > 1954</option>
-                        <option value="1953" > 1953</option>
-                        <option value="1952" > 1952</option>
-                        <option value="1951" > 1951</option>
-                        <option value="1950" > 1950</option>
-                        <option value="1949" > 1949</option>
-                        <option value="1948" > 1948</option>
-                        <option value="1947" > 1947</option>
-                        <option value="1946" > 1946</option>
-                        <option value="1945" > 1945</option>
-                        <option value="1944" > 1944</option>
-                        <option value="1943" > 1943</option>
-                        <option value="1942" > 1942</option>
-                        <option value="1941" > 1941</option>
-                        <option value="1940" > 1940</option>
-                        <option value="1939" > 1939</option>
-                        <option value="1938" > 1938</option>
-                        <option value="1937" > 1937</option>
-                        <option value="1936" > 1936</option>
-                        <option value="1935" > 1935</option>
-                        <option value="1934" > 1934</option>
-                        <option value="1933" > 1933</option>
-                        <option value="1932" > 1932</option>
-                        <option value="1931" > 1931</option>
-                        <option value="1930" > 1930</option>
-                        <option value="1929" > 1929</option>
-                        <option value="1928" > 1928</option>
-                        <option value="1927" > 1927</option>
-                        <option value="1926" > 1926</option>
-                        <option value="1925" > 1925</option>
-                    </select>
+                <label for="lname" class="text-gray-800 text-base mb-2 block"
+                    >วันเกิด</label
+                >
+
+                <div class="mb-3 flex">
+                    <input type="date" class="border p-2 w-full" />
                 </div>
             </div>
-            <hr class="bg-gray-400 border-0 h-[1px] my-2">
-            <input class="w-full border pl-2 py-1 rounded-sm border-gray-400" type="text" placeholder="ป้อนที่อยู่อีเมล">
-            <input class="w-full border pl-2 py-1 rounded-sm border-gray-400" type="text" placeholder="ป้อนเบอร์โทรศัพท์">
             <div>
-                <input class="w-full border pl-2 py-1 rounded-sm border-gray-400" {type} {value} placeholder="รหัสผ่านใหม่">
-                <div class="flex ml-3 mt-2 items-center ">
-                    <input class="aspect-square w-4 mr-2" type="checkbox" on:click={() => show_password = !show_password }>
-                    <label for="">แสดงรหัสผ่าน</label>
+                <label for="email" class="text-gray-800 text-base mb-2 block"
+                    >อีเมล</label
+                >
+                <input
+                    name="email"
+                    type="text"
+                    class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                    placeholder="ป้อนอีเมล"
+                />
+            </div>
+            <div>
+                <label for="number" class="text-gray-800 text-base mb-2 block"
+                    >หมายเลขโทรศัทท์</label
+                >
+                <input
+                    name="number"
+                    type="number"
+                    class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                    placeholder="ป้อนหมายเลขโทรศัทพ์"
+                />
+            </div>
+            <div>
+                <label for="password" class="text-gray-800 text-base mb-2 block">
+                    รหัสผ่าน
+                </label>
+                <div class="relative flex items-center">
+                    <input
+                        name="password"
+                        {type}
+                        {value}
+                        required
+                        class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                        placeholder="รหัสผ่าน"
+                    />
+                    <button
+                        type="button"
+                        on:click={() => (show_password = !show_password)}
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="w-5 h-5"
+                        >
+                            {#if show_password}
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            {:else}
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                            {/if}
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <div class="flex justify-center mb-5">
-                <button class="bg-orange-400 w-full py-2 rounded-md text-white hover:bg-orange-600 transition-colors" type="submit">สมัครสมาชิก</button>
+            <div>
+                <label for="cpassword" class="text-gray-800 text-base mb-2 block">
+                    ยืนยันรหัสผ่าน
+                </label>
+                <div class="relative flex items-center">
+                    <input
+                        name="password"
+                        {type}
+                        {value}
+                        required
+                        class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                        placeholder="ยืนยันรหัสผ่าน"
+                    />
+                    <button
+                        type="button"
+                        on:click={() => (show_password = !show_password)}
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="w-5 h-5"
+                        >
+                            {#if show_password}
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                            {:else}
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                                />
+                            {/if}
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="!mt-12">
+            <button
+                type="button"
+                class="py-2.5 px-5 text-base font-semibold tracking-wider rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none"
+            >
+                สมัครสมาชิก
+            </button>
+        </div>
+    </form>
 </div>
