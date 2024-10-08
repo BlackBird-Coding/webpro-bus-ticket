@@ -3,7 +3,7 @@
 </script>
 <div class="m-10">
     <Table hoverable={true}>
-        <TableHead class="bg-slate-200 rounded-md py-2 text-lg text-center">
+        <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
             <TableHeadCell>เลขที่การจอง</TableHeadCell>
             <TableHeadCell>ชื่อผู้โดยสาร</TableHeadCell>
             <TableHeadCell>วันที่เดินทาง</TableHeadCell>
