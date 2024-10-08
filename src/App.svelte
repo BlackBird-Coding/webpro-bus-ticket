@@ -9,6 +9,8 @@
   import Seat from './routes/Seat.svelte'
   import Payment from './routes/Payment.svelte'
   import Find from "./routes/Booking/Find.svelte";
+  import ManageBus_Emp from "./routes/ManageBus_Emp.svelte";
+  import History_Emp from "./routes/History_Emp.svelte";
 </script>
 
 <main use:links>
@@ -84,6 +86,20 @@
             </li>
             <li class="max-lg:border-b max-lg:py-3 px-3">
               <a
+                href="/ManageBus_Emp"
+                class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
+                >จัดการเที่ยวรถ (พนักงาน)</a
+              >
+            </li>
+            <li class="max-lg:border-b max-lg:py-3 px-3">
+              <a
+                href="/History_Emp"
+                class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
+                >ตรวจสอบประวัติการจอง (พนักงาน)</a
+              >
+            </li>
+            <li class="max-lg:border-b max-lg:py-3 px-3">
+              <a
                 href="/"
                 class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
                 >ติดต่อเรา</a
@@ -131,6 +147,8 @@
     <Route path="/booking/trip" component={Trip} />
     <Route path="/seat" component={Seat} />
     <Route path="/payment" component={Payment} />
+    <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
+    <Route path="/History_Emp" component={History_Emp} />
     <Route path="/booking/find" component={Find} />
     <Route path="/"><Home /></Route>
   </Router>
