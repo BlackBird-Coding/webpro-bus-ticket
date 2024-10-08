@@ -9,14 +9,10 @@
   import Seat from './routes/Booking/Seat.svelte';
   import Payment from './routes/Payment.svelte';
   import Find from "./routes/Booking/Find.svelte";
-<<<<<<< Updated upstream
   import Howto from "./routes/Howto.svelte"
   import ManageBus_Emp from "./routes/ManageBus_Emp.svelte";
   import History_Emp from "./routes/History_Emp.svelte";
-=======
-  import Howto from "./routes/Howto.svelte";
   import ContactForm from "./routes/ContactForm.svelte";
->>>>>>> Stashed changes
 </script>
 
 <body class="flex min-h-screen flex-col" use:links>
@@ -91,7 +87,6 @@
           </li>
           <li class="max-lg:border-b max-lg:py-3 px-3">
             <a
-<<<<<<< Updated upstream
               href="/ManageBus_Emp"
               class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
               >จัดการเที่ยวรถ (พนักงาน)</a
@@ -106,10 +101,7 @@
           </li>
           <li class="max-lg:border-b max-lg:py-3 px-3">
             <a
-              href="/"
-=======
               href="/contact"
->>>>>>> Stashed changes
               class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
             >
               ติดต่อเรา
