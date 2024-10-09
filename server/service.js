@@ -83,7 +83,8 @@ const login = (email, password) => {
         }
 
         if (result) {
-          resolve(user);
+          const { Password, ...userWithoutPassword } = user;
+          resolve(userWithoutPassword);
         } else {
           reject("Incorrect password.");
         }

@@ -12,8 +12,8 @@
   let gender = "unspecified";
   let dob = "";
 
-  const handelSubmit = (e) => {
-    e.preventDefault();
+  const handelSubmit = (event: Event) => {
+    event.preventDefault();
     console.log({
       fname,
       lname,

@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import express from "express";
+import sessions from "express-session";
+import cookieParser from "cookie-parser";
 import apiRouter from "./server/api.js";
 
 // Constants
@@ -20,6 +22,19 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const oneDay = 1000 * 60 * 60 * 24;
+
+app.use(
+  sessions({
+    secret: "thisismysecrctekey",
+    saveUninitialized: true,
+    cookie: { maxAge: oneDay },
+    resave: false,
+  })
+);
+
+app.use(cookieParser());
 
 // Add Vite or respective production middlewares
 let vite;
