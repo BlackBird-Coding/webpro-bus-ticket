@@ -18,8 +18,9 @@ router.post("/greet", express.json(), (req, res) => {
 });
 
 router.post("/register", (req, res) => {
-  const { fname, lname, phone, email, password } = req.body;
-  registerCustomer(fname, lname, phone, email, password).then(
+  console.log("Request body:", req.body);
+  const { fname, lname, dob, gender, number, email, password } = req.body;
+  registerCustomer(fname, lname, number, email, password).then(
     () => {
       res.json({ message: "Customer registration successful!" });
     },

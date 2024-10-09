@@ -18,6 +18,9 @@ const ssrManifest = isProduction
 // Create http server
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Add Vite or respective production middlewares
 let vite;
 if (!isProduction) {
