@@ -32,7 +32,7 @@ db.serialize(() => {
   // Create BUSES table
   db.run(`CREATE TABLE IF NOT EXISTS BUSES (
       BusID INTEGER PRIMARY KEY,
-      BusNumber TEXT NOT NULL,
+      BusName TEXT NOT NULL,
       Capacity INTEGER NOT NULL,
       Type TEXT NOT NULL
     );`);
@@ -136,6 +136,19 @@ db.serialize(() => {
 //   );
 
 //   console.log("Routes added successfully.");
+// });
+
+// // add buses
+// db.serialize(() => {
+//   db.run(
+//     `INSERT INTO BUSES (BusId, BusName, Capacity, Type) VALUES (1, 'Bus 1', 50, 'Standard'),
+//     (2, 'Bus 2', 40, 'Standard'),
+//     (3, 'Bus 3', 30, 'Standard'),
+//     (4, 'Bus 4', 20, 'Standard'),
+//     (5, 'Bus 5', 10, 'VIP');`
+//   );
+
+//   console.log("Buses added successfully.");
 // });
 
 export default db;
