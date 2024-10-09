@@ -6,12 +6,13 @@
   import History from './routes/History.svelte';
   import Login from './routes/Login.svelte';
   import Trip from './routes/Booking/Trip.svelte';
-  import Seat from './routes/Booking/Seat.svelte'
-  import Payment from './routes/Payment.svelte'
+  import Seat from './routes/Booking/Seat.svelte';
+  import Payment from './routes/Payment.svelte';
   import Find from "./routes/Booking/Find.svelte";
   import Howto from "./routes/Howto.svelte"
   import ManageBus_Emp from "./routes/ManageBus_Emp.svelte";
   import History_Emp from "./routes/History_Emp.svelte";
+  import ContactForm from "./routes/ContactForm.svelte";
 </script>
 
 <body class="flex min-h-screen flex-col" use:links>
@@ -100,11 +101,12 @@
           </li>
           <li class="max-lg:border-b max-lg:py-3 px-3">
             <a
-              href="/"
+              href="/contact"
               class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
-              >ติดต่อเรา</a
             >
-          </li>
+              ติดต่อเรา
+            </a>
+          </li>          
         </ul>
       </div>
 
@@ -150,6 +152,7 @@
       <Route path="/seat" component={Seat} />
       <Route path="/payment" component={Payment} />
       <Route path="/booking/find" component={Find} />
+      <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
       <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
     <Route path="/History_Emp" component={History_Emp} />
