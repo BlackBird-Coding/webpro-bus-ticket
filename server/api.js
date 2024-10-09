@@ -34,7 +34,8 @@ router.post("/login", (req, res) => {
   const { email, password } = req.body;
   login(email, password).then(
     (user) => {
-      res.json({ message: "Login successful!", user });
+      req.session.user = user;
+      res.json({ message: "Login successful!" });
     },
     (error) => {
       res.status(400).json({ error });

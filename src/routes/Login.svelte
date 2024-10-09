@@ -2,6 +2,26 @@
   let show_password = false;
   let value = "";
   $: type = show_password ? "text" : "password";
+
+  let email = "";
+  let password = "";
+
+  function handelSubmit(event: Event) {
+    event.preventDefault();
+    console.log({ email, password });
+
+    fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
+  }
 </script>
 
 <div class="bg-gray-50 font-[sans-serif]">
@@ -11,7 +31,7 @@
         <h2 class="text-gray-800 text-center text-2xl font-bold">
           เข้าสู่ระบบ
         </h2>
-        <form class="mt-8 space-y-4">
+        <form class="mt-8 space-y-4" on:submit={handelSubmit}>
           <div>
             <label for="username" class="text-gray-800 text-sm mb-2 block"
               >อีเมล</label
@@ -21,6 +41,7 @@
                 name="username"
                 type="text"
                 required
+                bind:value={email}
                 class="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600"
                 placeholder="ป้อนที่อยู่อีเมล"
               />
@@ -45,14 +66,25 @@
               >รหัสผ่าน</label
             >
             <div class="relative flex items-center">
-              <input
-                name="password"
-                {type}
-                {value}
-                required
-                class="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600"
-                placeholder="ป้อนรหัสผ่าน"
-              />
+              {#if show_password}
+                <input
+                  name="password"
+                  type="text"
+                  bind:value={password}
+                  required
+                  class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                  placeholder="รหัสผ่าน"
+                />
+              {:else}
+                <input
+                  name="password"
+                  type="password"
+                  bind:value={password}
+                  required
+                  class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"
+                  placeholder="รหัสผ่าน"
+                />
+              {/if}
               <button
                 type="button"
                 on:click={() => (show_password = !show_password)}
