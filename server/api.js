@@ -7,16 +7,6 @@ import {
 } from "./service.js";
 const router = express.Router();
 
-// Define your routes
-router.get("/hello", (req, res) => {
-  res.json({ message: "Hello, world!" });
-});
-
-router.post("/greet", express.json(), (req, res) => {
-  const { name } = req.body;
-  res.json({ message: `Hello, ${name}!` });
-});
-
 router.post("/register", (req, res) => {
   console.log("Request body:", req.body);
   const { fname, lname, dob, gender, number, email, password } = req.body;
