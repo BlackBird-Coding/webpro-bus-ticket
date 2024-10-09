@@ -55,8 +55,8 @@
             </div>
         </form>
         <button
-            type="submit"
-            class="ml-0 text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
+            type="button"
+            class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
             ><div>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

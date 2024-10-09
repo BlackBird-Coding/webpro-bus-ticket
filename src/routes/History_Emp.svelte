@@ -63,7 +63,7 @@
             <TableHeadCell>ชื่อเที่ยวรถ</TableHeadCell>
             <TableHeadCell>ต้นทาง-ปลายทาง</TableHeadCell>
             <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
-            <TableHeadCell>จำนวนที่นั่ง</TableHeadCell>
+            <TableHeadCell>สถานะการจอง</TableHeadCell>
             <TableHeadCell>
                 <span class="sr-only">Action</span>
             </TableHeadCell>
@@ -74,7 +74,7 @@
                 <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
                 <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
                 <TableBodyCell>10.00-12.00</TableBodyCell>
-                <TableBodyCell>40</TableBodyCell>
+                <TableBodyCell>ชำระเงินเสร็จสิ้น</TableBodyCell>
                 <TableBodyCell class="flex gap-5">
                     <a class="text-blue-500 hover:underline" href="/">แก้ไข</a>
                     <a class="text-red-600 hover:underline" href="/">ลบ</a>
@@ -85,7 +85,7 @@
                 <TableBodyCell>กรุงเทพ-เชียงใหม่</TableBodyCell>
                 <TableBodyCell>กรุงเทพ-เชียงใหม่</TableBodyCell>
                 <TableBodyCell>10.00-19.00</TableBodyCell>
-                <TableBodyCell>40</TableBodyCell>
+                <TableBodyCell>ชำระเงินเสร็จสิ้น</TableBodyCell>
                 <TableBodyCell class="flex gap-5">
                     <a class="text-blue-500 hover:underline" href="/">แก้ไข</a>
                     <a class="text-red-600 hover:underline" href="/">ลบ</a>

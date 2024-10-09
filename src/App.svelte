@@ -72,9 +72,9 @@
           </li>
           <li class="max-lg:border-b max-lg:py-3 px-3">
             <a
-              href="/howto"
+              href="/booking/find"
               class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
-              >วิธีการจองและชำระเงิน</a
+              >จองตั๋ว</a
             >
           </li>
           <li class="max-lg:border-b max-lg:py-3 px-3">
