@@ -19,6 +19,7 @@
     "express": "^4.21.0",
     "express-session": "^1.18.1",
     "flowbite": "^2.5.2",
+    "leaflet": "^1.9.4",
     "sirv": "^2.0.4",
     "sqlite3": "^5.1.7",
     "svelte-routing": "^2.13.0",
