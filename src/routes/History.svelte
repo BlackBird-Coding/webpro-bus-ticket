@@ -1,6 +1,7 @@
 <script>
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
 </script>
+
 <div class="m-10">
     <Table hoverable={true}>
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
@@ -25,23 +26,28 @@
                 <TableBodyCell>600.00 บาท</TableBodyCell>
                 <TableBodyCell>จองเสร็จสิ้น</TableBodyCell>
                 <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-500 hover:underline" href="/">เลื่อนตั๋ว</a>
-                    <a class="text-red-600 hover:underline" href="/">แสดงตั๋ว</a>
+                  <a class="text-blue-500 hover:underline" href="/">เลื่อนตั๋ว</a>
+                  <div class="flex gap-5 justify-center">
+                    <!-- Link to ticket-details page with ticket ID as a query parameter -->
+                    <a class="text-red-600 hover:underline" href={`/ticket-details?id=000001`}>แสดงตั๋ว</a>
+                  </div>
                 </TableBodyCell>
             </TableBodyRow>
+
             <TableBodyRow class="text-center">
                 <TableBodyCell>000002</TableBodyCell>
                 <TableBodyCell>ชวัล แซ่ย่าง</TableBodyCell>
                 <TableBodyCell>20/10/2024</TableBodyCell>
                 <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
-                <TableBodyCell>A1</TableBodyCell>
+                <TableBodyCell>A2</TableBodyCell>
                 <TableBodyCell>600.00 บาท</TableBodyCell>
                 <TableBodyCell>จองเสร็จสิ้น</TableBodyCell>
                 <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-500 hover:underline" href="/">เลื่อนตั๋ว</a>
-                    <a class="text-red-600 hover:underline" href="/">แสดงตั๋ว</a>
+                  <a class="text-blue-500 hover:underline" href="/">เลื่อนตั๋ว</a>
+                  <!-- Link to ticket-details page with ticket ID as a query parameter -->
+                  <a class="text-red-600 hover:underline" href={`/ticket-details?id=000002`}>แสดงตั๋ว</a>
                 </TableBodyCell>
-            </TableBodyRow>
+            </TableBodyRow>              
         </TableBody>
     </Table>
 </div>

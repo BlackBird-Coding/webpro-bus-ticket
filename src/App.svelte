@@ -13,6 +13,8 @@
   import ManageBus_Emp from "./routes/ManageBus_Emp.svelte";
   import History_Emp from "./routes/History_Emp.svelte";
   import ContactForm from "./routes/ContactForm.svelte";
+  import TicketDetails from './routes/TicketDetails.svelte';
+
 </script>
 
 <body class="flex min-h-screen flex-col" use:links>
@@ -156,6 +158,7 @@
       <Route path="/"><Home /></Route>
       <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
     <Route path="/History_Emp" component={History_Emp} />
+    <Route path="/ticket-details" component={TicketDetails} />
     </Router>
   </main>
   
