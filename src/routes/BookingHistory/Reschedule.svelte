@@ -28,9 +28,9 @@
           id="newDate" 
           class="block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700" 
         />
-        <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m0 0a5 5 0 00-5 5v13a5 5 0 005 5h8a5 5 0 005-5V8a5 5 0 00-5-5h-4M8 7h8" />
+        <span class="absolute inset-y-0 right-3 flex items-center text-gray-400 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-5 8h6m-6 4h6M5 5h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"/>
           </svg>
         </span>
       </div>
