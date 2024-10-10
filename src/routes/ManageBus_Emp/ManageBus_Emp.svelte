@@ -1,4 +1,5 @@
 <script>
+    import { Link } from "svelte-routing";
     import {
         Table,
         TableBody,
@@ -101,9 +102,8 @@
             <TableHeadCell>ต้นทาง-ปลายทาง</TableHeadCell>
             <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
             <TableHeadCell>จำนวนที่นั่ง</TableHeadCell>
-            <TableHeadCell>
-                <span class="sr-only">Action</span>
-            </TableHeadCell>
+            <TableHeadCell>รายละเอียด</TableHeadCell>
+            <TableHeadCell>Action</TableHeadCell>
         </TableHead>
         <TableBody>
             <TableBodyRow class="text-center">
@@ -112,8 +112,15 @@
                 <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
                 <TableBodyCell>10.00-12.00</TableBodyCell>
                 <TableBodyCell>40</TableBodyCell>
+                <TableBodyCell>
+                    <a class="text-blue-500 hover:underline" href="/EditBus"
+                        >คลิกเพื่อดูรายละเอียดเพิ่มเติม</a
+                    >
+                </TableBodyCell>
                 <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-500 hover:underline" href="/">แก้ไข</a>
+                    <a class="text-blue-500 hover:underline" href="/EditBus"
+                        >แก้ไข</a
+                    >
                     <a class="text-red-600 hover:underline" href="/">ลบ</a>
                 </TableBodyCell>
             </TableBodyRow>
@@ -123,6 +130,11 @@
                 <TableBodyCell>กรุงเทพ-เชียงใหม่</TableBodyCell>
                 <TableBodyCell>10.00-19.00</TableBodyCell>
                 <TableBodyCell>40</TableBodyCell>
+                <TableBodyCell>
+                    <a class="text-blue-500 hover:underline" href="/EditBus"
+                        >คลิกเพื่อดูรายละเอียดเพิ่มเติม</a
+                    >
+                </TableBodyCell>
                 <TableBodyCell class="flex gap-5">
                     <a class="text-blue-500 hover:underline" href="/">แก้ไข</a>
                     <a class="text-red-600 hover:underline" href="/">ลบ</a>

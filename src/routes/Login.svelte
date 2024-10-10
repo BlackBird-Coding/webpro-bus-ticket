@@ -25,7 +25,7 @@
 </script>
 
 <div class="bg-gray-50 font-[sans-serif]">
-  <div class="min-h-screen flex flex-col items-center justify-center py-6 px-4">
+  <div class="min-h-screen flex mx-auto items-center justify-center py-6 px-4">
     <div class="max-w-md w-full">
       <div class="p-8 rounded-2xl bg-white shadow">
         <h2 class="text-gray-800 text-center text-2xl font-bold">
