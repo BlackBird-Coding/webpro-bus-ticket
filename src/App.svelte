@@ -3,7 +3,7 @@
   import Home from "./routes/Home.svelte";
   import Test from "./routes/Test.svelte";
   import Register from "./routes/Register.svelte";
-  import History from "./routes/History.svelte";
+  import History from "./routes/BookingHistory/History.svelte";
   import Login from "./routes/Login.svelte";
   import Trip from "./routes/Booking/Trip.svelte";
   import Seat from "./routes/Booking/Seat.svelte";
@@ -12,13 +12,14 @@
   import Howto from "./routes/Howto.svelte";
   import History_Emp from "./routes/History_Emp.svelte";
   import ContactForm from "./routes/ContactForm.svelte";
-  import TicketDetails from "./routes/TicketDetails.svelte";
+  import TicketDetails from "./routes/BookingHistory/TicketDetails.svelte";
   import ManageBus_Emp from "./routes/ManageBus_Emp/ManageBus_Emp.svelte";
   import AddBus from "./routes/ManageBus_Emp/AddBus.svelte";
   import AddStation from "./routes/ManageBus_Emp/AddStation.svelte";
   import EditBus from "./routes/ManageBus_Emp/EditBus.svelte";
   import Navbar from "./lib/Navbar.svelte";
   import Footer from "./lib/Footer.svelte";
+  import Reschedule from "./routes/BookingHistory/Reschedule.svelte";
 </script>
 
 <body class="flex min-h-screen flex-col" use:links>
@@ -41,6 +42,7 @@
       <Route path="/History_Emp" component={History_Emp} />
       <Route path="/ticket-details" component={TicketDetails} />
       <Route path="/EditBus" component={EditBus} />
+      <Route path="/reschedule" component={Reschedule} />
     </Router>
   </main>
 <Footer></Footer>
