@@ -45,12 +45,12 @@ db.serialize(() => {
 
   // Insert data into SCHEDULES table
   db.run(
-    `INSERT INTO SCHEDULES (RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime) VALUES 
-    (1, 1, 1, '2024-10-10 08:00', '2024-10-10 16:00'),
-    (2, 2, 2, '2024-10-11 09:00', '2024-10-11 18:00'),
-    (3, 3, 3, '2024-10-12 10:00', '2024-10-12 12:00'),
-    (4, 4, 4, '2024-10-13 06:00', '2024-10-13 16:00'),
-    (5, 5, 5, '2024-10-14 07:30', '2024-10-14 09:30');`
+    `INSERT INTO SCHEDULES (RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Description, Image) VALUES 
+    (1, 1, 1, '2024-10-10 08:00', '2024-10-10 16:00', 'รถบัส VIP สะอาดสะอ้าน', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
+    (2, 2, 2, '2024-10-11 09:00', '2024-10-11 18:00', 'รถบัส เอ็กซ์เพรส สะอาดสะอ้าน', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
+    (3, 3, 3, '2024-10-12 10:00', '2024-10-12 12:00', 'รถบัส มาตรฐาน สะอาดสะอ้าน', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
+    (4, 4, 4, '2024-10-13 06:00', '2024-10-13 16:00', 'รถบัส ประหยัด สะอาดสะอ้าน', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
+    (5, 5, 5, '2024-10-14 07:30', '2024-10-14 09:30', 'ดีด๊ง','https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg');`
   );
 
   // Insert data into BOOKINGS table
