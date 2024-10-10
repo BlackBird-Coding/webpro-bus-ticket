@@ -8,7 +8,7 @@
   ];
 
   let line = "0.35rem";
-  let clickable = true;
+  let clickable = false;
   export let current = 0;
 </script>
 
