@@ -1,4 +1,7 @@
 import db from "./db.js";
+import bcrypt from "bcrypt";
+const saltRounds = 10;
+
 db.serialize(() => {
   // Insert data into BUS_STOPS table (Thai locations)
   db.run(
@@ -40,16 +43,6 @@ db.serialize(() => {
     ('มินิบัส', 10, 'Mini');`
   );
 
-  // Insert data into EMPLOYEES table (Thai names)
-  db.run(
-    `INSERT INTO EMPLOYEES (Fname, Lname, Role, HireDate, DOB) VALUES 
-    ('สมชาย', 'ทองใบ', 'พนักงานขับรถ', '2019-01-10', '1985-10-22'),
-    ('สมศรี', 'ดำรงค์', 'พนักงานขับรถ', '2018-03-15', '1982-11-30'),
-    ('วิไล', 'ทองทิพย์', 'พนักงานตรวจตั๋ว', '2020-04-18', '1990-08-05'),
-    ('ประวิทย์', 'บุญมี', 'ช่างซ่อมบำรุง', '2017-09-22', '1978-02-14'),
-    ('สุนิสา', 'เกษมศิลป์', 'ผู้จัดการ', '2015-12-05', '1972-06-11');`
-  );
-
   // Insert data into SCHEDULES table
   db.run(
     `INSERT INTO SCHEDULES (RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime) VALUES 
@@ -58,16 +51,6 @@ db.serialize(() => {
     (3, 3, 3, '2024-10-12 10:00', '2024-10-12 12:00'),
     (4, 4, 4, '2024-10-13 06:00', '2024-10-13 16:00'),
     (5, 5, 5, '2024-10-14 07:30', '2024-10-14 09:30');`
-  );
-
-  // Insert data into CUSTOMERS table (Thai names)
-  db.run(
-    `INSERT INTO CUSTOMERS (Fname, Lname, Phone, Email) VALUES 
-    ('กิตติ', 'ยั่งยืน', '0801234567', 'kitti.y@example.com'),
-    ('สุกัญญา', 'เพ็ชรดี', '0802345678', 'sukanya.p@example.com'),
-    ('ปรียา', 'รุ่งเรือง', '0803456789', 'preeya.r@example.com'),
-    ('ศุภชัย', 'นาวี', '0804567890', 'supachai.n@example.com'),
-    ('อรวรรณ', 'วิเศษ', '0805678901', 'orawan.v@example.com');`
   );
 
   // Insert data into BOOKINGS table
@@ -90,15 +73,143 @@ db.serialize(() => {
     (5, 200.00, '2024-09-24', 'จ่ายผ่านมือถือ');`
   );
 
-  // Insert data into USERS table
-  db.run(
-    `INSERT INTO USERS (Username, Email, Password, UserType, CustomerID, EmployeeID) VALUES 
-    ('kitti_y', 'kitti.y@example.com', 'hashedpassword1', 'customer', 1, NULL),
-    ('sukanya_p', 'sukanya.p@example.com', 'hashedpassword2', 'customer', 2, NULL),
-    ('preeya_r', 'preeya.r@example.com', 'hashedpassword3', 'customer', 3, NULL),
-    ('somchai_t', 'somchai.t@example.com', 'hashedpassword4', 'employee', NULL, 1),
-    ('somsri_d', 'somsri.d@example.com', 'hashedpassword5', 'employee', NULL, 2);`
-  );
-
   console.log("Mock data inserted successfully.");
 });
+
+// Mock customers and employees data
+const mockCustomers = [
+  {
+    fname: "กิตติ",
+    lname: "ยั่งยืน",
+    phone: "0801234567",
+    email: "kitti.y@example.com",
+    password: "password123",
+  },
+  {
+    fname: "สุกัญญา",
+    lname: "เพ็ชรดี",
+    phone: "0802345678",
+    email: "sukanya.p@example.com",
+    password: "password234",
+  },
+  {
+    fname: "ปรียา",
+    lname: "รุ่งเรือง",
+    phone: "0803456789",
+    email: "preeya.r@example.com",
+    password: "password345",
+  },
+];
+
+const mockEmployees = [
+  {
+    fname: "สมชาย",
+    lname: "ทองใบ",
+    role: "พนักงานขับรถ",
+    hireDate: "2019-01-10",
+    dob: "1985-10-22",
+    email: "somchai.t@example.com",
+    password: "password456",
+  },
+  {
+    fname: "สมศรี",
+    lname: "ดำรงค์",
+    role: "พนักงานขับรถ",
+    hireDate: "2018-03-15",
+    dob: "1982-11-30",
+    email: "somsri.d@example.com",
+    password: "password567",
+  },
+];
+
+// Function to insert mock users with hashed passwords
+const insertMockUsers = () => {
+  // Insert mock customers
+  mockCustomers.forEach((customer) => {
+    const { fname, lname, phone, email, password } = customer;
+
+    // Hash the password before inserting
+    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+      if (err) {
+        console.error("Error hashing the password:", err.message);
+        return;
+      }
+
+      // Insert the customer into the CUSTOMERS table
+      db.run(
+        `INSERT INTO CUSTOMERS (Fname, Lname, Phone, Email) VALUES (?, ?, ?, ?)`,
+        [fname, lname, phone, email],
+        function (err) {
+          if (err) {
+            console.error("Error inserting customer:", err.message);
+            return;
+          }
+
+          // Get the newly inserted CustomerID
+          const customerId = this.lastID;
+
+          // Insert the user into the USERS table with hashed password
+          db.run(
+            `INSERT INTO USERS (Username, Email, Password, UserType, CustomerID) VALUES (?, ?, ?, 'customer', ?)`,
+            [email, email, hashedPassword, customerId],
+            (err) => {
+              if (err) {
+                console.error("Error inserting user:", err.message);
+              } else {
+                console.log(
+                  `Customer ${fname} ${lname} registered successfully!`
+                );
+              }
+            }
+          );
+        }
+      );
+    });
+  });
+
+  // Insert mock employees
+  mockEmployees.forEach((employee) => {
+    const { fname, lname, role, hireDate, dob, email, password } = employee;
+
+    // Hash the password before inserting
+    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+      if (err) {
+        console.error("Error hashing the password:", err.message);
+        return;
+      }
+
+      // Insert the employee into the EMPLOYEES table
+      db.run(
+        `INSERT INTO EMPLOYEES (Fname, Lname, Role, HireDate, DOB) VALUES (?, ?, ?, ?, ?)`,
+        [fname, lname, role, hireDate, dob],
+        function (err) {
+          if (err) {
+            console.error("Error inserting employee:", err.message);
+            return;
+          }
+
+          // Get the newly inserted EmployeeID
+          const employeeId = this.lastID;
+
+          // Insert the user into the USERS table with hashed password
+          db.run(
+            `INSERT INTO USERS (Username, Email, Password, UserType, EmployeeID) VALUES (?, ?, ?, 'employee', ?)`,
+            [email, email, hashedPassword, employeeId],
+            (err) => {
+              if (err) {
+                console.error("Error inserting user:", err.message);
+              } else {
+                console.log(
+                  `Employee ${fname} ${lname} registered successfully!`
+                );
+              }
+            }
+          );
+        }
+      );
+    });
+  });
+};
+
+// Call the function to insert mock users and employees
+insertMockUsers();
