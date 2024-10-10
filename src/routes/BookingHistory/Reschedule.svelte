@@ -2,24 +2,25 @@
   let ticketId = "000001"; // Assuming you get the ticket ID dynamically
 </script>
 
-<div class="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-200 to-gray-100">
-  <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full border border-gray-200 lg:p-10">
+<div class="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-50">
+  <div class="bg-white p-8 rounded-lg shadow-2xl max-w-lg w-full border border-gray-200 lg:p-12">
     <!-- Title -->
-    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">เลื่อนตั๋ว</h1>
+    <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-8">เลื่อนตั๋วเดินทาง</h1>
 
     <!-- Additional Info or Instructions -->
-    <p class="text-center text-gray-600 mb-6">
-      หากคุณต้องการเลื่อนวันเดินทาง โปรดเลือกวันที่ใหม่ด้านล่างและกด "ยืนยันการเลื่อนตั๋ว"
+    <p class="text-center text-gray-500 text-lg mb-8 leading-relaxed">
+      หากคุณต้องการเลื่อนวันเดินทาง โปรดเลือกวันที่ใหม่ด้านล่างและกดปุ่ม 
+      <span class="font-semibold text-blue-600">"ยืนยันการเลื่อนตั๋ว"</span>.
     </p>
 
     <!-- Ticket Info -->
-    <div class="text-center mb-6">
-      <p class="text-lg text-gray-600">หมายเลขตั๋วที่ต้องการเลื่อน:</p>
-      <p class="text-xl font-semibold text-gray-800 mt-1">{ticketId}</p>
+    <div class="bg-gray-100 p-4 rounded-md mb-8">
+      <p class="text-center text-lg text-gray-700 mb-1">หมายเลขตั๋วที่ต้องการเลื่อน</p>
+      <p class="text-center text-2xl font-semibold text-gray-800">{ticketId}</p>
     </div>
 
     <!-- Date Picker -->
-    <div class="mb-6">
+    <div class="mb-10">
       <label for="newDate" class="block text-lg font-medium text-gray-700 mb-2">เลือกวันที่เดินทางใหม่:</label>
       <div class="relative">
         <input 
@@ -35,11 +36,14 @@
       </div>
     </div>
 
+    <!-- Divider -->
+    <hr class="my-6 border-gray-300"/>
+
     <!-- Confirmation Button -->
     <div class="text-center">
       <button 
         type="button" 
-        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition duration-300"
+        class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-600 transition duration-300"
       >
         ยืนยันการเลื่อนตั๋ว
       </button>
