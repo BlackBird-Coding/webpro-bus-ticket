@@ -4,6 +4,6 @@
 </script>
 
 <div class="flex ml-16">
-  <Sidebar></Sidebar>
+  <Sidebar current={0}></Sidebar>
   <Search />
 </div>

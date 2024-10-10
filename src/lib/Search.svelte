@@ -83,7 +83,7 @@
       RouteID: matchingRoute?.RouteID,
     });
 
-    navigate(`/booking/trip/${matchingRoute?.RouteID}`); // Adjust the route to navigate to
+    navigate(`/booking/trip/?id=${matchingRoute?.RouteID}`); // Adjust the route to navigate to
   }
 </script>
 

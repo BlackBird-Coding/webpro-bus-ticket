@@ -1,14 +1,15 @@
 <script>
-    import { Steps } from 'svelte-steps';
-    let steps = [
-        { text: 'ค้นหาเที่ยวรถ' },
-        { text: 'เลือกเที่ยวรถ' },
-        { text: 'เลือกที่นั่ง' },
-        { text: 'ชำระเงิน' }
-    ];
-    
-    let line = "0.35rem"
-    let clickable = true
+  import { Steps } from "svelte-steps";
+  let steps = [
+    { text: "ค้นหาเที่ยวรถ" },
+    { text: "เลือกเที่ยวรถ" },
+    { text: "เลือกที่นั่ง" },
+    { text: "ชำระเงิน" },
+  ];
+
+  let line = "0.35rem";
+  let clickable = true;
+  export let current = 0;
 </script>
 
-<Steps primary="#30BD7A" vertical {steps} {line} {clickable}/>
+<Steps primary="#30BD7A" vertical {steps} {line} {clickable} {current} />
