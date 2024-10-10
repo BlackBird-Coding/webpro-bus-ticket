@@ -12,7 +12,7 @@
 </script>
 
 <div class="flex ml-16">
-  <Sidebar class="w-1/4" current={1}></Sidebar>
+  <Sidebar current={1}></Sidebar>
   <div class="m-10 mx-20 w-4/5">
     <div class="text-3xl">เลือกเที่ยวรถ</div>
     <div class="mt-5">

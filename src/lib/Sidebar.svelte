@@ -12,4 +12,6 @@
   export let current = 0;
 </script>
 
-<Steps primary="#30BD7A" vertical {steps} {line} {clickable} {current} />
+<div class="h-screen flex flex-shrink-0">
+  <Steps primary="#30BD7A" vertical {steps} {line} {clickable} {current} />
+</div>
