@@ -10,11 +10,13 @@
   import Payment from './routes/Payment.svelte';
   import Find from "./routes/Booking/Find.svelte";
   import Howto from "./routes/Howto.svelte"
-  import ManageBus_Emp from "./routes/ManageBus_Emp.svelte";
   import History_Emp from "./routes/History_Emp.svelte";
   import ContactForm from "./routes/ContactForm.svelte";
   import TicketDetails from './routes/TicketDetails.svelte';
 
+  import ManageBus_Emp from "./routes/ManageBus_Emp/ManageBus_Emp.svelte";
+  import AddBus from "./routes/ManageBus_Emp/AddBus.svelte";
+  import AddStation from "./routes/ManageBus_Emp/AddStation.svelte";
 </script>
 
 <body class="flex min-h-screen flex-col" use:links>
@@ -157,6 +159,8 @@
       <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
       <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
+      <Route path="/AddBus" component={AddBus} />
+      <Route path="/AddStation" component={AddStation} />
     <Route path="/History_Emp" component={History_Emp} />
     <Route path="/ticket-details" component={TicketDetails} />
     </Router>

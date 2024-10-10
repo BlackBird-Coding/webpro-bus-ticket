@@ -7,10 +7,12 @@
         TableHead,
         TableHeadCell,
     } from "flowbite-svelte";
+
+    let showTooltip = false; // state to control tooltip visibility
 </script>
 
 <div class="m-10">
-    <div class="flex flex-wrap items-center gap-5 w-full">
+    <div class="flex flex-wrap items-center gap-3 w-full">
         <h1 class="flex text-xl">จัดการเที่ยวรถ</h1>
 
         <form class="flex items-center lg:ml-auto w-full lg:w-1/4">
@@ -54,32 +56,47 @@
                 >
             </div>
         </form>
-        <button
-            type="button"
-            class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
-            ><div>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-6"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                </svg>
-            </div></button
+        <a href="/AddBus"
+            ><button
+                type="button"
+                class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
+                ><div>
+                    <svg
+                        class="w-6 h-6 fill-[#ffffff]"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <path
+                            d="M224 0C348.8 0 448 35.2 448 80V96 416c0 17.7-14.3 32-32 32v32c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V448H128v32c0 17.7-14.3 32-32 32H64c-17.7 0-32-14.3-32-32l0-32c-17.7 0-32-14.3-32-32V96 80C0 35.2 99.2 0 224 0zM64 128V256c0 17.7 14.3 32 32 32H352c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32H96c-17.7 0-32 14.3-32 32zM80 400a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm288 0a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"
+                        ></path>
+                    </svg>
+                </div></button
+            ></a
+        >
+        <a href="/AddStation"
+            ><button
+                type="button"
+                class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
+                ><div>
+                    <svg
+                        class="w-6 h-6 fill-[#ffffff]"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        ><path
+                            fill="currentColor"
+                            d="M20 3H7V2H6a1.78 1.78 0 0 0-1.41 1H2v2h1.73C2 10.58 2 22 2 22h5V5h13m2 3.5a2.5 2.5 0 1 0-3 2.5v11h1V11a2.5 2.5 0 0 0 2-2.5m-7 3V16h-1v6h-1.5v-5h-1v5H10v-6H9v-4.5a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5m-3-5A1.5 1.5 0 1 0 13.5 8A1.5 1.5 0 0 0 12 6.5"
+                        /></svg
+                    >
+                </div></button
+            ></a
         >
     </div>
 
     <br />
     <Table hoverable={true}>
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
-            <TableHeadCell>เลขที่การจอง</TableHeadCell>
+            <TableHeadCell>เลขเที่ยวรถ</TableHeadCell>
             <TableHeadCell>ชื่อเที่ยวรถ</TableHeadCell>
             <TableHeadCell>ต้นทาง-ปลายทาง</TableHeadCell>
             <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
