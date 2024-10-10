@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Swal from "sweetalert2";
+  import { navigate } from "svelte-routing";
   let show_password = false;
   let value = "";
   $: type = show_password ? "text" : "password";
@@ -26,7 +28,11 @@
     });
 
     if (password !== cpassword) {
-      alert("รหัสผ่านไม่ตรงกัน");
+      Swal.fire({
+        icon: "error",
+        title: "รหัสผ่านไม่ตรงกัน",
+        text: "กรุณาตรวจสอบรหัสผ่านอีกครั้ง",
+      });
       return;
     }
 
@@ -47,10 +53,20 @@
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        navigate("/login", { replace: true });
+        Swal.fire({
+          icon: "success",
+          title: "สมัครสมาชิกสำเร็จ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       })
       .catch((err) => {
-        console.log(err);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถสมัครสมาชิกได้",
+        });
       });
   };
 </script>

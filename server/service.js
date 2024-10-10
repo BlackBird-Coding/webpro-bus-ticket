@@ -63,6 +63,7 @@ const registerCustomer = (fname, lname, phone, email, password) => {
 
 const login = (email, password) => {
   return new Promise((resolve, reject) => {
+    // Query the USERS table to find the user by email
     db.get(`SELECT * FROM USERS WHERE Email = ?`, [email], (err, user) => {
       if (err) {
         console.error(err.message);
@@ -75,6 +76,7 @@ const login = (email, password) => {
         return;
       }
 
+      // Compare the provided password with the hashed password in the database
       bcrypt.compare(password, user.Password, (err, result) => {
         if (err) {
           console.error(err.message);
@@ -84,7 +86,47 @@ const login = (email, password) => {
 
         if (result) {
           const { Password, ...userWithoutPassword } = user;
-          resolve(userWithoutPassword);
+
+          // Check if the user is a customer or an employee
+          if (user.UserType === "customer") {
+            // Query the CUSTOMERS table to get additional customer information
+            db.get(
+              `SELECT * FROM CUSTOMERS WHERE CustomerID = ?`,
+              [user.CustomerID],
+              (err, customer) => {
+                if (err) {
+                  console.error(err.message);
+                  reject("Error querying customer information.");
+                  return;
+                }
+
+                resolve({
+                  userType: "customer",
+                  details: { ...userWithoutPassword, customer },
+                });
+              }
+            );
+          } else if (user.UserType === "employee") {
+            // Query the EMPLOYEES table to get additional employee information
+            db.get(
+              `SELECT * FROM EMPLOYEES WHERE EmployeeID = ?`,
+              [user.EmployeeID],
+              (err, employee) => {
+                if (err) {
+                  console.error(err.message);
+                  reject("Error querying employee information.");
+                  return;
+                }
+
+                resolve({
+                  userType: "employee",
+                  details: { ...userWithoutPassword, employee },
+                });
+              }
+            );
+          } else {
+            reject("Unknown user type.");
+          }
         } else {
           reject("Incorrect password.");
         }

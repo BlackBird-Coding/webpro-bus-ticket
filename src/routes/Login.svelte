@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Swal from "sweetalert2";
+  import { navigate } from "svelte-routing";
+  import { userStore } from "@/lib/stores/userStore.svelte";
   let show_password = false;
   let value = "";
   $: type = show_password ? "text" : "password";
@@ -17,9 +20,40 @@
       },
       body: JSON.stringify({ email, password }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
+      .then((res) => {
+        return res.json().then((data) => ({ status: res.status, data }));
+      })
+      .then(({ status, data }) => {
+        console.log({ status, data });
+        if (status === 200) {
+          // Update the userStore with the new login state
+          userStore.login({
+            role: data.user.userType, // Adjust this based on your API response
+            // Add any other user data you want to store
+          });
+
+          navigate("/", { replace: true });
+          Swal.fire({
+            icon: "success",
+            title: "เข้าสู่ระบบสำเร็จ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "เข้าสู่ระบบไม่สำเร็จ",
+            text: data.message,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้",
+        });
       });
   }
 </script>
