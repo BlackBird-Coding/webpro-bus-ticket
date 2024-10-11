@@ -56,6 +56,8 @@ db.serialize(() => {
       EmployeeID INTEGER NOT NULL,
       DepartureTime DATETIME NOT NULL,
       ArrivalTime DATETIME NOT NULL,
+      Description TEXT,
+      Image TEXT,
       FOREIGN KEY (RouteID) REFERENCES ROUTES(RouteID),
       FOREIGN KEY (BusID) REFERENCES BUSES(BusID),
       FOREIGN KEY (EmployeeID) REFERENCES EMPLOYEES(EmployeeID)

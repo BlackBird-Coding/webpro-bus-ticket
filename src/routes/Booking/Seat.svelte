@@ -2,7 +2,7 @@
     import Sidebar from "@/lib/Sidebar.svelte";
 </script>
 <div class="flex ml-16">
-    <Sidebar class="w-1/4"></Sidebar>
+    <Sidebar current={2}></Sidebar>
     <div class="m-10 mx-20 w-4/5">
         <div class="text-3xl">เลือกที่นั่ง</div>
         <div class="mt-5">
