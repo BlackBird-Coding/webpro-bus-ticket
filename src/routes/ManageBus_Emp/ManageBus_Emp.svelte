@@ -11,7 +11,6 @@
         Tooltip,
         Button,
     } from "flowbite-svelte";
-    import Trip from "../Booking/Trip.svelte";
 
     let showTooltip = false; // state to control tooltip visibility
     let tripdata = [];
@@ -87,7 +86,6 @@
         });
     }
 
-    let showCard = false;
 </script>
 
 <div class="m-10">
