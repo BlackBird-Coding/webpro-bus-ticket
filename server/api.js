@@ -4,6 +4,9 @@ import {
   login,
   createEmployee,
   getRoutes,
+  deleteRoute,
+  getOneRoute,
+  historyEmp
 } from "./service.js";
 const router = express.Router();
 
@@ -50,6 +53,51 @@ router.get("/routes", (req, res) => {
 
 router.get("/user", (req, res) => {
   res.json({ user: req.session.user });
+});
+  
+router.get("/ManageBus_Emp", (req, res) => {
+  getRoutes()
+    .then((routes) => {
+      res.json({ routes });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.post("/EditBus", (req, res) => {
+  console.log('router',req.body.id )
+  getOneRoute(req.body.id )
+    .then((routes) => {
+      res.json({ routes });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+
+router.post("/DeleteRoute", (req, res) => {
+  const { id } = req.body;
+  console.log(id)
+  deleteRoute(id).then(
+    () => {
+      res.json({ message: "Delete Route successful!" });
+    },
+    (error) => {
+      res.status(400).json({ error });
+    }
+  );
+});
+
+router.get("/history", (req, res) => {
+  historyEmp()
+    .then((history) => {
+      res.json({ history });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
 });
 
 export default router;

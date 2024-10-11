@@ -12,6 +12,7 @@
     "mock": "node ./server/mock.js"
   },
   "dependencies": {
+    "@anoram/leaflet-svelte": "^0.0.7-1",
     "@preline/toggle-password": "^2.5.0",
     "@sveltejs/kit": "^2.6.4",
     "bcrypt": "^5.1.1",

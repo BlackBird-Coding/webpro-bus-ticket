@@ -7,12 +7,36 @@
         TableHead,
         TableHeadCell,
     } from "flowbite-svelte";
+
+    let history = [];
+
+    fetch(`/api/history`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return res.json();
+        })
+        .then((data) => {
+            console.log(data);
+            history = data.history;
+        })
+        .catch((error) => {
+            console.error(
+                "There was a problem with the fetch operation:",
+                error,
+            );
+        });
 </script>
 
 <div class="m-10">
     <div class="flex flex-wrap items-center gap-5 w-full">
         <h1 class="flex text-xl row-span-3">ตรวจสอบประวัติการจอง</h1>
-
         <form class="flex items-center lg:ml-auto w-full lg:w-1/4">
             <!-- Adjust width here -->
             <label
@@ -60,37 +84,29 @@
     <Table hoverable={true}>
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
             <TableHeadCell>เลขที่การจอง</TableHeadCell>
+            <TableHeadCell>ชื่อผู้โดยสาร</TableHeadCell>
             <TableHeadCell>ชื่อเที่ยวรถ</TableHeadCell>
-            <TableHeadCell>ต้นทาง-ปลายทาง</TableHeadCell>
             <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
+            <TableHeadCell>ประเภทรถ</TableHeadCell>
+            <TableHeadCell>เลขที่นั่ง</TableHeadCell>
             <TableHeadCell>สถานะการจอง</TableHeadCell>
-            <TableHeadCell>
-                <span class="sr-only">Action</span>
-            </TableHeadCell>
+            <TableHeadCell>Action</TableHeadCell>
         </TableHead>
         <TableBody>
+            {#each history as data}
             <TableBodyRow class="text-center">
-                <TableBodyCell>000001</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
-                <TableBodyCell>10.00-12.00</TableBodyCell>
-                <TableBodyCell>ชำระเงินเสร็จสิ้น</TableBodyCell>
+                <TableBodyCell>{data.BookingID}</TableBodyCell>
+                <TableBodyCell>{data.Fname} {data.Lname}</TableBodyCell>
+                <TableBodyCell>{data.RouteName}</TableBodyCell>
+                <TableBodyCell>{data.DepartureTime} - {data.ArrivalTime}</TableBodyCell>
+                <TableBodyCell>{data.Type}</TableBodyCell>
+                <TableBodyCell>{data.SeatNumber}</TableBodyCell>
+                <TableBodyCell>{data.Status}</TableBodyCell>
                 <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-500 hover:underline" href="/">แก้ไข</a>
-                    <a class="text-red-600 hover:underline" href="/">ลบ</a>
+                    <a class="text-orange-400 hover:underline" href="/">เลื่อนตั๋ว</a>
                 </TableBodyCell>
             </TableBodyRow>
-            <TableBodyRow class="text-center">
-                <TableBodyCell>000002</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-เชียงใหม่</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-เชียงใหม่</TableBodyCell>
-                <TableBodyCell>10.00-19.00</TableBodyCell>
-                <TableBodyCell>ชำระเงินเสร็จสิ้น</TableBodyCell>
-                <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-500 hover:underline" href="/">แก้ไข</a>
-                    <a class="text-red-600 hover:underline" href="/">ลบ</a>
-                </TableBodyCell>
-            </TableBodyRow>
+            {/each}
         </TableBody>
     </Table>
 </div>

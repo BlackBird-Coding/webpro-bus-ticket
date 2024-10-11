@@ -1,5 +1,6 @@
-<script src="../path/to/flowbite/dist/flowbite.min.js">
-    import { Link } from "svelte-routing";
+<script lang="ts" src="../path/to/flowbite/dist/flowbite.min.js">
+    import Swal from "sweetalert2";
+    import { Link, Route, navigate } from "svelte-routing";
     import {
         Table,
         TableBody,
@@ -10,8 +11,83 @@
         Tooltip,
         Button,
     } from "flowbite-svelte";
+    import Trip from "../Booking/Trip.svelte";
 
     let showTooltip = false; // state to control tooltip visibility
+    let tripdata = [];
+
+    // Function to navigate to the second page with the ID passed in the URL
+    function goToPage(id) {
+        navigate(`/EditBus?id=${id}`, { replace: true }); // Pass the button ID as a query parameter
+    }
+
+    fetch(`/api/ManageBus_Emp`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return res.json();
+        })
+        .then((data) => {
+            console.log(data);
+            tripdata = data.routes;
+        })
+        .catch((error) => {
+            console.error(
+                "There was a problem with the fetch operation:",
+                error,
+            );
+        });
+
+    function deleteCard(id) {
+        Swal.fire({
+            title: "คุณยืนยันที่จะลบเที่ยวรถนี้หรือไม่",
+            text: "หลังจากลบแล้ว คุณจะไม่สามารถกู้คืนได้",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "ยืนยัน!",
+            cancelButtonText: "ยกเลิก",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("/api/DeleteRoute", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id }),
+                })
+                    .then((res) => {
+                        if (!res.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return res.json();
+                    })
+                    .then(() => {
+                        Swal.fire({
+                            title: "ลบ!",
+                            text: "เที่ยวรถถูกลบเรียบร้อยแล้ว",
+                            icon: "success",
+                        });
+                        location.reload()
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "There was a problem with the fetch operation:",
+                            error,
+                        );
+                    });
+            }
+        });
+    }
+
+    let showCard = false;
 </script>
 
 <div class="m-10">
@@ -120,47 +196,41 @@
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
             <TableHeadCell>เลขเที่ยวรถ</TableHeadCell>
             <TableHeadCell>ชื่อเที่ยวรถ</TableHeadCell>
-            <TableHeadCell>ต้นทาง-ปลายทาง</TableHeadCell>
             <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
             <TableHeadCell>จำนวนที่นั่ง</TableHeadCell>
             <TableHeadCell>รายละเอียด</TableHeadCell>
             <TableHeadCell>Action</TableHeadCell>
         </TableHead>
         <TableBody>
-            <TableBodyRow class="text-center">
-                <TableBodyCell>000001</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-หัวหิน</TableBodyCell>
-                <TableBodyCell>10.00-12.00</TableBodyCell>
-                <TableBodyCell>40</TableBodyCell>
-                <TableBodyCell>
-                    <a class="text-blue-500 hover:underline" href="/EditBus"
-                        >คลิกเพื่อดูรายละเอียดเพิ่มเติม</a
+            {#each tripdata as trip}
+                <TableBodyRow class="text-center">
+                    <TableBodyCell>{trip.RouteID}</TableBodyCell>
+                    <TableBodyCell>{trip.RouteName} ({trip.Type})</TableBodyCell
                     >
-                </TableBodyCell>
-                <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-500 hover:underline" href="/EditBus"
-                        >แก้ไข</a
+                    <TableBodyCell
+                        >({trip.DepartureTime.toLocaleString()}) - ({trip.ArrivalTime.toLocaleString()})</TableBodyCell
                     >
-                    <a class="text-red-600 hover:underline" href="/">ลบ</a>
-                </TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow class="text-center">
-                <TableBodyCell>000002</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-เชียงใหม่</TableBodyCell>
-                <TableBodyCell>กรุงเทพ-เชียงใหม่</TableBodyCell>
-                <TableBodyCell>10.00-19.00</TableBodyCell>
-                <TableBodyCell>40</TableBodyCell>
-                <TableBodyCell>
-                    <a class="text-blue-500 hover:underline" href="/EditBus"
-                        >คลิกเพื่อดูรายละเอียดเพิ่มเติม</a
-                    >
-                </TableBodyCell>
-                <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-500 hover:underline" href="/">แก้ไข</a>
-                    <a class="text-red-600 hover:underline" href="/">ลบ</a>
-                </TableBodyCell>
-            </TableBodyRow>
+                    <TableBodyCell>{trip.Capacity}</TableBodyCell>
+                    <TableBodyCell>
+                        <a class="text-blue-500 hover:underline" href="/EditBus"
+                            >คลิก</a
+                        >
+                    </TableBodyCell>
+                    <TableBodyCell class="flex gap-5">
+                        <button
+                            on:click={() => goToPage(trip.RouteID)}
+                            class="text-blue-500 hover:underline">แก้ไข</button
+                        >
+                        <button
+                            on:click={deleteCard(trip.RouteID)}
+                            class="text-red-600 hover:underline"
+                            id="showCardButton"
+                        >
+                            ลบ</button
+                        >
+                    </TableBodyCell>
+                </TableBodyRow>
+            {/each}
         </TableBody>
     </Table>
 </div>

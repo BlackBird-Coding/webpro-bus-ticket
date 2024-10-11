@@ -22,27 +22,50 @@
     <div class="space-y-12">
       <div class="border-b border-gray-900/10 pb-12">
         <h2 class="text-xl font-semibold leading-7 text-gray-900">
-          เพิ่มเที่ยวรถ
+          เพิ่มเที่ยว
         </h2>
         <p class="mt-1 text-sm leading-6 text-gray-600">
           กรุณากรอกรายละเอียดเที่ยวรถที่ต้องการเพิ่ม
         </p>
 
-        <div class="sm:col-span-6 mt-8">
-          <label
-            for="first-name"
-            class="block text-base font-medium leading-6 text-gray-900"
-            >ชื่อเที่ยวรถ</label
-          >
-          <div class="mt-2">
-            <input
-              type="text"
-              name="first-name"
-              id="first-name"
-              autocomplete="given-name"
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
+        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+          <div class="sm:col-span-3">
+            <label
+              for="first-name"
+              class="block text-base font-medium leading-6 text-gray-900"
+              >ชื่อเที่ยวรถ</label
+            >
+            <div class="mt-2">
+              <input
+                type="text"
+                name="first-name"
+                id="first-name"
+                autocomplete="given-name"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
           </div>
+
+          <div class="sm:col-span-3">
+            <label
+              for="first-name"
+              class="block text-base font-medium leading-6 text-gray-900"
+              >ประเภทรถ</label
+            >
+            <div class="mt-2">
+              <select
+                id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option selected>เลือกประเภทรถ</option>
+                <option value="vip">VIP</option>
+                <option value="express">Express</option>
+                <option value="standard">Standard</option>
+                <option value="economy">Economy</option>
+                <option value="mini">Mini</option>
+              </select>
+            </div>
+          </div>  
         </div>
 
         <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
@@ -54,12 +77,12 @@
             >
             <div class="mt-2">
               <select
-                  id="countries"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
+                id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
                 <option selected>เลือกสถานี</option>
                 <option value="bkk">กรุงเทพ</option>
-                </select>
+              </select>
             </div>
           </div>
 
@@ -71,12 +94,12 @@
             >
             <div class="mt-2">
               <select
-                  id="countries"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
-                  <option selected>เลือกสถานี</option>
-                  <option value="bkk">กรุงเทพ</option>
-                </select>
+                id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option selected>เลือกสถานี</option>
+                <option value="bkk">กรุงเทพ</option>
+              </select>
             </div>
           </div>
 
@@ -153,7 +176,7 @@
           </div>
         </div>
 
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-5">
+        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-5">
           <h2 class="text-base font-semibold leading-7 text-black mb-1">
             พนักงานผู้รับผิดชอบ
           </h2>
@@ -345,7 +368,7 @@
         >
         <button
           type="submit"
-          class="rounded-md bg-orange-500  px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >Save</button
         >
       </div>

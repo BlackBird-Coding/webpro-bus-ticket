@@ -1,4 +1,40 @@
 <script>
+    import Map from "@anoram/leaflet-svelte";
+
+    let options = {
+        zoom: 5,
+        center: [13, 80],
+        mapID: "map",
+        markers: [
+            {
+                lat: 13,
+                lng: 80,
+                popup: {
+                    isOpen: true,
+                    text: `Static Marker`,
+                },
+            },
+        ],
+    };
+
+    let MAP_EL;
+    let latlng = "";
+    let lt = "",
+        ln = "";
+    async function init() {
+        let map = MAP_EL.getMap();
+        // You can write almost any leaflet functions
+        map.on("click", function (e) {
+            latlng = e.latlng;
+            lt = e.latlng.lat;
+            ln = e.latlng.lng;
+            var popLocation = e.latlng;
+            L.popup()
+                .setLatLng(popLocation)
+                .setContent(`<p>${e.latlng}</p>`)
+                .openOn(map);
+        });
+    }
 </script>
 
 <div>
@@ -120,6 +156,49 @@
                             />
                         </div>
                     </div>
+
+                    <div class="sm:col-span-3">
+                        <label
+                            for="latitude"
+                            class="block text-base font-medium leading-6 text-gray-900"
+                            >ละติจุด</label
+                        >
+                        <div class="mt-2">
+                            <input
+                                value={lt}
+                                disabled
+                                type="text"
+                                name="latitude"
+                                id="latitude"
+                                autocomplete="given-name"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label
+                            for="longitude"
+                            class="block text-base font-medium leading-6 text-gray-900"
+                            >ลองจิจุด</label
+                        >
+                        <div class="mt-2">
+                            <input
+                                value={ln}
+                                disabled
+                                type="text"
+                                name="longitude"
+                                id="longitude"
+                                autocomplete="family-name"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="map">
+                    <Map {options} bind:this={MAP_EL} on:ready={init} />
                 </div>
             </div>
 
@@ -131,10 +210,17 @@
                 >
                 <button
                     type="submit"
-                    class="rounded-md bg-orange-500  px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    class="rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >Save</button
                 >
             </div>
         </div>
     </form>
 </div>
+
+<style>
+    .map {
+        height: 300px;
+        width: auto;
+    }
+</style>

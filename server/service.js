@@ -201,19 +201,86 @@ const createEmployee = (fname, lname, phone, email, password, role) => {
 const getRoutes = () => {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop
+      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.Capacity, B.Type
        FROM ROUTES R
        JOIN BUS_STOPS BS1 ON R.Origin = BS1.BusStopID
-       JOIN BUS_STOPS BS2 ON R.Destination = BS2.BusStopID`,
+       JOIN BUS_STOPS BS2 ON R.Destination = BS2.BusStopID
+       JOIN SCHEDULES S ON S.RouteID = R.RouteID 
+       JOIN BUSES B ON B.BusID = S.BusID`,
       (err, routes) => {
         if (err) {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
+        console.log(routes)
         resolve(routes);
       }
     );
   });
 };
 
-export { registerCustomer, login, createEmployee, getRoutes };
+const getOneRoute = (id) => {
+  console.log('fc', id)
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, 
+      BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.Capacity, B.Type 
+      FROM ROUTES R 
+      JOIN BUS_STOPS BS1 ON R.Origin = BS1.BusStopID 
+      JOIN BUS_STOPS BS2 ON R.Destination = BS2.BusStopID 
+      JOIN SCHEDULES S ON S.RouteID = R.RouteID 
+      JOIN BUSES B ON B.BusID = S.BusID 
+      WHERE R.RouteID = ?`,
+      [id],
+      (err, routes) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log(routes)
+        resolve(routes);
+      }
+    );
+  });
+};
+
+const deleteRoute = (id) => {
+  console.log(id)
+  return new Promise((resolve, reject) => {
+    db.run(
+      `DELETE FROM ROUTES WHERE RouteID = ?`,
+      [id],
+      (err) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        resolve(); // Call resolve when query is successful
+      }
+    );
+  });
+};
+
+const historyEmp = () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT *
+      FROM BOOKINGS B
+      JOIN CUSTOMERS C ON B.CustomerID = C.CustomerID
+      JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
+      JOIN ROUTES R ON R.RouteID = S.RouteID
+      JOIN BUSES BU ON BU.BusID = S.BusID`,
+      (err, history) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log(history)
+        resolve(history);
+      }
+    );
+  });
+};
+
+
+export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp};
