@@ -6,17 +6,23 @@
   function createUserStore() {
     const { subscribe, set, update } = writable({
       isLoggedIn: false,
-      role: "",
+      userType: "", // New field for userType
+      role: "", // Role specific to employees (e.g., admin, manager)
       isLoading: true,
     });
 
     return {
       subscribe,
       login: (userData) =>
-        set({ isLoggedIn: true, ...userData, isLoading: false }),
+        set({
+          isLoggedIn: true,
+          userType: userData?.userType || "", // Ensure we store the correct userType
+          role: userData?.details?.role || "", // Ensure we store the correct role
+          isLoading: false,
+        }),
       logout: () => {
         return new Promise((resolve, reject) => {
-          set({ isLoggedIn: false, role: "", isLoading: true });
+          set({ isLoggedIn: false, userType: "", role: "", isLoading: true });
           fetch("/api/logout", {
             method: "POST",
             headers: {
@@ -25,7 +31,12 @@
           })
             .then((res) => {
               if (res.status === 200) {
-                set({ isLoggedIn: false, role: "", isLoading: false });
+                set({
+                  isLoggedIn: false,
+                  userType: "",
+                  role: "",
+                  isLoading: false,
+                });
                 navigate("/", { replace: true });
                 Swal.fire({
                   icon: "success",
@@ -58,12 +69,13 @@
           const data = await response.json();
           set({
             isLoggedIn: !!data.user,
-            role: data.user?.userType || "",
+            userType: data.user?.userType || "", // Set the correct userType from API
+            role: data.user?.details?.role || "", // Set the correct role from API
             isLoading: false,
           });
         } catch (error) {
           console.error("Error checking auth:", error);
-          set({ isLoggedIn: false, role: "", isLoading: false });
+          set({ isLoggedIn: false, userType: "", role: "", isLoading: false });
         }
       },
     };
