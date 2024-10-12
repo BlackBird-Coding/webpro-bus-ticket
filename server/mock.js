@@ -314,7 +314,7 @@ const insertMockUsers = () => {
       password,
     } = employee;
 
-    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    bcrypt.hash("password", saltRounds, (err, hashedPassword) => {
       if (err) {
         console.error("Error hashing the password:", err.message);
         return;
@@ -354,7 +354,7 @@ const insertMockUsers = () => {
     const { fname, lname, phone, Gender, DOB, username, email, password } =
       customer;
 
-    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    bcrypt.hash("password", saltRounds, (err, hashedPassword) => {
       if (err) {
         console.error("Error hashing the password:", err.message);
         return;

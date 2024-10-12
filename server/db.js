@@ -24,7 +24,6 @@ db.serialize(() => {
   // Create CUSTOMERS table
   db.run(`CREATE TABLE IF NOT EXISTS Customers (
     UserID INTEGER PRIMARY KEY,
-    CustomerCode TEXT GENERATED ALWAYS AS (printf('C%03d', UserID)),
     Fname VARCHAR(50) NOT NULL,
     Lname VARCHAR(50) NOT NULL,
     Gender VARCHAR(4) NOT NULL,
@@ -36,7 +35,6 @@ db.serialize(() => {
   // Create EMPLOYEES table
   db.run(`CREATE TABLE IF NOT EXISTS Employees (
     UserID INTEGER PRIMARY KEY,
-    EmployeeCode TEXT GENERATED ALWAYS AS (printf('E%03d', UserID)),
     Fname VARCHAR(50) NOT NULL,
     Lname VARCHAR(50) NOT NULL,
     Phone VARCHAR(15) NOT NULL,

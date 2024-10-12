@@ -1,201 +1,218 @@
 import bcrypt from "bcrypt";
 import db from "./db.js";
 
-const registerCustomer = (fname, lname, phone, email, password) => {
+const registerCustomer = async (fname, lname, phone, email, password) => {
   const saltRounds = 10;
 
-  return new Promise((resolve, reject) => {
-    // First, check if the email already exists in the USERS table
-    db.get(`SELECT * FROM USERS WHERE Email = ?`, [email], (err, user) => {
-      if (err) {
-        console.error(err.message);
-        reject("Error querying the database.");
-        return;
-      }
-
-      if (user) {
-        reject("Email already exists. Please use another email.");
-        return;
-      }
-
-      // Hash the password before storing it
-      bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+  try {
+    // Check if the email already exists in the USERS table
+    const user = await new Promise((resolve, reject) => {
+      db.get(`SELECT * FROM Users WHERE Email = ?`, [email], (err, user) => {
         if (err) {
-          console.error(err.message);
-          reject("Error hashing the password.");
-          return;
+          reject("Error querying the database.");
+        } else {
+          resolve(user);
         }
-
-        // Insert the customer into the CUSTOMERS table
-        db.run(
-          `INSERT INTO CUSTOMERS (Fname, Lname, Phone, Email) VALUES (?, ?, ?, ?)`,
-          [fname, lname, phone, email],
-          function (err) {
-            if (err) {
-              console.error(err.message);
-              reject("Error inserting customer.");
-              return;
-            }
-
-            // Get the newly inserted CustomerID
-            const customerId = this.lastID;
-
-            // Insert the user's login details into the USERS table
-            db.run(
-              `INSERT INTO USERS (Username, Email, Password, UserType, CustomerID) VALUES (?, ?, ?, 'customer', ?)`,
-              [email, email, hashedPassword, customerId],
-              (err) => {
-                if (err) {
-                  console.error(err.message);
-                  reject("Error inserting user.");
-                } else {
-                  console.log("Customer registered successfully!");
-                  resolve("Customer registered successfully!");
-                }
-              }
-            );
-          }
-        );
       });
     });
-  });
+
+    if (user) {
+      throw new Error("Email already exists. Please use another email.");
+    }
+
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert customer details into CUSTOMERS table
+    const customerId = await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO Customers (Fname, Lname, Phone, Email) VALUES (?, ?, ?, ?)`,
+        [fname, lname, phone, email],
+        function (err) {
+          if (err) {
+            reject("Error inserting customer.");
+          } else {
+            resolve(this.lastID); // Return the newly inserted CustomerID
+          }
+        }
+      );
+    });
+
+    // Insert user's login details into USERS table
+    await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO Users (Username, Email, Password, UserType, CustomerID) VALUES (?, ?, ?, 'customer', ?)`,
+        [email, email, hashedPassword, customerId],
+        (err) => {
+          if (err) {
+            reject("Error inserting user.");
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
+
+    console.log("Customer registered successfully!");
+    return "Customer registered successfully!";
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
 };
 
 const login = (email, password) => {
   return new Promise((resolve, reject) => {
-    // Query the USERS table to find the user by email
-    db.get(`SELECT * FROM USERS WHERE Email = ?`, [email], (err, user) => {
-      if (err) {
-        console.error(err.message);
-        reject("Error querying the database.");
-        return;
-      }
-
-      if (!user) {
-        reject("Email not found.");
-        return;
-      }
-
-      // Compare the provided password with the hashed password in the database
-      bcrypt.compare(password, user.Password, (err, result) => {
+    // Query the USERS table and join with the CUSTOMERS and EMPLOYEES tables
+    db.get(
+      `SELECT u.*, 
+              c.Fname AS CustomerFname, c.Lname AS CustomerLname, c.Gender AS CustomerGender, c.DOB AS CustomerDOB, c.Phone AS CustomerPhone,
+              e.Fname AS EmployeeFname, e.Lname AS EmployeeLname, e.Gender AS EmployeeGender, e.DOB AS EmployeeDOB, e.Phone AS EmployeePhone, e.Role, e.HireDate
+       FROM Users u
+       LEFT JOIN Customers c ON u.UserID = c.UserID
+       LEFT JOIN Employees e ON u.UserID = e.UserID
+       WHERE u.Email = ?`,
+      [email],
+      (err, user) => {
         if (err) {
           console.error(err.message);
-          reject("Error comparing passwords.");
+          reject("Error querying the database.");
           return;
         }
 
-        if (result) {
-          const { Password, ...userWithoutPassword } = user;
-
-          // Check if the user is a customer or an employee
-          if (user.UserType === "customer") {
-            // Query the CUSTOMERS table to get additional customer information
-            db.get(
-              `SELECT * FROM CUSTOMERS WHERE CustomerID = ?`,
-              [user.CustomerID],
-              (err, customer) => {
-                if (err) {
-                  console.error(err.message);
-                  reject("Error querying customer information.");
-                  return;
-                }
-
-                resolve({
-                  userType: "customer",
-                  details: { ...userWithoutPassword, customer },
-                });
-              }
-            );
-          } else if (user.UserType === "employee") {
-            // Query the EMPLOYEES table to get additional employee information
-            db.get(
-              `SELECT * FROM EMPLOYEES WHERE EmployeeID = ?`,
-              [user.EmployeeID],
-              (err, employee) => {
-                if (err) {
-                  console.error(err.message);
-                  reject("Error querying employee information.");
-                  return;
-                }
-
-                resolve({
-                  userType: "employee",
-                  details: { ...userWithoutPassword, employee },
-                });
-              }
-            );
-          } else {
-            reject("Unknown user type.");
-          }
-        } else {
-          reject("Incorrect password.");
+        if (!user) {
+          reject("Email not found.");
+          return;
         }
-      });
-    });
+
+        // Compare the provided password with the hashed password in the database
+        bcrypt.compare(password, user.Password, (err, result) => {
+          if (err) {
+            console.error(err.message);
+            reject("Error comparing passwords.");
+            return;
+          }
+
+          if (result) {
+            const { Password, ...userWithoutPassword } = user;
+
+            // Prepare the response based on whether the user is a customer or an employee
+            if (user.CustomerFname) {
+              // User is a customer
+              resolve({
+                userType: "customer",
+                details: {
+                  userID: user.UserID,
+                  userCode: user.UserCode,
+                  username: user.Username,
+                  email: user.Email,
+                  createdDate: user.CreatedDate,
+                  fname: user.CustomerFname,
+                  lname: user.CustomerLname,
+                  gender: user.CustomerGender,
+                  dob: user.CustomerDOB,
+                  phone: user.CustomerPhone,
+                },
+              });
+            } else if (user.EmployeeFname) {
+              // User is an employee
+              resolve({
+                userType: "employee",
+                details: {
+                  userID: user.UserID,
+                  userCode: user.UserCode,
+                  username: user.Username,
+                  email: user.Email,
+                  createdDate: user.CreatedDate,
+                  fname: user.EmployeeFname,
+                  fname: user.EmployeeLname,
+                  gender: user.EmployeeGender,
+                  dob: user.EmployeeDOB,
+                  phone: user.EmployeePhone,
+                  role: user.Role,
+                  hireDate: user.HireDate,
+                },
+              });
+            } else {
+              reject("Unknown user type.");
+            }
+          } else {
+            reject("Incorrect password.");
+          }
+        });
+      }
+    );
   });
 };
 
-const createEmployee = (fname, lname, phone, email, password, role) => {
+const createEmployee = async (
+  fname,
+  lname,
+  phone,
+  email,
+  password,
+  role,
+  dob
+) => {
   const saltRounds = 10;
-  console.log("Creating employee...");
-  return new Promise((resolve, reject) => {
-    // First, check if the email already exists in the USERS table
-    db.get(`SELECT * FROM USERS WHERE Email = ?`, [email], (err, user) => {
-      console.log("Checking if email exists...");
-      if (err) {
-        console.error("Error querying the database:", err.message);
-        return reject("Error querying the database.");
-      }
 
-      if (user) {
-        console.log("Email already exists.");
-        return reject("Email already exists. Please use another email.");
-      }
-
-      // Hash the password before storing it
-      console.log("Hashing the password...");
-      bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+  try {
+    // Check if the email already exists in the USERS table
+    const user = await new Promise((resolve, reject) => {
+      db.get(`SELECT * FROM Users WHERE Email = ?`, [email], (err, user) => {
         if (err) {
-          console.error("Error hashing the password:", err.message);
-          return reject("Error hashing the password.");
+          reject("Error querying the database.");
+        } else {
+          resolve(user);
         }
-
-        // Insert the employee into the EMPLOYEES table
-        console.log("Inserting employee...");
-        db.run(
-          `INSERT INTO EMPLOYEES (Fname, Lname, Role, HireDate, DOB) 
-           VALUES (?, ?, ?, date('now'), '1990-01-01')`, // Replace '1990-01-01' with actual DOB if available
-          [fname, lname, role],
-          function (err) {
-            if (err) {
-              console.error("Error inserting employee:", err.message);
-              return reject("Error inserting employee.");
-            }
-
-            // Get the newly inserted EmployeeID
-            const employeeId = this.lastID;
-
-            console.log("Inserting user...");
-            // Insert the user's login details into the USERS table
-            db.run(
-              `INSERT INTO USERS (Username, Email, Password, UserType, EmployeeID) 
-               VALUES (?, ?, ?, 'employee', ?)`,
-              [`${fname}.${lname}`, email, hashedPassword, employeeId],
-              (err) => {
-                if (err) {
-                  console.error("Error inserting user:", err.message);
-                  return reject("Error inserting user.");
-                } else {
-                  console.log("Employee registered successfully!");
-                  return resolve("Employee registered successfully!");
-                }
-              }
-            );
-          }
-        );
       });
     });
-  });
+
+    if (user) {
+      throw new Error("Email already exists. Please use another email.");
+    }
+
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert employee details into EMPLOYEES table
+    const employeeId = await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO Employees (Fname, Lname, Role, HireDate, DOB) 
+         VALUES (?, ?, ?, date('now'), ?)`,
+        [fname, lname, role, dob],
+        function (err) {
+          if (err) {
+            reject("Error inserting employee.");
+          } else {
+            resolve(this.lastID); // Return the newly inserted EmployeeID
+          }
+        }
+      );
+    });
+
+    // Insert user's login details into USERS table
+    await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO Users (Username, Email, Password, UserType, EmployeeID) 
+         VALUES (?, ?, ?, 'employee', ?)`,
+        [`${fname}.${lname}`, email, hashedPassword, employeeId],
+        (err) => {
+          if (err) {
+            reject("Error inserting user.");
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
+
+    console.log("Employee registered successfully!");
+    return "Employee registered successfully!";
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
 };
 
 const getRoutes = () => {
@@ -212,7 +229,7 @@ const getRoutes = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(routes)
+        console.log(routes);
         resolve(routes);
       }
     );
@@ -220,7 +237,7 @@ const getRoutes = () => {
 };
 
 const getOneRoute = (id) => {
-  console.log('fc', id)
+  console.log("fc", id);
   return new Promise((resolve, reject) => {
     db.all(
       `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, 
@@ -242,7 +259,7 @@ const getOneRoute = (id) => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(routes)
+        console.log(routes);
         resolve(routes);
       }
     );
@@ -267,19 +284,15 @@ const getBusStops = () => {
 };
 
 const deleteRoute = (id) => {
-  console.log(id)
+  console.log(id);
   return new Promise((resolve, reject) => {
-    db.run(
-      `DELETE FROM ROUTES WHERE RouteID = ?`,
-      [id],
-      (err) => {
-        if (err) {
-          console.error("Error querying the database:", err.message);
-          return reject("Error querying the database.");
-        }
-        resolve(); // Call resolve when query is successful
+    db.run(`DELETE FROM ROUTES WHERE RouteID = ?`, [id], (err) => {
+      if (err) {
+        console.error("Error querying the database:", err.message);
+        return reject("Error querying the database.");
       }
-    );
+      resolve(); // Call resolve when query is successful
+    });
   });
 };
 
@@ -297,7 +310,7 @@ const historyEmp = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(history)
+        console.log(history);
         resolve(history);
       }
     );

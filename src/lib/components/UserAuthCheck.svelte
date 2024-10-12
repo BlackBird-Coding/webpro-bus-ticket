@@ -1,49 +1,49 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
+  import { navigate } from "svelte-routing";
   import { userStore } from "@/lib/stores/userStore.svelte";
 
   // Props
-  export let requiredRole = ""; // The role required to view the content (e.g., "admin", "manager")
-  export let requiredUserType = ""; // The userType required to view the content (e.g., "employee", "customer")
-  export let isShow = true; // true: show when logged in, false: show when logged out
+  export let requiredRole = "";
+  export let requiredUserType = "";
+  export let showWhenLoggedIn = true;
+  export let redirectToLogin = false;
+  export let loginPath = "/login";
 
-  // State
-  let isLoading = true;
-  let error = null;
+  // Reactive store values
+  $: ({ isLoggedIn, userType, role, isLoading } = $userStore);
 
-  let unsubscribe;
+  // Determine if the content should be shown
+  $: shouldShow =
+    !isLoading &&
+    showWhenLoggedIn === isLoggedIn &&
+    (!requiredRole || role === requiredRole) &&
+    (!requiredUserType || userType === requiredUserType);
+
+  // Handle redirection
+  $: {
+    if (!isLoading && !isLoggedIn && showWhenLoggedIn && redirectToLogin) {
+      navigate(loginPath, { replace: true });
+    }
+  }
 
   onMount(() => {
-    userStore.checkAuth().catch((e) => {
-      error = e.message;
-    });
-
-    unsubscribe = userStore.subscribe((value) => {
-      isLoading = value.isLoading;
-    });
+    userStore.checkAuth();
   });
-
-  onDestroy(() => {
-    if (unsubscribe) unsubscribe();
-  });
-
-  // Derived state
-  $: userState = $userStore;
-  $: isLoggedIn = userState?.isLoggedIn ?? false;
-  $: userRole = userState?.details?.role ?? "";
-  $: userType = userState?.userType ?? "";
-
-  // Determine if the user has the correct type and role
-  $: shouldShow = isShow ? isLoggedIn : !isLoggedIn;
-
-  // Role check: both userType and role should match required conditions
-  $: shouldShowRole =
-    (!requiredRole || userRole === requiredRole) &&
-    (!requiredUserType || userType === requiredUserType);
 </script>
 
-{#if error}
-  <p>Error: {error}</p>
-{:else if !isLoading && shouldShow && shouldShowRole}
+{#if shouldShow}
   <slot />
 {/if}
+
+<!-- Debugging Section -->
+<!-- <div>
+  <h3>Debug Information:</h3>
+  <p>User Role: {role}</p>
+  <p>User Type: {userType}</p>
+  <p>Is Logged In: {isLoggedIn}</p>
+  <p>Show When Logged In: {showWhenLoggedIn}</p>
+  <p>Should Show: {shouldShow}</p>
+  <p>Is Loading: {isLoading}</p>
+  <p>Redirect To Login: {redirectToLogin}</p>
+</div> -->

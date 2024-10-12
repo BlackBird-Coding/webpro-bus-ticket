@@ -27,8 +27,10 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
+  console.log("Request body:", req.body);
   login(email, password).then(
     (user) => {
+      console.log("User:", user);
       req.session.user = user;
       res.json({ message: "Login successful!", user });
     },
@@ -56,7 +58,7 @@ router.get("/routes", (req, res) => {
 router.get("/user", (req, res) => {
   res.json({ user: req.session.user });
 });
-  
+
 router.get("/ManageBus_Emp", (req, res) => {
   getRoutes()
     .then((routes) => {
@@ -78,8 +80,8 @@ router.get("/BusStops", (req, res) => {
 });
 
 router.post("/EditBus", (req, res) => {
-  console.log('router',req.body.id )
-  getOneRoute(req.body.id )
+  console.log("router", req.body.id);
+  getOneRoute(req.body.id)
     .then((routes) => {
       res.json({ routes });
     })
@@ -88,10 +90,9 @@ router.post("/EditBus", (req, res) => {
     });
 });
 
-
 router.post("/DeleteRoute", (req, res) => {
   const { id } = req.body;
-  console.log(id)
+  console.log(id);
   deleteRoute(id).then(
     () => {
       res.json({ message: "Delete Route successful!" });
