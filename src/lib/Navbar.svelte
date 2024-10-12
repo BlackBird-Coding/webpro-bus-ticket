@@ -2,6 +2,36 @@
   import UserAuthCheck from "@/lib/components/UserAuthCheck.svelte";
   import { userStore } from "@/lib/stores/userStore.svelte";
   import logo from "@/assets/logo.webp";
+  async function handleLogout() {
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        userStore.clearUser();
+        navigate("/", { replace: true });
+        Swal.fire({
+          icon: "success",
+          title: "ออกจากระบบสำเร็จ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        throw new Error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "ออกจากระบบไม่สำเร็จ",
+        text: "กรุณาลองใหม่อีกครั้ง",
+      });
+    }
+  }
 </script>
 
 <header
@@ -97,7 +127,7 @@
         </li>
       </ul>
     </div>
-    <UserAuthCheck isShow={false}>
+    <UserAuthCheck showWhenLoggedIn={false}>
       <div class="flex items-center max-lg:ml-auto space-x-6">
         <a href="/register"
           ><button
@@ -113,10 +143,10 @@
         >
       </div>
     </UserAuthCheck>
-    <UserAuthCheck isShow={true}>
+    <UserAuthCheck showWhenLoggedIn={true}>
       <button
         class="px-4 py-2 text-[15px] rounded font-semibold text-[#6439FF] border-2 border-[#6439FF] hover:bg-slate-200 transition-all ease-in-out duration-300 bg-[#FFFFFF]"
-        on:click={() => userStore.logout()}>ออกจากระบบ</button
+        on:click={() => handleLogout()}>ออกจากระบบ</button
       >
     </UserAuthCheck>
   </div>

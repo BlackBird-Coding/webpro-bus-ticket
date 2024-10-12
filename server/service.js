@@ -63,75 +63,85 @@ const registerCustomer = (fname, lname, phone, email, password) => {
 
 const login = (email, password) => {
   return new Promise((resolve, reject) => {
-    // Query the USERS table to find the user by email
-    db.get(`SELECT * FROM USERS WHERE Email = ?`, [email], (err, user) => {
-      if (err) {
-        console.error(err.message);
-        reject("Error querying the database.");
-        return;
-      }
-
-      if (!user) {
-        reject("Email not found.");
-        return;
-      }
-
-      // Compare the provided password with the hashed password in the database
-      bcrypt.compare(password, user.Password, (err, result) => {
+    // Query the USERS table and join with the CUSTOMERS and EMPLOYEES tables
+    db.get(
+      `SELECT u.*, 
+              c.Fname AS CustomerFname, c.Lname AS CustomerLname, c.Gender AS CustomerGender, c.DOB AS CustomerDOB, c.Phone AS CustomerPhone,
+              e.Fname AS EmployeeFname, e.Lname AS EmployeeLname, e.Gender AS EmployeeGender, e.DOB AS EmployeeDOB, e.Phone AS EmployeePhone, e.Role, e.HireDate
+       FROM Users u
+       LEFT JOIN Customers c ON u.UserID = c.UserID
+       LEFT JOIN Employees e ON u.UserID = e.UserID
+       WHERE u.Email = ?`,
+      [email],
+      (err, user) => {
         if (err) {
           console.error(err.message);
-          reject("Error comparing passwords.");
+          reject("Error querying the database.");
           return;
         }
 
-        if (result) {
-          const { Password, ...userWithoutPassword } = user;
-
-          // Check if the user is a customer or an employee
-          if (user.UserType === "customer") {
-            // Query the CUSTOMERS table to get additional customer information
-            db.get(
-              `SELECT * FROM CUSTOMERS WHERE CustomerID = ?`,
-              [user.CustomerID],
-              (err, customer) => {
-                if (err) {
-                  console.error(err.message);
-                  reject("Error querying customer information.");
-                  return;
-                }
-
-                resolve({
-                  userType: "customer",
-                  details: { ...userWithoutPassword, customer },
-                });
-              }
-            );
-          } else if (user.UserType === "employee") {
-            // Query the EMPLOYEES table to get additional employee information
-            db.get(
-              `SELECT * FROM EMPLOYEES WHERE EmployeeID = ?`,
-              [user.EmployeeID],
-              (err, employee) => {
-                if (err) {
-                  console.error(err.message);
-                  reject("Error querying employee information.");
-                  return;
-                }
-
-                resolve({
-                  userType: "employee",
-                  details: { ...userWithoutPassword, employee },
-                });
-              }
-            );
-          } else {
-            reject("Unknown user type.");
-          }
-        } else {
-          reject("Incorrect password.");
+        if (!user) {
+          reject("Email not found.");
+          return;
         }
-      });
-    });
+
+        // Compare the provided password with the hashed password in the database
+        bcrypt.compare(password, user.Password, (err, result) => {
+          if (err) {
+            console.error(err.message);
+            reject("Error comparing passwords.");
+            return;
+          }
+
+          if (result) {
+            const { Password, ...userWithoutPassword } = user;
+
+            // Prepare the response based on whether the user is a customer or an employee
+            if (user.CustomerFname) {
+              // User is a customer
+              resolve({
+                userType: "customer",
+                details: {
+                  userID: user.UserID,
+                  userCode: user.UserCode,
+                  username: user.Username,
+                  email: user.Email,
+                  createdDate: user.CreatedDate,
+                  fname: user.CustomerFname,
+                  lname: user.CustomerLname,
+                  gender: user.CustomerGender,
+                  dob: user.CustomerDOB,
+                  phone: user.CustomerPhone,
+                },
+              });
+            } else if (user.EmployeeFname) {
+              // User is an employee
+              resolve({
+                userType: "employee",
+                details: {
+                  userID: user.UserID,
+                  userCode: user.UserCode,
+                  username: user.Username,
+                  email: user.Email,
+                  createdDate: user.CreatedDate,
+                  fname: user.EmployeeFname,
+                  fname: user.EmployeeLname,
+                  gender: user.EmployeeGender,
+                  dob: user.EmployeeDOB,
+                  phone: user.EmployeePhone,
+                  role: user.Role,
+                  hireDate: user.HireDate,
+                },
+              });
+            } else {
+              reject("Unknown user type.");
+            }
+          } else {
+            reject("Incorrect password.");
+          }
+        });
+      }
+    );
   });
 };
 
@@ -212,7 +222,7 @@ const getRoutes = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(routes)
+        console.log(routes);
         resolve(routes);
       }
     );
@@ -220,7 +230,7 @@ const getRoutes = () => {
 };
 
 const getOneRoute = (id) => {
-  console.log('fc', id)
+  console.log("fc", id);
   return new Promise((resolve, reject) => {
     db.all(
       `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, 
@@ -237,7 +247,7 @@ const getOneRoute = (id) => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(routes)
+        console.log(routes);
         resolve(routes);
       }
     );
@@ -245,19 +255,15 @@ const getOneRoute = (id) => {
 };
 
 const deleteRoute = (id) => {
-  console.log(id)
+  console.log(id);
   return new Promise((resolve, reject) => {
-    db.run(
-      `DELETE FROM ROUTES WHERE RouteID = ?`,
-      [id],
-      (err) => {
-        if (err) {
-          console.error("Error querying the database:", err.message);
-          return reject("Error querying the database.");
-        }
-        resolve(); // Call resolve when query is successful
+    db.run(`DELETE FROM ROUTES WHERE RouteID = ?`, [id], (err) => {
+      if (err) {
+        console.error("Error querying the database:", err.message);
+        return reject("Error querying the database.");
       }
-    );
+      resolve(); // Call resolve when query is successful
+    });
   });
 };
 
@@ -275,12 +281,19 @@ const historyEmp = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(history)
+        console.log(history);
         resolve(history);
       }
     );
   });
 };
 
-
-export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp};
+export {
+  registerCustomer,
+  login,
+  createEmployee,
+  getRoutes,
+  deleteRoute,
+  getOneRoute,
+  historyEmp,
+};

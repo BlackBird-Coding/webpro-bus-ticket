@@ -27,8 +27,9 @@
         console.log({ status, data });
         if (status === 200) {
           // Update the userStore with the new login state
-          userStore.login({
-            role: data.user.userType, // Adjust this based on your API response
+          userStore.setUser({
+            userType: data.user.userType,
+            role: data.user.role, // Make sure your API returns the role
             // Add any other user data you want to store
           });
 
