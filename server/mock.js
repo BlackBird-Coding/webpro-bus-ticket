@@ -45,37 +45,36 @@ db.serialize(() => {
     ('กรุงเทพ-หาดใหญ่ 1', 40, 'VIP'),
     ('กรุงเทพ-นครสวรรค์ 1', 50, 'ปรับอากาศ 2 ชั้น'),
     ('กรุงเทพ-อุดรธานี 1', 45, 'ปรับอากาศ 3 ชั้น'),
-    ('เชียงใหม่-ขอนแก่น 1', 40, 'ปรับอากาศ 10 ชั้น');`
+    ('เชียงใหม่-ขอนแก่น 1', 40, 'ปรับอากาศ 1 ชั้น');`
   );
 
   // Insert data into SCHEDULES table
   db.run(
     `INSERT INTO Schedules (RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description, Image) VALUES
-    (1, 1, 13, '2024-10-13 20:00:00', '2024-10-14 06:00:00', 800.00, 'รถ VIP กรุงเทพ-เชียงใหม่ เดินทางสบาย', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
-    (2, 2, 15, '2024-10-13 21:00:00', '2024-10-14 05:00:00', 500.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-ขอนแก่น', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
-    (3, 3, 19, '2024-10-13 20:30:00', '2024-10-14 06:30:00', 600.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-อุบลราชธานี', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
-    (4, 4, 13, '2024-10-13 22:00:00', '2024-10-14 03:00:00', 300.00, 'รถปรับอากาศชั้น 2 กรุงเทพ-นครราชสีมา', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
-    (5, 5, 15, '2024-10-13 23:00:00', '2024-10-14 05:00:00', 400.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-พิษณุโลก', 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dbus&psig=AOvVaw3qKAolfd8yXxnn-C7bBpnK&ust=1728648764364000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNC7683kg4kDFQAAAAAdAAAAABAEhttps://t4.ftcdn.net/jpg/00/15/53/79/240_F_15537925_5qUqgBbDSQHCI5DeP7M0z88ouNIHdeKY.jpg'),
-    (6, 6, 19, '2024-10-13 19:00:00', '2024-10-14 07:00:00', 900.00, 'รถ VIP กรุงเทพ-สุราษฎร์ธานี', 'bus_bkk_srt.jpg'),
-    (7, 7, 13, '2024-10-13 18:00:00', '2024-10-14 08:00:00', 1000.00, 'รถ VIP กรุงเทพ-หาดใหญ่', 'bus_bkk_hyi.jpg'),
-    (8, 8, 15, '2024-10-13 23:30:00', '2024-10-14 03:30:00', 250.00, 'รถปรับอากาศชั้น 2 กรุงเทพ-นครสวรรค์', 'bus_bkk_nsn.jpg'),
-    (9, 9, 19, '2024-10-13 21:00:00', '2024-10-14 06:00:00', 550.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-อุดรธานี', 'bus_bkk_udn.jpg'),
-    (10, 10, 13, '2024-10-13 08:00:00', '2024-10-13 22:00:00', 700.00, 'รถปรับอากาศชั้น 1 เชียงใหม่-ขอนแก่น', 'bus_cnx_kkn.jpg');`
+    (1, 1, 1, '2024-10-13 20:00:00', '2024-10-14 06:00:00', 800.00, 'รถ VIP กรุงเทพ-เชียงใหม่ เดินทางสบาย', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/LT_471_%28LTZ_1471%29_Arriva_London_New_Routemaster_%2819522859218%29.jpg/2560px-LT_471_%28LTZ_1471%29_Arriva_London_New_Routemaster_%2819522859218%29.jpg'),
+    (2, 2, 12, '2024-10-13 21:00:00', '2024-10-14 05:00:00', 500.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-ขอนแก่น', 'https://patsornchaitour.com/wp-content/uploads/2022/06/%E0%B9%80%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%A1%E0%B8%B4%E0%B8%99%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%AA.jpg'),
+    (3, 3, 1, '2024-10-13 20:30:00', '2024-10-14 06:30:00', 600.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-อุบลราชธานี', 'https://www.khaosod.co.th/wpapp/uploads/2022/09/image1-201.jpg'),
+    (4, 4, 12, '2024-10-13 22:00:00', '2024-10-14 03:00:00', 300.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-นครราชสีมา', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVqb-DHc5iUvONhPVbL4RVRyZN6NOqlKTs7Y_3zMSyXOBDlDlmxN6mBpxTxDxyh3aB4Qc&usqp=CAU'),
+    (6, 6, 1, '2024-10-13 19:00:00', '2024-10-14 07:00:00', 900.00, 'รถ VIP กรุงเทพ-สุราษฎร์ธานี', 'https://osabus.com/wp-content/uploads/2024/06/OsaBus-Setra-bus-for-rent-europe-1.jpg'),
+    (7, 7, 12, '2024-10-13 18:00:00', '2024-10-14 08:00:00', 1000.00, 'รถ VIP กรุงเทพ-หาดใหญ่', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpId-2bkjAQmP-pTAjsipLj_mAHkPNrDmtbg&s'),
+    (8, 8, 1, '2024-10-13 23:30:00', '2024-10-14 03:30:00', 250.00, 'รถปรับอากาศชั้น 2 กรุงเทพ-นครสวรรค์', 'https://osabus.com/wp-content/uploads/2022/09/49-MAN-1024x768.jpeg'),
+    (9, 9, 12, '2024-10-13 21:00:00', '2024-10-14 06:00:00', 550.00, 'รถปรับอากาศชั้น 1 กรุงเทพ-อุดรธานี', 'https://cdn.britannica.com/72/146072-050-124A752E/Greyhound-bus.jpg'),
+    (10, 10, 1, '2024-10-13 08:00:00', '2024-10-13 22:00:00', 700.00, 'รถปรับอากาศชั้น 1 เชียงใหม่-ขอนแก่น', 'https://immanuel.sa.edu.au/wp-content/uploads/2024/06/Bus_website-scaled.jpg');`
   );
 
   // Insert data into BOOKINGS table
   db.run(
     `INSERT INTO Bookings (CustomerID, ScheduleID, BookingDate, SeatNumber, Status) VALUES
-    (1, 1, '2024-10-10 10:00:00', 15, 'ยืนยันแล้ว'),
-    (2, 2, '2024-10-11 11:30:00', 22, 'ยืนยันแล้ว'),
-    (3, 3, '2024-10-09 09:15:00', 7, 'ยืนยันแล้ว'),
-    (4, 4, '2024-10-12 14:00:00', 30, 'รอการชำระเงิน'),
-    (5, 5, '2024-10-10 16:45:00', 18, 'ยืนยันแล้ว'),
-    (6, 6, '2024-10-11 13:20:00', 25, 'ยืนยันแล้ว'),
-    (7, 7, '2024-10-09 10:30:00', 10, 'ยืนยันแล้ว'),
-    (8, 8, '2024-10-12 17:00:00', 40, 'รอการชำระเงิน'),
-    (9, 9, '2024-10-10 15:15:00', 5, 'ยืนยันแล้ว'),
-    (10, 10, '2024-10-11 12:45:00', 33, 'ยืนยันแล้ว');`
+    (8, 1, '2024-10-10 10:00:00', 15, 'ยืนยันแล้ว'),
+    (9, 2, '2024-10-11 11:30:00', 22, 'ยืนยันแล้ว'),
+    (10, 3, '2024-10-09 09:15:00', 7, 'ยืนยันแล้ว'),
+    (11, 4, '2024-10-12 14:00:00', 30, 'รอการชำระเงิน'),
+    (13, 5, '2024-10-10 16:45:00', 18, 'ยืนยันแล้ว'),
+    (14, 6, '2024-10-11 13:20:00', 25, 'ยืนยันแล้ว'),
+    (15, 7, '2024-10-09 10:30:00', 10, 'ยืนยันแล้ว'),
+    (16, 8, '2024-10-12 17:00:00', 40, 'รอการชำระเงิน'),
+    (17, 9, '2024-10-10 15:15:00', 5, 'ยืนยันแล้ว'),
+    (17, 10, '2024-10-11 12:45:00', 33, 'ยืนยันแล้ว');`
   );
 
   // Insert data into PAYMENTS table

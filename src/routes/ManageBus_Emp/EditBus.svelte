@@ -10,6 +10,57 @@
     let tripdata = [];
     let isDisabled = true; // เริ่มต้นไม่ disabled
     let mode = null;
+    let BusStops = [];
+
+    let departureDateTime = null;
+    let departureDate = null;
+    let departureTime = null;
+    let arrivalDateTime = null;
+    let arrivalDate = null;
+    let arrivalTime = null;
+
+    let userCodes = [];
+
+    fetch('/api/employees',{
+        method:"GET",
+    }).then((res) => {
+            if (!res.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return res.json();
+        })
+        .then((data) => {
+            userCodes = data.id
+        })
+        .catch((error) => {
+            console.error(
+                "There was a problem with the fetch operation:",
+                error,
+            );
+        });
+
+
+    
+
+    fetch(`/api/BusStops`, {
+        method: "GET",
+    })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return res.json();
+        })
+        .then((data) => {
+            BusStops = data.BusStops;
+            console.log(BusStops);
+        })
+        .catch((error) => {
+            console.error(
+                "There was a problem with the fetch operation:",
+                error,
+            );
+        });
 
     function toggleDisabled() {
         isDisabled = !isDisabled;
@@ -92,6 +143,14 @@
             .then((data) => {
                 console.log("fetch", data);
                 tripdata = data.routes[0];
+
+                departureDateTime = new Date(tripdata.DepartureTime);
+                departureDate = departureDateTime.toISOString().split("T")[0];
+                departureTime = departureDateTime.toTimeString().slice(0, 5);
+
+                arrivalDateTime = new Date(tripdata.ArrivalTime);
+                arrivalDate = arrivalDateTime.toISOString().split("T")[0];
+                arrivalTime = arrivalDateTime.toTimeString().slice(0, 5);
             })
             .catch((error) => {
                 console.error(
@@ -155,8 +214,11 @@
                             <h1
                                 class="text-2xl font-semibold leading-7 text-gray-900"
                             >
-                                {tripdata.RouteID} - {tripdata.RouteName}
+                                {tripdata.RouteCode}: {tripdata.RouteName}
                             </h1>
+                            <p class="mt-3 text-xs text-red-500">
+                                หากต้องการแก้ไขข้อมูล ให้คลิกปุ่มแก้ไขทางด้านขวา
+                            </p>
                         </div>
                         <div class="flex items-center gap-3">
                             <Button
@@ -246,9 +308,9 @@
                 {/if}
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6"
+                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-4"
                 >
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-2">
                         <label
                             for="type"
                             class="block text-base font-medium leading-6 text-gray-900"
@@ -270,18 +332,29 @@
                                     id="countries"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 >
-                                    <option selected>เลือกประเภทรถ</option>
-                                    <option value="vip">VIP</option>
-                                    <option value="express">Express</option>
-                                    <option value="standard">Standard</option>
-                                    <option value="economy">Economy</option>
-                                    <option value="mini">Mini</option>
+                                    <option
+                                        value="vip"
+                                        selected={tripdata.Type === "VIP"}
+                                        >VIP</option
+                                    >
+                                    <option
+                                        value="1floorAir"
+                                        selected={tripdata.Type ===
+                                            "ปรับอากาศ 1 ชั้น"}
+                                        >ปรับอากาศ 1 ชั้น</option
+                                    >
+                                    <option
+                                        value="2floorAir"
+                                        selected={tripdata.Type ===
+                                            "ปรับอากาศ 2 ชั้น"}
+                                        >ปรับอากาศ 2 ชั้น</option
+                                    >
                                 </select>
                             {/if}
                         </div>
                     </div>
 
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-2">
                         <label
                             for="capacity"
                             class="block text-base font-medium leading-6 text-gray-900"
@@ -300,7 +373,7 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-2">
                         <label
                             for="origin-bus-stop"
                             class="block text-base font-medium leading-6 text-gray-900"
@@ -308,10 +381,15 @@
                         >
                         <div class="mt-2">
                             {#if isDisabled}
-                                <input
+                                <textarea
                                     disabled
-                                    value={tripdata.OriginBusStop}
-                                    type="text"
+                                    value={tripdata.OriginBusStop +
+                                        "\n" +
+                                        tripdata.OriginAddress +
+                                        " " +
+                                        tripdata.OriginSubprovince +
+                                        " " +
+                                        tripdata.OriginProvince}
                                     name="origin-bus-stop"
                                     id="origin-bus-stop"
                                     autocomplete="given-name"
@@ -322,14 +400,19 @@
                                     id="origin-bus-stop"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 >
-                                    <option selected>เลือกสถานี</option>
-                                    <option value="bkk">กรุงเทพ</option>
+                                    {#each BusStops as data}
+                                        <option
+                                            value={data.Name}
+                                            selected={tripdata.OriginBusStop ===
+                                                data.Name}>{data.Name}</option
+                                        >
+                                    {/each}
                                 </select>
                             {/if}
                         </div>
                     </div>
 
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-2">
                         <label
                             for="destination-bus-stop"
                             class="block text-base font-medium leading-6 text-gray-900"
@@ -337,9 +420,15 @@
                         >
                         <div class="mt-2">
                             {#if isDisabled}
-                                <input
+                                <textarea
                                     disabled
-                                    value={tripdata.DestinationBusStop}
+                                    value={tripdata.DestinationBusStop +
+                                        "\n" +
+                                        tripdata.DestinationAddress +
+                                        " " +
+                                        tripdata.DestinationSubprovince +
+                                        " " +
+                                        tripdata.DestinationProvince}
                                     type="text"
                                     name="destination-bus-stop"
                                     id="destination-bus-stop"
@@ -351,117 +440,158 @@
                                     id="destination-bus-stop"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 >
-                                    <option selected>เลือกสถานี</option>
-                                    <option value="bkk">กรุงเทพ</option>
+                                    {#each BusStops as data}
+                                        <option
+                                            value={data.Name}
+                                            selected={tripdata.DestinationBusStop ===
+                                                data.Name}>{data.Name}</option
+                                        >
+                                    {/each}
                                 </select>
                             {/if}
                         </div>
                     </div>
 
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-2">
                         <label
                             for="departure-time"
                             class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-                            >เวลาออกเดินทาง</label
                         >
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
+                            เวลาออกเดินทาง
+                        </label>
+                        <div class="flex space-x-4">
+                            <div class="relative w-1/2">
+                                <input
+                                disabled={isDisabled}
+                                    type="date"
+                                    value={arrivalDate}
+                                    id="departure-date"
+                                    class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                />
+                                <div
+                                    class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
                                 >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
+                                    <svg
+                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                            clip-rule="evenodd"
+                                        ></path>
+                                    </svg>
+                                </div>
                             </div>
-                            {#if isDisabled}
-                                <input
-                                    disabled
-                                    value={tripdata.DepartureTime}
-                                    type="text"
-                                    name="departure-time"
-                                    id="departure-time"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            {:else}
-                                <input
-                                    type="time"
-                                    id="departure-time"
-                                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    min="09:00"
-                                    max="18:00"
-                                    value="00:00"
-                                    required
-                                />
-                            {/if}
+                            <div class="relative w-1/2">
+                                    <input
+                                    disabled={isDisabled}
+                                        value={arrivalTime}
+                                        type="time"
+                                        id="departure-time"
+                                        class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        min="09:00"
+                                        max="18:00"
+                                        required
+                                    />
+                            
+                                <div
+                                    class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none"
+                                >
+                                    <svg
+                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-2">
                         <label
-                            for="arrival-time"
+                            for="departure-time"
                             class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-                            >เวลาถึงปลายทาง</label
                         >
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                        clip-rule="evenodd"
+                            เวลาถึงปลายทาง
+                        </label>
+                        <div class="flex space-x-4">
+                            
+                                <div class="relative w-1/2">
+                                    <input
+                                        type="date"
+                                        value={departureDate}
+                                        id="departure-date"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        disabled={isDisabled}
                                     />
-                                </svg>
-                            </div>
-                            {#if isDisabled}
-                                <input
-                                    disabled
-                                    value={tripdata.ArrivalTime}
-                                    type="text"
-                                    name="arrival-time"
-                                    id="arrival-time"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            {:else}
-                                <input
-                                    type="time"
-                                    id="arrival-time"
-                                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    min="09:00"
-                                    max="18:00"
-                                    value="00:00"
-                                    required
-                                />
-                            {/if}
+                                    <div
+                                        class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+                                    >
+                                        <svg
+                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                                clip-rule="evenodd"
+                                            ></path>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <div class="relative w-1/2">
+                                    <input
+                                    disabled={isDisabled}
+                                        value={departureTime}
+                                        type="time"
+                                        id="departure-time"
+                                        class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        required
+                                    />
+                                    <div
+                                        class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none"
+                                    >
+                                        <svg
+                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                        
                         </div>
                     </div>
                 </div>
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-5"
+                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-4"
                 >
                     <h2
                         class="text-base font-semibold leading-7 text-black mb-1"
                     >
-                        พนักงานผู้รับผิดชอบ
+                        พนักงานขับรถ (หลัก)
                     </h2>
 
                     {#each inputs as input, index}
@@ -472,13 +602,19 @@
                                 >รหัสพนักงาน</label
                             >
                             <div class="mt-2">
-                                <input
-                                    type="text"
+                                <select
+                                    bind:value={tripdata.UserCode}
+                                    {isDisabled}
                                     name="empID"
                                     id="empID"
                                     autocomplete="address-level2"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                >
+                                    <option value="">Select a User Code</option>
+                                    {#each userCodes as code}
+                                        <option value={code.UserCode}>{code.UserCode}</option>
+                                    {/each}
+                                </select>
                             </div>
                         </div>
 
@@ -490,7 +626,8 @@
                             >
                             <div class="mt-2">
                                 <input
-                                    disabled
+                                    value={tripdata.Fname}
+                                    disabled={isDisabled}
                                     type="text"
                                     name="emp-name"
                                     id="emp-name"
@@ -508,7 +645,8 @@
                             >
                             <div class="mt-2">
                                 <input
-                                    disabled
+                                    value={tripdata.Lname}
+                                    disabled={isDisabled}
                                     type="text"
                                     name="emp-lname"
                                     id="emp-lname"
@@ -526,37 +664,14 @@
                             >
                             <div class="mt-2">
                                 <input
-                                    disabled
+                                    value={tripdata.Phone}
+                                    disabled={isDisabled}
                                     type="text"
                                     name="postal-code"
                                     id="postal-code"
                                     autocomplete="postal-code"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label
-                                for="countries"
-                                class="block text-sm font-medium leading-6 text-gray-900"
-                                >ตำแหน่ง</label
-                            >
-                            <div class="mt-2">
-                                <select
-                                    disabled
-                                    id="countries"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                >
-                                    <option selected>เลือกตำแหน่ง</option>
-                                    <option value="rider">หนักงานขับรถ</option>
-                                    <option value="checker"
-                                        >พนักงานตรวจตั๋ว</option
-                                    >
-                                    <option value="caretaker"
-                                        >พนักงานดูแล/ทำความสะอาด</option
-                                    >
-                                </select>
                             </div>
                         </div>
                     {/each}
@@ -586,7 +701,7 @@
                     </div>
                 -->
 
-                    <div class="col-span-full mb-6">
+                    <div class="col-span-full mb-6 mt-4">
                         <label
                             for="about"
                             class="block text-base font-medium leading-6 text-gray-900"
@@ -594,6 +709,7 @@
                         >
                         <div class="mt-2">
                             <textarea
+                                value={tripdata.Description}
                                 disabled={isDisabled}
                                 id="about"
                                 name="about"
@@ -609,46 +725,51 @@
                             class="block text-base font-medium leading-6 text-gray-900"
                             >รูปภาพ</label
                         >
-                        <div
-                            class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
-                        >
-                            <div class="text-center">
-                                <svg
-                                    class="mx-auto h-12 w-12 text-gray-300"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    aria-hidden="true"
-                                    data-slot="icon"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
-                                <div
-                                    class="mt-4 flex text-sm leading-6 text-gray-600"
-                                >
-                                    <label
-                                        for="file-upload"
-                                        class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                        <br />
+                        {#if isDisabled}
+                            <img src={tripdata.Image} alt="" />
+                        {:else}
+                            <div
+                                class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                            >
+                                <div class="text-center">
+                                    <svg
+                                        class="mx-auto h-12 w-12 text-gray-300"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                        data-slot="icon"
                                     >
-                                        <span>Upload a file</span>
-                                        <input
-                                            disabled={isDisabled}
-                                            id="file-upload"
-                                            name="file-upload"
-                                            type="file"
-                                            class="sr-only"
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                            clip-rule="evenodd"
                                         />
-                                    </label>
-                                    <p class="pl-1">or drag and drop</p>
+                                    </svg>
+                                    <div
+                                        class="mt-4 flex text-sm leading-6 text-gray-600"
+                                    >
+                                        <label
+                                            for="file-upload"
+                                            class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                                        >
+                                            <span>Upload a file</span>
+                                            <input
+                                                disabled={isDisabled}
+                                                id="file-upload"
+                                                name="file-upload"
+                                                type="file"
+                                                class="sr-only"
+                                            />
+                                        </label>
+                                        <p class="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p class="text-xs leading-5 text-gray-600">
+                                        PNG, JPG, GIF up to 10MB
+                                    </p>
                                 </div>
-                                <p class="text-xs leading-5 text-gray-600">
-                                    PNG, JPG, GIF up to 10MB
-                                </p>
                             </div>
-                        </div>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -657,11 +778,13 @@
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <Button
                         on:click={cancel}
+                        type="button"
                         class="text-sm font-semibold leading-6 text-gray-900"
                         >Cancel</Button
                     >
                     <button
                         on:click={saveEdit}
+                        type="button"
                         class="rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >Save</button
                     >
@@ -670,3 +793,4 @@
         </div>
     </form>
 </div>
+

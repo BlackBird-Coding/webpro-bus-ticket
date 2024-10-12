@@ -203,8 +203,8 @@ const getRoutes = () => {
     db.all(
       `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.Capacity, B.Type
        FROM ROUTES R
-       JOIN BUS_STOPS BS1 ON R.Origin = BS1.BusStopID
-       JOIN BUS_STOPS BS2 ON R.Destination = BS2.BusStopID
+       JOIN BUSSTOPS BS1 ON R.Origin = BS1.BusStopID
+       JOIN BUSSTOPS BS2 ON R.Destination = BS2.BusStopID
        JOIN SCHEDULES S ON S.RouteID = R.RouteID 
        JOIN BUSES B ON B.BusID = S.BusID`,
       (err, routes) => {
@@ -224,12 +224,17 @@ const getOneRoute = (id) => {
   return new Promise((resolve, reject) => {
     db.all(
       `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, 
-      BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.Capacity, B.Type 
+      BS1.Subprovince AS OriginSubprovince, BS2.Subprovince AS DestinationSubprovince, 
+      BS1.Address AS OriginAddress, BS2.Address AS DestinationAddress, 
+      BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.*,
+      U.UserCode, E.fname, E.lname, E.Role, E.Phone
       FROM ROUTES R 
-      JOIN BUS_STOPS BS1 ON R.Origin = BS1.BusStopID 
-      JOIN BUS_STOPS BS2 ON R.Destination = BS2.BusStopID 
+      JOIN BUSSTOPS BS1 ON R.Origin = BS1.BusStopID 
+      JOIN BUSSTOPS BS2 ON R.Destination = BS2.BusStopID 
       JOIN SCHEDULES S ON S.RouteID = R.RouteID 
       JOIN BUSES B ON B.BusID = S.BusID 
+      JOIN EMPLOYEES E ON E.UserID = S.EmployeeID
+      JOIN USERS U ON E.UserID = U.UserID
       WHERE R.RouteID = ?`,
       [id],
       (err, routes) => {
@@ -239,6 +244,23 @@ const getOneRoute = (id) => {
         }
         console.log(routes)
         resolve(routes);
+      }
+    );
+  });
+};
+
+const getBusStops = () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT *
+       FROM BusStops`,
+      (err, BusStops) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log(BusStops)
+        resolve(BusStops);
       }
     );
   });
@@ -282,5 +304,23 @@ const historyEmp = () => {
   });
 };
 
+const getEmployees = () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT UserCode
+      FROM Users
+      WHERE UserType="Employee"`,
+      (err, row) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log(row)
+        resolve(row);
+      }
+    );
+  });
+}
 
-export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp};
+
+export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp, getBusStops, getEmployees};

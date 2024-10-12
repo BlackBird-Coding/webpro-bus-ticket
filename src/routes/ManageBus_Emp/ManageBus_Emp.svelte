@@ -17,7 +17,7 @@
 
     // Function to navigate to the second page with the ID passed in the URL
     function goToPage(id, mode) {
-        navigate(`/EditBus?id=${id}&mode=${mode}`, { replace: true }); // Pass the button ID as a query parameter
+        navigate(`/EditBus?id=${id}&mode=${mode}`, { replace: false }); // Pass the button ID as a query parameter
     }
 
     fetch(`/api/ManageBus_Emp`, {
@@ -193,7 +193,7 @@
     <Table hoverable={true}>
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
             <TableHeadCell>เลขเที่ยวรถ</TableHeadCell>
-            <TableHeadCell>ชื่อเที่ยวรถ</TableHeadCell>
+            <TableHeadCell>เที่ยวรถ</TableHeadCell>
             <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
             <TableHeadCell>จำนวนที่นั่ง</TableHeadCell>
             <TableHeadCell>รายละเอียด</TableHeadCell>

@@ -6,7 +6,9 @@ import {
   getRoutes,
   deleteRoute,
   getOneRoute,
-  historyEmp
+  historyEmp,
+  getBusStops,
+  getEmployees
 } from "./service.js";
 const router = express.Router();
 
@@ -65,6 +67,16 @@ router.get("/ManageBus_Emp", (req, res) => {
     });
 });
 
+router.get("/BusStops", (req, res) => {
+  getBusStops()
+    .then((BusStops) => {
+      res.json({ BusStops });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
 router.post("/EditBus", (req, res) => {
   console.log('router',req.body.id )
   getOneRoute(req.body.id )
@@ -100,4 +112,13 @@ router.get("/history", (req, res) => {
     });
 });
 
+router.get("/employees",(req, res) => {
+  getEmployees()
+    .then((id)=>{
+      res.json({id})
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
 export default router;
