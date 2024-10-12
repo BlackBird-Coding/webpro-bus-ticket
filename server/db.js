@@ -21,6 +21,32 @@ db.serialize(() => {
   UserType VARCHAR(10) NOT NULL CHECK (UserType IN ('Customer', 'Employee'))
 );`);
 
+  // Create CUSTOMERS table
+  db.run(`CREATE TABLE IF NOT EXISTS Customers (
+    UserID INTEGER PRIMARY KEY,
+    CustomerCode TEXT GENERATED ALWAYS AS (printf('C%03d', UserID)),
+    Fname VARCHAR(50) NOT NULL,
+    Lname VARCHAR(50) NOT NULL,
+    Gender VARCHAR(4) NOT NULL,
+    DOB DATE NOT NULL,
+    Phone VARCHAR(15) NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+  );`);
+
+  // Create EMPLOYEES table
+  db.run(`CREATE TABLE IF NOT EXISTS Employees (
+    UserID INTEGER PRIMARY KEY,
+    EmployeeCode TEXT GENERATED ALWAYS AS (printf('E%03d', UserID)),
+    Fname VARCHAR(50) NOT NULL,
+    Lname VARCHAR(50) NOT NULL,
+    Phone VARCHAR(15) NOT NULL,
+    Gender VARCHAR(4) NOT NULL,
+    DOB DATE NOT NULL,
+    Role VARCHAR(50) NOT NULL,
+    HireDate DATE NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+  );`);
+
   // Create BUS_STOPS table
   db.run(`CREATE TABLE IF NOT EXISTS BusStops (
   BusStopID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,20 +80,6 @@ db.serialize(() => {
   Type VARCHAR(50) NOT NULL
 );`);
 
-  // Create EMPLOYEES table
-  db.run(`CREATE TABLE IF NOT EXISTS Employees (
-  UserID INTEGER PRIMARY KEY,
-  EmployeeCode TEXT GENERATED ALWAYS AS (printf('E%03d', UserID)),
-  Fname VARCHAR(50) NOT NULL,
-  Lname VARCHAR(50) NOT NULL,
-  Phone VARCHAR(15) NOT NULL,
-  Gender VARCHAR(4) NOT NULL,
-  DOB DATE NOT NULL,
-  Role VARCHAR(50) NOT NULL,
-  HireDate DATE NOT NULL,
-  FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
-);`);
-
   // Create SCHEDULES table
   db.run(`CREATE TABLE IF NOT EXISTS Schedules (
   ScheduleID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,18 +95,6 @@ db.serialize(() => {
   FOREIGN KEY (RouteID) REFERENCES Routes(RouteID) ON DELETE CASCADE,
   FOREIGN KEY (BusID) REFERENCES Buses(BusID) ON DELETE CASCADE,
   FOREIGN KEY (EmployeeID) REFERENCES Employees(UserID) ON DELETE CASCADE
-);`);
-
-  // Create CUSTOMERS table
-  db.run(`CREATE TABLE IF NOT EXISTS Customers (
-  UserID INTEGER PRIMARY KEY,
-  CustomerCode TEXT GENERATED ALWAYS AS (printf('C%03d', UserID)),
-  Fname VARCHAR(50) NOT NULL,
-  Lname VARCHAR(50) NOT NULL,
-  Gender VARCHAR(4) NOT NULL,
-  DOB DATE NOT NULL,
-  Phone VARCHAR(15) NOT NULL,
-  FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );`);
 
   // Create BOOKINGS table

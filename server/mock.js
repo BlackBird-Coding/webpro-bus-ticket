@@ -37,15 +37,15 @@ db.serialize(() => {
   db.run(
     `INSERT INTO Buses (BusName, Capacity, Type) VALUES
     ('กรุงเทพ-เชียงใหม่ 1', 40, 'VIP'),
-    ('กรุงเทพ-ขอนแก่น 1', 50, 'ปรับอากาศชั้น 1'),
-    ('กรุงเทพ-อุบล 1', 45, 'ปรับอากาศชั้น 1'),
-    ('กรุงเทพ-โคราช 1', 50, 'ปรับอากาศชั้น 2'),
-    ('กรุงเทพ-พิษณุโลก 1', 45, 'ปรับอากาศชั้น 1'),
+    ('กรุงเทพ-ขอนแก่น 1', 50, 'ปรับอากาศ 1 ชั้น'),
+    ('กรุงเทพ-อุบล 1', 45, 'ปรับอากาศ 1 ชั้น'),
+    ('กรุงเทพ-โคราช 1', 50, 'ปรับอากาศ 2 ชั้น'),
+    ('กรุงเทพ-พิษณุโลก 1', 45, 'ปรับอากาศ 1 ชั้น'),
     ('กรุงเทพ-สุราษฎร์ 1', 40, 'VIP'),
     ('กรุงเทพ-หาดใหญ่ 1', 40, 'VIP'),
-    ('กรุงเทพ-นครสวรรค์ 1', 50, 'ปรับอากาศชั้น 2'),
-    ('กรุงเทพ-อุดรธานี 1', 45, 'ปรับอากาศชั้น 1'),
-    ('เชียงใหม่-ขอนแก่น 1', 40, 'ปรับอากาศชั้น 1');`
+    ('กรุงเทพ-นครสวรรค์ 1', 50, 'ปรับอากาศ 2 ชั้น'),
+    ('กรุงเทพ-อุดรธานี 1', 45, 'ปรับอากาศ 3 ชั้น'),
+    ('เชียงใหม่-ขอนแก่น 1', 40, 'ปรับอากาศ 10 ชั้น');`
   );
 
   // Insert data into SCHEDULES table
@@ -197,7 +197,7 @@ const mockCustomers = [
     username: "sunisa_r",
     email: "sunisa.r@example.com",
     password: "password012",
-  }
+  },
 ];
 
 const mockEmployees = [
@@ -296,45 +296,51 @@ const mockEmployees = [
     username: "rattana_y",
     email: "rattana.y@example.com",
     password: "password567",
-  }
+  },
 ];
 
-// Function to insert mock users with hashed passwords
 const insertMockUsers = () => {
-  // Insert mock customers
-  mockCustomers.forEach((customer) => {
-    const { fname, lname, phone, email, password } = customer;
+  // Insert mock employees
+  mockEmployees.forEach((employee) => {
+    const {
+      fname,
+      lname,
+      phone,
+      Gender,
+      role,
+      hireDate,
+      DOB,
+      username,
+      email,
+      password,
+    } = employee;
 
-    // Hash the password before inserting
     bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
       if (err) {
         console.error("Error hashing the password:", err.message);
         return;
       }
 
-      // Insert the customer into the CUSTOMERS table
       db.run(
-        `INSERT INTO CUSTOMERS (Fname, Lname, Phone, Email) VALUES (?, ?, ?, ?)`,
-        [fname, lname, phone, email],
+        `INSERT INTO Users (Username, Email, Password, UserType) VALUES (?, ?, ?, 'Employee')`,
+        [username, email, hashedPassword],
         function (err) {
           if (err) {
-            console.error("Error inserting customer:", err.message);
+            console.error("Error inserting user:", err.message);
             return;
           }
 
-          // Get the newly inserted CustomerID
-          const customerId = this.lastID;
+          const userId = this.lastID;
 
-          // Insert the user into the USERS table with hashed password
           db.run(
-            `INSERT INTO USERS (Username, Email, Password, UserType, CustomerID) VALUES (?, ?, ?, 'customer', ?)`,
-            [email, email, hashedPassword, customerId],
+            `INSERT INTO Employees (UserID, Fname, Lname, Phone, Gender, DOB, Role, HireDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [userId, fname, lname, phone, Gender, DOB, role, hireDate],
             (err) => {
               if (err) {
-                console.error("Error inserting user:", err.message);
+                console.error("Error inserting employee:", err.message);
               } else {
                 console.log(
-                  `Customer ${fname} ${lname} registered successfully!`
+                  `Employee ${fname} ${lname} registered successfully!`
                 );
               }
             }
@@ -344,40 +350,37 @@ const insertMockUsers = () => {
     });
   });
 
-  // Insert mock employees
-  mockEmployees.forEach((employee) => {
-    const { fname, lname, role, hireDate, dob, email, password } = employee;
+  // Insert mock customers
+  mockCustomers.forEach((customer) => {
+    const { fname, lname, phone, Gender, DOB, username, email, password } =
+      customer;
 
-    // Hash the password before inserting
     bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
       if (err) {
         console.error("Error hashing the password:", err.message);
         return;
       }
 
-      // Insert the employee into the EMPLOYEES table
       db.run(
-        `INSERT INTO EMPLOYEES (Fname, Lname, Role, HireDate, DOB) VALUES (?, ?, ?, ?, ?)`,
-        [fname, lname, role, hireDate, dob],
+        `INSERT INTO Users (Username, Email, Password, UserType) VALUES (?, ?, ?, 'Customer')`,
+        [username, email, hashedPassword],
         function (err) {
           if (err) {
-            console.error("Error inserting employee:", err.message);
+            console.error("Error inserting user:", err.message);
             return;
           }
 
-          // Get the newly inserted EmployeeID
-          const employeeId = this.lastID;
+          const userId = this.lastID;
 
-          // Insert the user into the USERS table with hashed password
           db.run(
-            `INSERT INTO USERS (Username, Email, Password, UserType, EmployeeID) VALUES (?, ?, ?, 'employee', ?)`,
-            [email, email, hashedPassword, employeeId],
+            `INSERT INTO Customers (UserID, Fname, Lname, Phone, Gender, DOB) VALUES (?, ?, ?, ?, ?, ?)`,
+            [userId, fname, lname, phone, Gender, DOB],
             (err) => {
               if (err) {
-                console.error("Error inserting user:", err.message);
+                console.error("Error inserting customer:", err.message);
               } else {
                 console.log(
-                  `Employee ${fname} ${lname} registered successfully!`
+                  `Customer ${fname} ${lname} registered successfully!`
                 );
               }
             }
