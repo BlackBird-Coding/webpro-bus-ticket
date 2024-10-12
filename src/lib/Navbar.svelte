@@ -55,7 +55,7 @@
             >หน้าแรก</a
           >
         </li>
-        <UserAuthCheck role="customer">
+        <UserAuthCheck requiredUserType="customer">
           <li class="max-lg:border-b max-lg:py-3 px-3">
             <a
               href="/booking/find"
@@ -71,7 +71,7 @@
             >
           </li>
         </UserAuthCheck>
-        <UserAuthCheck role="employee">
+        <UserAuthCheck requiredUserType="employee">
           <li class="max-lg:border-b max-lg:py-3 px-3">
             <a
               href="/ManageBus_Emp"
