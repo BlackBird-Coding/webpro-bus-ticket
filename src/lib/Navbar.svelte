@@ -1,6 +1,8 @@
 <script lang="ts">
   import UserAuthCheck from "@/lib/components/UserAuthCheck.svelte";
   import { userStore } from "@/lib/stores/userStore.svelte";
+  import { navigate } from "svelte-routing";
+  import Swal from "sweetalert2";
   import logo from "@/assets/logo.webp";
   async function handleLogout() {
     try {
