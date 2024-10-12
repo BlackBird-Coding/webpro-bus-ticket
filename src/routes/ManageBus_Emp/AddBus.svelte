@@ -178,7 +178,7 @@
 
         <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-5">
           <h2 class="text-base font-semibold leading-7 text-black mb-1">
-            พนักงานผู้รับผิดชอบ
+            พนักงานผู้รับผิดชอบ (หลัก)
           </h2>
 
           {#each inputs as input, index}
@@ -273,7 +273,7 @@
               </div>
             </div>
           {/each}
-
+          <!--
           <div class="sm:col-span-1">
             <button
               on:click={addInput}
@@ -297,7 +297,7 @@
               <span class="text-sm">เพิ่มพนักงาน</span>
             </button>
           </div>
-
+          -->
           <div class="col-span-full mb-6">
             <label
               for="about"

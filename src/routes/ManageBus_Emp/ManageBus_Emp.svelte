@@ -16,8 +16,8 @@
     let tripdata = [];
 
     // Function to navigate to the second page with the ID passed in the URL
-    function goToPage(id) {
-        navigate(`/EditBus?id=${id}`, { replace: true }); // Pass the button ID as a query parameter
+    function goToPage(id, mode) {
+        navigate(`/EditBus?id=${id}&mode=${mode}`, { replace: true }); // Pass the button ID as a query parameter
     }
 
     fetch(`/api/ManageBus_Emp`, {
@@ -210,13 +210,14 @@
                     >
                     <TableBodyCell>{trip.Capacity}</TableBodyCell>
                     <TableBodyCell>
-                        <a class="text-blue-500 hover:underline" href="/EditBus"
-                            >คลิก</a
+                        <button
+                            on:click={() => goToPage(trip.RouteID, 'view')}
+                            class="text-blue-500 hover:underline">คลิก</button
                         >
                     </TableBodyCell>
                     <TableBodyCell class="flex gap-5">
                         <button
-                            on:click={() => goToPage(trip.RouteID)}
+                            on:click={() => goToPage(trip.RouteID, 'edit')}
                             class="text-blue-500 hover:underline">แก้ไข</button
                         >
                         <button

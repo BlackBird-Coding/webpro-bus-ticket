@@ -10,101 +10,116 @@ let db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.serialize(() => {
-  // Create ROUTES table
-  db.run(`CREATE TABLE IF NOT EXISTS ROUTES (
-      RouteID INTEGER PRIMARY KEY,
-      RouteName TEXT NOT NULL,
-      Origin INTEGER NOT NULL,
-      Destination INTEGER NOT NULL,
-      Distance DECIMAL NOT NULL,
-      FOREIGN KEY (Origin) REFERENCES BUS_STOPS(BusStopID),
-      FOREIGN KEY (Destination) REFERENCES BUS_STOPS(BusStopID)
-    );`);
+  // Create USERS table
+  db.run(`CREATE TABLE IF NOT EXISTS Users (
+  UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+  UserCode TEXT GENERATED ALWAYS AS (printf('U%03d', UserID)),
+  Username VARCHAR(50) NOT NULL UNIQUE,
+  Email VARCHAR(100) NOT NULL UNIQUE,
+  Password VARCHAR(50) NOT NULL,
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UserType VARCHAR(10) NOT NULL CHECK (UserType IN ('Customer', 'Employee'))
+);`);
 
   // Create BUS_STOPS table
-  db.run(`CREATE TABLE IF NOT EXISTS BUS_STOPS (
-      BusStopID INTEGER PRIMARY KEY,
-      Name TEXT NOT NULL,
-      Province TEXT NOT NULL,
-      Latitude DECIMAL NOT NULL,
-      Longitude DECIMAL NOT NULL
-    );`);
+  db.run(`CREATE TABLE IF NOT EXISTS BusStops (
+  BusStopID INTEGER PRIMARY KEY AUTOINCREMENT,
+  BusStopCode TEXT GENERATED ALWAYS AS (printf('S%03d', BusStopID)),
+  Name VARCHAR(100) NOT NULL,
+  Address VARCHAR(200) NOT NULL,
+  Subprovince VARCHAR(100) NOT NULL,
+  Province VARCHAR(100) NOT NULL,
+  Latitude DECIMAL(9,6) NOT NULL,
+  Longitude DECIMAL(9,6) NOT NULL
+);`);
+
+  // Create ROUTES table
+  db.run(`CREATE TABLE IF NOT EXISTS Routes (
+  RouteID INTEGER PRIMARY KEY AUTOINCREMENT,
+  RouteCode TEXT GENERATED ALWAYS AS (printf('R%03d', RouteID)),
+  RouteName VARCHAR(100) NOT NULL,
+  Origin INTEGER NOT NULL,
+  Destination INTEGER NOT NULL,
+  Distance DECIMAL(5,2) NOT NULL,
+  FOREIGN KEY (Origin) REFERENCES BusStops(BusStopID),
+  FOREIGN KEY (Destination) REFERENCES BusStops(BusStopID)
+);`);
 
   // Create BUSES table
-  db.run(`CREATE TABLE IF NOT EXISTS BUSES (
-      BusID INTEGER PRIMARY KEY,
-      BusName TEXT NOT NULL,
-      Capacity INTEGER NOT NULL,
-      Type TEXT NOT NULL
-    );`);
+  db.run(`CREATE TABLE IF NOT EXISTS Buses (
+  BusID INTEGER PRIMARY KEY AUTOINCREMENT,
+  BusCode TEXT GENERATED ALWAYS AS (printf('B%03d', BusID)),
+  BusName VARCHAR(50) NOT NULL,
+  Capacity INT NOT NULL,
+  Type VARCHAR(50) NOT NULL
+);`);
 
   // Create EMPLOYEES table
-  db.run(`CREATE TABLE IF NOT EXISTS EMPLOYEES (
-      EmployeeID INTEGER PRIMARY KEY,
-      Fname TEXT NOT NULL,
-      Lname TEXT NOT NULL,
-      Role TEXT NOT NULL,
-      HireDate DATE NOT NULL,
-      DOB DATE NOT NULL
-    );`);
+  db.run(`CREATE TABLE IF NOT EXISTS Employees (
+  UserID INTEGER PRIMARY KEY,
+  EmployeeCode TEXT GENERATED ALWAYS AS (printf('E%03d', UserID)),
+  Fname VARCHAR(50) NOT NULL,
+  Lname VARCHAR(50) NOT NULL,
+  Phone VARCHAR(15) NOT NULL,
+  Gender VARCHAR(4) NOT NULL,
+  DOB DATE NOT NULL,
+  Role VARCHAR(50) NOT NULL,
+  HireDate DATE NOT NULL,
+  FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+);`);
 
   // Create SCHEDULES table
-  db.run(`CREATE TABLE IF NOT EXISTS SCHEDULES (
-      ScheduleID INTEGER PRIMARY KEY,
-      RouteID INTEGER NOT NULL,
-      BusID INTEGER NOT NULL,
-      EmployeeID INTEGER NOT NULL,
-      DepartureTime DATETIME NOT NULL,
-      ArrivalTime DATETIME NOT NULL,
-      Description TEXT,
-      Image TEXT,
-      FOREIGN KEY (RouteID) REFERENCES ROUTES(RouteID),
-      FOREIGN KEY (BusID) REFERENCES BUSES(BusID),
-      FOREIGN KEY (EmployeeID) REFERENCES EMPLOYEES(EmployeeID)
-    );`);
+  db.run(`CREATE TABLE IF NOT EXISTS Schedules (
+  ScheduleID INTEGER PRIMARY KEY AUTOINCREMENT,
+  ScheduleCode TEXT GENERATED ALWAYS AS (printf('H%03d', ScheduleID)),
+  RouteID INTEGER NOT NULL,
+  BusID INTEGER NOT NULL,
+  EmployeeID INTEGER NOT NULL,
+  DepartureTime DATETIME NOT NULL,
+  ArrivalTime DATETIME NOT NULL,
+  Price DECIMAL(10,2) NOT NULL,
+  Description TEXT NOT NULL,
+  Image TEXT NOT NULL,
+  FOREIGN KEY (RouteID) REFERENCES Routes(RouteID) ON DELETE CASCADE,
+  FOREIGN KEY (BusID) REFERENCES Buses(BusID) ON DELETE CASCADE,
+  FOREIGN KEY (EmployeeID) REFERENCES Employees(UserID) ON DELETE CASCADE
+);`);
 
   // Create CUSTOMERS table
-  db.run(`CREATE TABLE IF NOT EXISTS CUSTOMERS (
-      CustomerID INTEGER PRIMARY KEY,
-      Fname TEXT NOT NULL,
-      Lname TEXT NOT NULL,
-      Phone TEXT NOT NULL,
-      Email TEXT NOT NULL
-    );`);
+  db.run(`CREATE TABLE IF NOT EXISTS Customers (
+  UserID INTEGER PRIMARY KEY,
+  CustomerCode TEXT GENERATED ALWAYS AS (printf('C%03d', UserID)),
+  Fname VARCHAR(50) NOT NULL,
+  Lname VARCHAR(50) NOT NULL,
+  Gender VARCHAR(4) NOT NULL,
+  DOB DATE NOT NULL,
+  Phone VARCHAR(15) NOT NULL,
+  FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+);`);
 
   // Create BOOKINGS table
-  db.run(`CREATE TABLE IF NOT EXISTS BOOKINGS (
-      BookingID INTEGER PRIMARY KEY,
-      CustomerID INTEGER NOT NULL,
-      ScheduleID INTEGER NOT NULL,
-      BookingDate DATE NOT NULL,
-      SeatNumber TEXT NOT NULL,
-      Status TEXT NOT NULL,
-      FOREIGN KEY (CustomerID) REFERENCES CUSTOMERS(CustomerID),
-      FOREIGN KEY (ScheduleID) REFERENCES SCHEDULES(ScheduleID)
-    );`);
+  db.run(`CREATE TABLE IF NOT EXISTS Bookings (
+  BookingID INTEGER PRIMARY KEY AUTOINCREMENT,
+  BookingCode TEXT GENERATED ALWAYS AS (printf('K%03d', BookingID)),
+  CustomerID INTEGER NOT NULL,
+  ScheduleID INTEGER NOT NULL,
+  BookingDate DATETIME NOT NULL,
+  SeatNumber INT NOT NULL,
+  Status VARCHAR(50) NOT NULL,
+  FOREIGN KEY (CustomerID) REFERENCES Customers(UserID) ON DELETE CASCADE,
+  FOREIGN KEY (ScheduleID) REFERENCES Schedules(ScheduleID) ON DELETE CASCADE
+);`);
 
   // Create PAYMENTS table
-  db.run(`CREATE TABLE IF NOT EXISTS PAYMENTS (
-      PaymentID INTEGER PRIMARY KEY,
-      BookingID INTEGER NOT NULL,
-      Amount DECIMAL NOT NULL,
-      PaymentDate DATE NOT NULL,
-      PaymentMethod TEXT NOT NULL,
-      FOREIGN KEY (BookingID) REFERENCES BOOKINGS(BookingID)
-    );`);
-
-  db.run(`CREATE TABLE IF NOT EXISTS USERS (
-        UserID INTEGER PRIMARY KEY,
-        Username TEXT NOT NULL UNIQUE,
-        Email TEXT NOT NULL UNIQUE,
-        Password TEXT NOT NULL,
-        UserType TEXT NOT NULL, -- customer or employee
-        CustomerID INTEGER,
-        EmployeeID INTEGER,
-        FOREIGN KEY (CustomerID) REFERENCES CUSTOMERS(CustomerID),
-        FOREIGN KEY (EmployeeID) REFERENCES EMPLOYEES(EmployeeID)
-      );`);
+  db.run(`CREATE TABLE IF NOT EXISTS Payment (
+  PaymentID INTEGER PRIMARY KEY AUTOINCREMENT,
+  PaymentCode TEXT GENERATED ALWAYS AS (printf('P%03d', PaymentID)),
+  BookingID INTEGER NOT NULL,
+  Amount DECIMAL(10,2) NOT NULL,
+  PaymentTime DATETIME NOT NULL,
+  PaymentMethod VARCHAR(50) NOT NULL,
+  FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID) ON DELETE CASCADE
+);`);
 
   console.log("Tables created successfully.");
 });

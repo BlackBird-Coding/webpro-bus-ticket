@@ -9,6 +9,7 @@
     let id = null;
     let tripdata = [];
     let isDisabled = true; // เริ่มต้นไม่ disabled
+    let mode = null;
 
     function toggleDisabled() {
         isDisabled = !isDisabled;
@@ -16,36 +17,36 @@
 
     function cancel() {
         Swal.fire({
-                title: "คุณต้องการละทิ้งการแก้ไขใช่หรือไม่?",
-                showDenyButton: true,
-                confirmButtonText: "ใช่",
-                denyButtonText: `ไม่`
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    toggleDisabled()
-                }
-            });
+            title: "คุณต้องการละทิ้งการแก้ไขใช่หรือไม่?",
+            showDenyButton: true,
+            confirmButtonText: "ใช่",
+            denyButtonText: `ไม่`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                toggleDisabled();
+            }
+        });
     }
 
     function saveEdit() {
         Swal.fire({
-                title: "คุณต้องการบันทึกการแก้ไขหรือไม่?",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: "บันทึก",
-                denyButtonText: `ไม่บันทึก`,
-                cancelButtonText: "ยกเลิก"
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    Swal.fire("บันทึกเรียบร้อย!", "", "success");
-                    toggleDisabled()
-                } else if (result.isDenied) {
-                    Swal.fire("การแก้ไขถูกยกเลิก", "", "info");
-                    toggleDisabled()
-                }
-            });
+            title: "คุณต้องการบันทึกการแก้ไขหรือไม่?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "บันทึก",
+            denyButtonText: `ไม่บันทึก`,
+            cancelButtonText: "ยกเลิก",
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                Swal.fire("บันทึกเรียบร้อย!", "", "success");
+                toggleDisabled();
+            } else if (result.isDenied) {
+                Swal.fire("การแก้ไขถูกยกเลิก", "", "info");
+                toggleDisabled();
+            }
+        });
     }
 
     function addInput() {
@@ -67,6 +68,13 @@
     onMount(() => {
         const urlParams = new URLSearchParams(window.location.search);
         id = urlParams.get("id"); // Get the "id" from the query string
+        mode = urlParams.get("mode");
+
+        if (mode == "edit") {
+            isDisabled = false;
+        } else if (mode == "view") {
+            isDisabled = true;
+        }
 
         fetch(`/api/EditBus`, {
             method: "POST",
@@ -143,13 +151,13 @@
             <div class="border-b border-gray-900/10 pb-12">
                 <div class="flex flex-wrap items-center justify-between w-full">
                     {#if isDisabled}
-                    <div>
-                        <h1
-                            class="text-2xl font-semibold leading-7 text-gray-900"
-                        >
-                            {tripdata.RouteID} - {tripdata.RouteName}
-                        </h1>
-                    </div>
+                        <div>
+                            <h1
+                                class="text-2xl font-semibold leading-7 text-gray-900"
+                            >
+                                {tripdata.RouteID} - {tripdata.RouteName}
+                            </h1>
+                        </div>
                         <div class="flex items-center gap-3">
                             <Button
                                 on:click={toggleDisabled}
@@ -212,29 +220,29 @@
                             >
                                 ลบเที่ยวรถ
                             </Tooltip>
-                        </div> 
+                        </div>
                     {/if}
                 </div>
 
                 {#if !isDisabled}
-                <div class="sm:col-span-6">
-                    <label
-                        for="name"
-                        class="block text-base font-medium leading-6 text-gray-900"
-                        >ชื่อเที่ยวรถ</label
-                    >
-                    <div class="mt-2">
-                        <input
-                            disabled={isDisabled}
-                            value={tripdata.RouteName}
-                            type="text"
-                            name="name"
-                            id="name"
-                            autocomplete="given-name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        />
+                    <div class="sm:col-span-6">
+                        <label
+                            for="name"
+                            class="block text-base font-medium leading-6 text-gray-900"
+                            >ชื่อเที่ยวรถ</label
+                        >
+                        <div class="mt-2">
+                            <input
+                                disabled={isDisabled}
+                                value={tripdata.RouteName}
+                                type="text"
+                                name="name"
+                                id="name"
+                                autocomplete="given-name"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                        </div>
                     </div>
-                </div>
                 {/if}
 
                 <div
@@ -552,7 +560,7 @@
                             </div>
                         </div>
                     {/each}
-
+                    <!--
                     <div class="sm:col-span-1">
                         <button
                             on:click={addInput}
@@ -576,6 +584,7 @@
                             <span class="text-sm">เพิ่มพนักงาน</span>
                         </button>
                     </div>
+                -->
 
                     <div class="col-span-full mb-6">
                         <label
