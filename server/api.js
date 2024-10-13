@@ -9,7 +9,7 @@ import {
   historyEmp,
   getBusStops,
   getEmployees,
-  historyCus
+  historyCus,
 } from "./service.js";
 const router = express.Router();
 
@@ -57,7 +57,7 @@ router.get("/routes", (req, res) => {
 });
 
 router.get("/user", (req, res) => {
-  res.json({ user: req.session.user });
+  res.json({ user: req.session.user } || {});
 });
 
 router.get("/ManageBus_Emp", (req, res) => {
@@ -122,7 +122,7 @@ router.get("/employees", (req, res) => {
 });
 
 router.get("/historyCus", (req, res) => {
-  console.log('seesion', req.session)
+  console.log("seesion", req.session);
   historyCus(req.session.user.details.userID)
     .then((histories) => {
       res.json({ histories });
@@ -132,8 +132,8 @@ router.get("/historyCus", (req, res) => {
     });
 });
 
-router.get('/SaveEditBus', (req,res) => {
-  console.log('get', req.body)
+router.get("/SaveEditBus", (req, res) => {
+  console.log("get", req.body);
   historyCus(req.body)
     .then((histories) => {
       res.json({ histories });
@@ -142,6 +142,5 @@ router.get('/SaveEditBus', (req,res) => {
       res.status(500).json({ error });
     });
 });
-
 
 export default router;

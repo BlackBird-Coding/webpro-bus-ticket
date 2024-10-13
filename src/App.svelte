@@ -20,12 +20,20 @@
   import Navbar from "./lib/Navbar.svelte";
   import Footer from "./lib/Footer.svelte";
   import Reschedule from "./routes/BookingHistory/Reschedule.svelte";
+
+  // import { onMount } from "svelte";
+  // import { userStore } from "./lib/stores/userStore.svelte";
+
+  // onMount(() => {
+  //   userStore.checkAuth();
+  //   console.log(userStore.role);
+  // });
 </script>
 
 <body class="flex min-h-screen flex-col" use:links>
   <Navbar></Navbar>
   <main class="flex-1">
-    <Router >
+    <Router>
       <Route path="/howto" component={Howto} />
       <Route path="/register" component={Register} />
       <Route path="/history" component={History} />
@@ -45,6 +53,5 @@
       <Route path="/reschedule" component={Reschedule} />
     </Router>
   </main>
-<Footer></Footer>
+  <Footer></Footer>
 </body>
-

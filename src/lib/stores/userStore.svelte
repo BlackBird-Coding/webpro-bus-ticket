@@ -14,8 +14,8 @@
       setUser: (userData) => {
         set({
           isLoggedIn: true,
-          userType: userData?.userType || "",
-          role: userData?.role || "",
+          userType: userData.userType || "",
+          role: userData.role || "",
           isLoading: false,
         });
       },
@@ -36,12 +36,22 @@
           const response = await fetch("/api/user");
           if (!response.ok) throw new Error("Auth check failed");
           const userData = await response.json();
-          set({
-            isLoggedIn: true,
-            userType: userData.userType || "",
-            role: userData.role || "",
-            isLoading: false,
-          });
+          if (userData && Object.keys(userData).length > 0) {
+            set({
+              isLoggedIn: true,
+              userType: userData.user.userType || "",
+              role: userData.user.role || "",
+              isLoading: false,
+            });
+          } else {
+            // If userData is empty, consider the user not logged in
+            set({
+              isLoggedIn: false,
+              userType: "",
+              role: "",
+              isLoading: false,
+            });
+          }
         } catch (error) {
           console.error("Error checking auth:", error);
           set({
