@@ -23,6 +23,7 @@
     "express-session": "^1.18.1",
     "html2pdf.js": "^0.10.2",
     "leaflet": "^1.9.4",
+    "lucide-svelte": "^0.452.0",
     "qrcode": "^1.5.4",
     "sirv": "^2.0.4",
     "sqlite3": "^5.1.7",

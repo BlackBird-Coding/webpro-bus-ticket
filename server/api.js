@@ -10,6 +10,7 @@ import {
   getBusStops,
   getEmployees,
   historyCus,
+  getTrips,
 } from "./service.js";
 const router = express.Router();
 
@@ -137,6 +138,17 @@ router.get("/SaveEditBus", (req, res) => {
   historyCus(req.body)
     .then((histories) => {
       res.json({ histories });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.get("/trips", (req, res) => {
+  const { routeId, date } = req.query;
+  getTrips(routeId, date)
+    .then((trips) => {
+      res.json({ trips });
     })
     .catch((error) => {
       res.status(500).json({ error });

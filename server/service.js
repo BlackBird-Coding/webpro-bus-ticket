@@ -276,7 +276,7 @@ const getBusStops = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(BusStops)
+        console.log(BusStops);
         resolve(BusStops);
       }
     );
@@ -352,11 +352,74 @@ const getEmployees = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(row)
+        console.log(row);
         resolve(row);
       }
     );
   });
-}
+};
 
-export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp, getBusStops, getEmployees, historyCus};
+const getTrips = (routeId, date) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT S.*, R.RouteName
+      FROM SCHEDULES S
+      JOIN ROUTES R ON S.RouteID = R.RouteID
+      WHERE S.RouteID = ? AND DATE(S.DepartureTime) = ?`,
+      [routeId, new Date(date).toISOString().split("T")[0]], // Format date as YYYY-MM-DD
+      (err, trips) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+
+        // For each trip, fetch available seat count
+        const tripPromises = trips.map((trip) => {
+          return new Promise((resolve, reject) => {
+            db.get(
+              `SELECT COUNT(*) as AvailableSeatCount
+              FROM Seats
+              WHERE SeatID NOT IN (
+                SELECT SeatID
+                FROM Bookings
+                WHERE ScheduleID = ?
+              )`,
+              [trip.ScheduleID],
+              (err, result) => {
+                if (err) {
+                  console.error(
+                    "Error querying available seat count:",
+                    err.message
+                  );
+                  return reject("Error querying available seat count.");
+                }
+                // Attach the available seat count to the trip object
+                trip.AvailableSeat = result.AvailableSeatCount;
+                resolve(trip);
+              }
+            );
+          });
+        });
+
+        // Resolve all trips with available seat counts
+        Promise.all(tripPromises)
+          .then((tripsWithSeats) => resolve(tripsWithSeats))
+          .catch((err) => reject(err));
+      }
+    );
+  });
+};
+
+export {
+  registerCustomer,
+  login,
+  createEmployee,
+  getRoutes,
+  deleteRoute,
+  getOneRoute,
+  historyEmp,
+  getBusStops,
+  getEmployees,
+  historyCus,
+  getTrips,
+};
