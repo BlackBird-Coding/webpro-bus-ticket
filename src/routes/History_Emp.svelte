@@ -90,7 +90,9 @@
             <TableHeadCell>ประเภทรถ</TableHeadCell>
             <TableHeadCell>เลขที่นั่ง</TableHeadCell>
             <TableHeadCell>สถานะการจอง</TableHeadCell>
-            <TableHeadCell>Action</TableHeadCell>
+            <TableHeadCell>
+                <span class="sr-only">Action</span>
+            </TableHeadCell>
         </TableHead>
         <TableBody>
             {#each history as data}

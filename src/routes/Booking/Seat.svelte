@@ -113,7 +113,7 @@
         </div>
         <div class="flex justify-center my-5 gap-10">
             <a class="bg-gray-500 text-2xl text-white px-3 py-1 rounded-md hover:bg-orange-600" href="/trip">ย้อนกลับ</a>
-            <a class="bg-orange-500 text-2xl text-white px-3 py-1 rounded-md hover:bg-orange-600" href="/payment">ชำระเงิน</a>
+            <a class="bg-orange-500 text-2xl text-white px-3 py-1 rounded-md hover:bg-orange-600" href="/payment">ดำเนินการต่อ</a>
         </div>
     </div>
 </div>

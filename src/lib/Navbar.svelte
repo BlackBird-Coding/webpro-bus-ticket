@@ -41,7 +41,7 @@
 >
   <div class="flex flex-wrap items-center gap-5 w-full">
     <div>
-      <p class="text-xl text-white">พิมพ์มาดาทัวร์</p>
+      <p class="font-semibold text-xl text-white">พิมพ์มาดาทัวร์</p>
     </div>
 
     <div
