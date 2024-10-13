@@ -1,9 +1,11 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, createEventDispatcher } from "svelte";
     import { Tooltip, Button } from "flowbite-svelte";
     import Swal from "sweetalert2";
     import Trip from "../Booking/Trip.svelte";
     import { Route } from "svelte-routing";
+    import { Upload } from "lucide-svelte";
+    import { base64 } from "@sveu/browser"
 
     let inputs = [{}]; // Array to store input values
     let id = null;
@@ -11,26 +13,65 @@
     let isDisabled = true; // เริ่มต้นไม่ disabled
     let mode = null;
     let BusStops = [];
+    let Buses = [];
 
     let departureDateTime = null;
     let departureDate = null;
     let departureTime = null;
+
     let arrivalDateTime = null;
     let arrivalDate = null;
     let arrivalTime = null;
 
-    let userCodes = [];
+    let employees = [];
+    let dataToSend = [];
 
-    fetch('/api/employees',{
-        method:"GET",
-    }).then((res) => {
+    let fileInput;
+    let previewImage = null;
+
+  const dispatch = createEventDispatcher();
+
+  function handleFileChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage = e.target.result;
+        dispatch('change', { image: e.target.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function handleDragOver(event) {
+    event.preventDefault();
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage = e.target.result;
+        dispatch('change', { image: e.target.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+    fetch("/api/employees", {
+        method: "GET",
+    })
+        .then((res) => {
             if (!res.ok) {
                 throw new Error("Network response was not ok");
             }
             return res.json();
         })
         .then((data) => {
-            userCodes = data.id
+            console.log(data);
+            employees = data.employees;
         })
         .catch((error) => {
             console.error(
@@ -39,8 +80,25 @@
             );
         });
 
-
-    
+    fetch("/api/getBuses", {
+        method: "GET",
+    })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return res.json();
+        })
+        .then((data) => {
+            console.log(data);
+            Buses = data.Buses;
+        })
+        .catch((error) => {
+            console.error(
+                "There was a problem with the fetch operation:",
+                error,
+            );
+        });
 
     fetch(`/api/BusStops`, {
         method: "GET",
@@ -53,7 +111,7 @@
         })
         .then((data) => {
             BusStops = data.BusStops;
-            console.log(BusStops);
+            console.log(data);
         })
         .catch((error) => {
             console.error(
@@ -80,6 +138,55 @@
         });
     }
 
+    function saveChanges() {
+        // Prepare the data to be sent
+        dataToSend = {
+            ScheduleID: tripdata.ScheduleID,
+            RouteID: tripdata.RouteID,
+            RouteName: tripdata.RouteName,
+            BusID: tripdata.BusID,
+            Price: tripdata.Price,
+            EmployeeID: tripdata.EmployeeID,
+            Origin: tripdata.Origin,
+            Destination: tripdata.Destination,
+            DepartureTime: new Date(
+                departureDate + " " + departureTime + ".00",
+            ),
+            ArrivalTime: new Date(arrivalDate + " " + arrivalTime + ".00"),
+            DriverID: tripdata.DriverID,
+            Description: tripdata.Description,
+            Image: tripdata.Image
+        };
+        console.log("datatosent:", JSON.stringify(dataToSend));
+        console.log("image", tripdata.Image)
+        console.log("image", base64(tripdata.Image))
+
+        fetch(`/api/SaveEditBus`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataToSend),
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    return res.text().then((text) => {
+                        throw new Error(
+                            `HTTP error! status: ${res.status}, body: ${text}`,
+                        );
+                    });
+                }
+                return res.json();
+            })
+            .then((data) => {
+                console.log("Successfully saved changes:", data);
+                // Handle successful save (e.g., show a success message to the user)
+            })
+            .catch((error) => {
+                console.error("SaveEditBus error:", error);
+            });
+    }
+
     function saveEdit() {
         Swal.fire({
             title: "คุณต้องการบันทึกการแก้ไขหรือไม่?",
@@ -91,6 +198,8 @@
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
+                tripdata.Image = previewImage;
+                saveChanges();
                 Swal.fire("บันทึกเรียบร้อย!", "", "success");
                 toggleDisabled();
             } else if (result.isDenied) {
@@ -143,6 +252,8 @@
             .then((data) => {
                 console.log("fetch", data);
                 tripdata = data.routes[0];
+
+                previewImage = tripdata.Image;
 
                 departureDateTime = new Date(tripdata.DepartureTime);
                 departureDate = departureDateTime.toISOString().split("T")[0];
@@ -296,7 +407,7 @@
                         <div class="mt-2">
                             <input
                                 disabled={isDisabled}
-                                value={tripdata.RouteName}
+                                bind:value={tripdata.RouteName}
                                 type="text"
                                 name="name"
                                 id="name"
@@ -308,72 +419,94 @@
                 {/if}
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-4"
+                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6"
                 >
-                    <div class="sm:col-span-2">
-                        <label
-                            for="type"
-                            class="block text-base font-medium leading-6 text-gray-900"
-                            >ประเภทรถ</label
-                        >
-                        <div class="mt-2">
-                            {#if isDisabled}
+                    {#if !isDisabled}
+                        {#each inputs as input, index}
+                            <div class="sm:col-span-4 sm:col-start-1">
+                                <label
+                                    for="type"
+                                    class="block text-base font-medium leading-6 text-gray-900"
+                                    >รถบัส</label
+                                >
+                                <div class="mt-2">
+                                    <select
+                                        bind:value={tripdata.BusID}
+                                        disabled={isDisabled}
+                                        name="bus"
+                                        id="bus"
+                                        autocomplete="address-level2"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    >
+                                        {#each Buses as data}
+                                            <option value={data.BusID}>
+                                                {data.BusCode}: {data.Type}
+                                                {data.Capacity} ที่นั่ง
+                                            </option>
+                                        {/each}
+                                    </select>
+                                </div>
+                            </div>
+                        {/each}
+                    {:else}
+                        <div class="sm:col-span-2">
+                            <label
+                                for="type"
+                                class="block text-base font-medium leading-6 text-gray-900"
+                                >ประเภทรถ</label
+                            >
+                            <div class="mt-2">
                                 <input
                                     disabled
-                                    value={tripdata.Type}
+                                    bind:value={tripdata.Type}
                                     type="text"
                                     name="type"
                                     id="type"
                                     autocomplete="given-name"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
-                            {:else}
-                                <select
-                                    id="countries"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                >
-                                    <option
-                                        value="vip"
-                                        selected={tripdata.Type === "VIP"}
-                                        >VIP</option
-                                    >
-                                    <option
-                                        value="1floorAir"
-                                        selected={tripdata.Type ===
-                                            "ปรับอากาศ 1 ชั้น"}
-                                        >ปรับอากาศ 1 ชั้น</option
-                                    >
-                                    <option
-                                        value="2floorAir"
-                                        selected={tripdata.Type ===
-                                            "ปรับอากาศ 2 ชั้น"}
-                                        >ปรับอากาศ 2 ชั้น</option
-                                    >
-                                </select>
-                            {/if}
+                            </div>
                         </div>
-                    </div>
+                        <div class="sm:col-span-2">
+                            <label
+                                for="capacity"
+                                class="block text-base font-medium leading-6 text-gray-900"
+                                >จำนวนที่นั่ง</label
+                            >
+                            <div class="mt-2">
+                                <input
+                                    disabled={isDisabled}
+                                    value={tripdata.Capacity}
+                                    type="text"
+                                    name="capacity"
+                                    id="capacity"
+                                    autocomplete="given-name"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                            </div>
+                        </div>
+                    {/if}
 
                     <div class="sm:col-span-2">
                         <label
-                            for="capacity"
+                            for="price"
                             class="block text-base font-medium leading-6 text-gray-900"
-                            >จำนวนที่นั่ง</label
+                            >ราคา</label
                         >
                         <div class="mt-2">
                             <input
                                 disabled={isDisabled}
-                                value={tripdata.Capacity}
+                                bind:value={tripdata.Price}
                                 type="text"
-                                name="capacity"
-                                id="capacity"
+                                name="price"
+                                id="price"
                                 autocomplete="given-name"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
 
-                    <div class="sm:col-span-2">
+                    <div class="sm:col-span-3">
                         <label
                             for="origin-bus-stop"
                             class="block text-base font-medium leading-6 text-gray-900"
@@ -399,12 +532,11 @@
                                 <select
                                     id="origin-bus-stop"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    bind:value={tripdata.Origin}
                                 >
                                     {#each BusStops as data}
-                                        <option
-                                            value={data.Name}
-                                            selected={tripdata.OriginBusStop ===
-                                                data.Name}>{data.Name}</option
+                                        <option value={data.BusStopID}
+                                            >{data.Name}</option
                                         >
                                     {/each}
                                 </select>
@@ -412,7 +544,73 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-2">
+                    <div class="sm:col-span-3">
+                        <label
+                            for="departure-time"
+                            class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
+                        >
+                            เวลาออกเดินทาง
+                        </label>
+                        <div class="flex space-x-4">
+                            <div class="relative w-1/2">
+                                <input
+                                    disabled={isDisabled}
+                                    type="date"
+                                    bind:value={arrivalDate}
+                                    id="departure-date"
+                                    class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                />
+                                <div
+                                    class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+                                >
+                                    <svg
+                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                            clip-rule="evenodd"
+                                        ></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="relative w-1/2">
+                                <input
+                                    disabled={isDisabled}
+                                    bind:value={arrivalTime}
+                                    type="time"
+                                    id="departure-time"
+                                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    min="09:00"
+                                    max="18:00"
+                                    required
+                                />
+
+                                <div
+                                    class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none"
+                                >
+                                    <svg
+                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
                         <label
                             for="destination-bus-stop"
                             class="block text-base font-medium leading-6 text-gray-900"
@@ -439,12 +637,11 @@
                                 <select
                                     id="destination-bus-stop"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    bind:value={tripdata.Destination}
                                 >
                                     {#each BusStops as data}
-                                        <option
-                                            value={data.Name}
-                                            selected={tripdata.DestinationBusStop ===
-                                                data.Name}>{data.Name}</option
+                                        <option value={data.BusStopID}
+                                            >{data.Name}</option
                                         >
                                     {/each}
                                 </select>
@@ -452,21 +649,21 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-2">
+                    <div class="sm:col-span-3">
                         <label
                             for="departure-time"
                             class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
                         >
-                            เวลาออกเดินทาง
+                            เวลาถึงปลายทาง
                         </label>
                         <div class="flex space-x-4">
                             <div class="relative w-1/2">
                                 <input
-                                disabled={isDisabled}
                                     type="date"
-                                    value={arrivalDate}
+                                    bind:value={departureDate}
                                     id="departure-date"
-                                    class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    disabled={isDisabled}
                                 />
                                 <div
                                     class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
@@ -485,18 +682,16 @@
                                     </svg>
                                 </div>
                             </div>
+
                             <div class="relative w-1/2">
-                                    <input
+                                <input
                                     disabled={isDisabled}
-                                        value={arrivalTime}
-                                        type="time"
-                                        id="departure-time"
-                                        class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        min="09:00"
-                                        max="18:00"
-                                        required
-                                    />
-                            
+                                    bind:value={departureTime}
+                                    type="time"
+                                    id="departure-time"
+                                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    required
+                                />
                                 <div
                                     class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none"
                                 >
@@ -517,76 +712,10 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="sm:col-span-2">
-                        <label
-                            for="departure-time"
-                            class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-                        >
-                            เวลาถึงปลายทาง
-                        </label>
-                        <div class="flex space-x-4">
-                            
-                                <div class="relative w-1/2">
-                                    <input
-                                        type="date"
-                                        value={departureDate}
-                                        id="departure-date"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        disabled={isDisabled}
-                                    />
-                                    <div
-                                        class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-                                    >
-                                        <svg
-                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                                clip-rule="evenodd"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-
-                                <div class="relative w-1/2">
-                                    <input
-                                    disabled={isDisabled}
-                                        value={departureTime}
-                                        type="time"
-                                        id="departure-time"
-                                        class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        required
-                                    />
-                                    <div
-                                        class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none"
-                                    >
-                                        <svg
-                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                            aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                                clip-rule="evenodd"
-                                            />
-                                        </svg>
-                                    </div>
-                                </div>
-                        
-                        </div>
-                    </div>
                 </div>
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-4"
+                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-4"
                 >
                     <h2
                         class="text-base font-semibold leading-7 text-black mb-1"
@@ -595,83 +724,23 @@
                     </h2>
 
                     {#each inputs as input, index}
-                        <div class="sm:col-span-1 sm:col-start-1">
-                            <label
-                                for="empID"
-                                class="block text-sm font-medium leading-6 text-gray-900"
-                                >รหัสพนักงาน</label
-                            >
-                            <div class="mt-2">
+                        <div class="sm:col-span-4 sm:col-start-1">
+                            <div>
                                 <select
-                                    bind:value={tripdata.UserCode}
-                                    {isDisabled}
+                                    bind:value={tripdata.EmployeeID}
+                                    disabled={isDisabled}
                                     name="empID"
                                     id="empID"
                                     autocomplete="address-level2"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 >
-                                    <option value="">Select a User Code</option>
-                                    {#each userCodes as code}
-                                        <option value={code.UserCode}>{code.UserCode}</option>
+                                    {#each employees as employee}
+                                        <option value={employee.UserID}>
+                                            {employee.EmployeeCode} - {employee.Fname}
+                                            {employee.Lname} ({employee.Phone})
+                                        </option>
                                     {/each}
                                 </select>
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label
-                                for="emp-name"
-                                class="block text-sm font-medium leading-6 text-gray-900"
-                                >ชื่อจริง</label
-                            >
-                            <div class="mt-2">
-                                <input
-                                    value={tripdata.Fname}
-                                    disabled={isDisabled}
-                                    type="text"
-                                    name="emp-name"
-                                    id="emp-name"
-                                    autocomplete="address-level1"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label
-                                for="emp-lname"
-                                class="block text-sm font-medium leading-6 text-gray-900"
-                                >นามสกุล</label
-                            >
-                            <div class="mt-2">
-                                <input
-                                    value={tripdata.Lname}
-                                    disabled={isDisabled}
-                                    type="text"
-                                    name="emp-lname"
-                                    id="emp-lname"
-                                    autocomplete="postal-code"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label
-                                for="postal-code"
-                                class="block text-sm font-medium leading-6 text-gray-900"
-                                >เบอร์โทรศัพท์</label
-                            >
-                            <div class="mt-2">
-                                <input
-                                    value={tripdata.Phone}
-                                    disabled={isDisabled}
-                                    type="text"
-                                    name="postal-code"
-                                    id="postal-code"
-                                    autocomplete="postal-code"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
                             </div>
                         </div>
                     {/each}
@@ -709,7 +778,7 @@
                         >
                         <div class="mt-2">
                             <textarea
-                                value={tripdata.Description}
+                                bind:value={tripdata.Description}
                                 disabled={isDisabled}
                                 id="about"
                                 name="about"
@@ -725,51 +794,53 @@
                             class="block text-base font-medium leading-6 text-gray-900"
                             >รูปภาพ</label
                         >
-                        <br />
                         {#if isDisabled}
-                            <img src={tripdata.Image} alt="" />
-                        {:else}
-                            <div
-                                class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
-                            >
-                                <div class="text-center">
-                                    <svg
-                                        class="mx-auto h-12 w-12 text-gray-300"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                        aria-hidden="true"
-                                        data-slot="icon"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                    <div
-                                        class="mt-4 flex text-sm leading-6 text-gray-600"
-                                    >
-                                        <label
-                                            for="file-upload"
-                                            class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                                        >
-                                            <span>Upload a file</span>
-                                            <input
-                                                disabled={isDisabled}
-                                                id="file-upload"
-                                                name="file-upload"
-                                                type="file"
-                                                class="sr-only"
-                                            />
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs leading-5 text-gray-600">
-                                        PNG, JPG, GIF up to 10MB
-                                    </p>
-                                </div>
-                            </div>
-                        {/if}
+  <img class="mt-3" src={tripdata.Image} alt="" />
+{:else}
+  <div
+    class="mt-3 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+    on:dragover={handleDragOver}
+    on:drop={handleDrop}
+    role="button"
+    tabindex="0"
+    aria-label="อัพโหลดรูปภาพ"
+  >
+    <div class="text-center">
+      {#if previewImage}
+        <img
+          src={previewImage}
+          alt="รูปภาพที่อัพโหลด"
+          class="mx-auto h-32 w-32 object-cover rounded-lg"
+        />
+      {:else}
+        <Upload
+          class="mx-auto h-12 w-12 text-gray-300"
+        />
+      {/if}
+      <div class="mt-4 flex text-sm leading-6 text-gray-600">
+        <label
+          for="file-upload"
+          class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+        >
+          <span>อัพโหลดรูปภาพ</span>
+          <input
+            id="file-upload"
+            name="file-upload"
+            type="file"
+            class="sr-only"
+            on:change={handleFileChange}
+            bind:this={fileInput}
+            accept="image/*"
+          />
+        </label>
+        <p class="pl-1">หรือลากและวาง</p>
+      </div>
+      <p class="text-xs leading-5 text-gray-600">
+        PNG, JPG, GIF ไม่เกิน 10MB
+      </p>
+    </div>
+  </div>
+{/if}
                     </div>
                 </div>
             </div>
@@ -793,4 +864,3 @@
         </div>
     </form>
 </div>
-
