@@ -20,7 +20,7 @@
             <div class="border-[3px] border-[#6439FF] rounded-md w-[350px] h-[190px] flex justify-center items-center">
                 <svg class="aspect-square h-24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M17 3.34A10 10 0 1 1 2 12l.005-.324A10 10 0 0 1 17 3.34M12 6a1 1 0 0 0-1 1a3 3 0 1 0 0 6v2a1.02 1.02 0 0 1-.866-.398l-.068-.101a1 1 0 0 0-1.732.998a3 3 0 0 0 2.505 1.5H11a1 1 0 0 0 .883.994L12 18a1 1 0 0 0 1-1l.176-.005A3 3 0 0 0 13 11V9c.358-.012.671.14.866.398l.068.101a1 1 0 0 0 1.732-.998A3 3 0 0 0 13.161 7H13a1 1 0 0 0-1-1m1 7a1 1 0 0 1 0 2zm-2-4v2a1 1 0 0 1 0-2"/></svg>
             </div>
-            <div>3. ชำระเงินผ่าน <a class="text-[#6439FF] underline italic" href="">ช่องทางต่างๆ</a></div>
+            <div>3. ชำระเงินผ่าน <a class="text-[#6439FF] underline italic" href="/">ช่องทางต่างๆ</a></div>
             </div>
             <div class="flex flex-col justify-center items-center font-medium gap-5">
             <div class="border-[3px] border-[#6439FF] rounded-md w-[350px] h-[190px] flex justify-center items-center">
