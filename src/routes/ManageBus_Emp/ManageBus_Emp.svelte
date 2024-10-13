@@ -194,7 +194,7 @@
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
             <TableHeadCell>เลขเที่ยวรถ</TableHeadCell>
             <TableHeadCell>เที่ยวรถ</TableHeadCell>
-            <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
+            <TableHeadCell>เวลาออกเดินทาง - ถึงปลายทาง</TableHeadCell>
             <TableHeadCell>จำนวนที่นั่ง</TableHeadCell>
             <TableHeadCell>รายละเอียด</TableHeadCell>
             <TableHeadCell>Action</TableHeadCell>
@@ -202,11 +202,11 @@
         <TableBody>
             {#each tripdata as trip}
                 <TableBodyRow class="text-center">
-                    <TableBodyCell>{trip.RouteID}</TableBodyCell>
+                    <TableBodyCell>{trip.RouteCode}</TableBodyCell>
                     <TableBodyCell>{trip.RouteName} ({trip.Type})</TableBodyCell
                     >
                     <TableBodyCell
-                        >({trip.DepartureTime.toLocaleString()}) - ({trip.ArrivalTime.toLocaleString()})</TableBodyCell
+                        >({trip.DepartureTime.toLocaleString().slice(2, -3)}) - ({trip.ArrivalTime.toLocaleString().slice(2, -3)})</TableBodyCell
                     >
                     <TableBodyCell>{trip.Capacity}</TableBodyCell>
                     <TableBodyCell>
@@ -218,7 +218,7 @@
                     <TableBodyCell class="flex gap-5">
                         <button
                             on:click={() => goToPage(trip.RouteID, 'edit')}
-                            class="text-blue-500 hover:underline">แก้ไข</button
+                            class="text-orange-400 hover:text-aorange-500 hover:underline">แก้ไข</button
                         >
                         <button
                             on:click={deleteCard(trip.RouteID)}

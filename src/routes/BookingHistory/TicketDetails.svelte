@@ -252,7 +252,7 @@ function printTicket() {
           <p class="text-lg font-semibold text-gray-900">To: หัวหิน</p>
         </div>
         <div class="text-right">
-          <p class="text-2xl font-bold text-gray-900">{ticket.price} บาท</p>
+          <p class="text-2xl font-bold text-gray-900">{ticket.price}</p>
           <p class="text-sm text-gray-500">Total Price</p>
         </div>
       </div>

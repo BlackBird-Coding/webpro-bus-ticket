@@ -343,7 +343,7 @@ const historyCus = (id) => {
 const getEmployees = () => {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT EmployeeCode, Fname, Lname, Phone
+      `SELECT *
       FROM Employees
       WHERE Role = ?`,
       ["พนักงานขับรถ"],
@@ -410,6 +410,64 @@ const getTrips = (routeId, date) => {
   });
 };
 
+const getBuses = () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT *
+      FROM Buses`,
+      (err, row) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log(row);
+        resolve(row);
+      }
+    );
+  });
+};
+
+const saveEditBus = (id) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `UPDATE Schedules
+       SET EmployeeID = ?, DepartureTime = ?, ArrivalTime = ?, Price = ?, Description = ?, Image = ?, BusID = ?
+       WHERE ScheduleID = ?`,
+      [
+        id.EmployeeID,
+        id.DepartureTime,
+        id.ArrivalTime,
+        id.Price,
+        id.Description,
+        id.Image,
+        id.BusID,
+        id.ScheduleID,
+      ],
+      (err) => {
+        if (err) {
+          console.error("Error updating Schedules:", err.message);
+          return reject("Error updating Schedules.");
+        }
+
+        // Now update Routes
+        db.run(
+          `UPDATE Routes
+           SET RouteName = ?, Origin = ?, Destination = ?
+           WHERE RouteID = ?`,
+          [id.RouteName, id.Origin, id.Destination, id.RouteID],
+          (err) => {
+            if (err) {
+              console.error("Error updating Routes:", err.message);
+              return reject("Error updating Routes.");
+            }
+            resolve();
+          }
+        );
+      }
+    );
+  });
+};
+
 export {
   registerCustomer,
   login,
@@ -422,4 +480,6 @@ export {
   getEmployees,
   historyCus,
   getTrips,
+  saveEditBus,
+  getBuses,
 };

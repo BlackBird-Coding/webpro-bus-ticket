@@ -75,7 +75,6 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS Buses (
   BusID INTEGER PRIMARY KEY AUTOINCREMENT,
   BusCode TEXT GENERATED ALWAYS AS (printf('B%03d', BusID)),
-  BusName VARCHAR(50) NOT NULL,
   Capacity INT NOT NULL,
   Type VARCHAR(50) NOT NULL
 );`);
@@ -91,7 +90,7 @@ db.serialize(() => {
   ArrivalTime DATETIME NOT NULL,
   Price DECIMAL(10,2) NOT NULL,
   Description TEXT NOT NULL,
-  Image TEXT NOT NULL,
+  Image TEXT,
   FOREIGN KEY (RouteID) REFERENCES Routes(RouteID) ON DELETE CASCADE,
   FOREIGN KEY (BusID) REFERENCES Buses(BusID) ON DELETE CASCADE,
   FOREIGN KEY (EmployeeID) REFERENCES Employees(UserID) ON DELETE CASCADE

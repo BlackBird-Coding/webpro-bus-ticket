@@ -15,6 +15,7 @@
     "@anoram/leaflet-svelte": "^0.0.7-1",
     "@preline/toggle-password": "^2.5.0",
     "@sveltejs/kit": "^2.6.4",
+    "@sveu/browser": "^1.0.1",
     "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.7",

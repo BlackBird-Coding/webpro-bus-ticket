@@ -84,10 +84,9 @@
     <Table hoverable={true}>
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
             <TableHeadCell>เลขที่การจอง</TableHeadCell>
-            <TableHeadCell>ชื่อผู้โดยสาร</TableHeadCell>
-            <TableHeadCell>ชื่อเที่ยวรถ</TableHeadCell>
-            <TableHeadCell>เวลาออกเดินทาง-ถึงปลายทาง</TableHeadCell>
-            <TableHeadCell>ประเภทรถ</TableHeadCell>
+            <TableHeadCell>ผู้โดยสาร</TableHeadCell>
+            <TableHeadCell>เที่ยวรถ</TableHeadCell>
+            <TableHeadCell>เวลาออกเดินทาง - ถึงปลายทาง</TableHeadCell>
             <TableHeadCell>เลขที่นั่ง</TableHeadCell>
             <TableHeadCell>สถานะการจอง</TableHeadCell>
             <TableHeadCell>
@@ -97,14 +96,14 @@
         <TableBody>
             {#each history as data}
             <TableBodyRow class="text-center">
-                <TableBodyCell>{data.BookingID}</TableBodyCell>
-                <TableBodyCell>{data.Fname} {data.Lname}</TableBodyCell>
-                <TableBodyCell>{data.RouteName}</TableBodyCell>
-                <TableBodyCell>{data.DepartureTime} - {data.ArrivalTime}</TableBodyCell>
-                <TableBodyCell>{data.Type}</TableBodyCell>
+                <TableBodyCell>{data.BookingCode}</TableBodyCell>
+                <TableBodyCell>{data.Fname} {data.Lname} ({data.Gender})</TableBodyCell>
+                <TableBodyCell>{data.RouteCode}: {data.RouteName} ({data.Type})</TableBodyCell>
+                <TableBodyCell>({data.DepartureTime.slice(2, -3)}) - ({data.ArrivalTime.slice(2, -3)})</TableBodyCell>
                 <TableBodyCell>{data.SeatNumber}</TableBodyCell>
                 <TableBodyCell>{data.Status}</TableBodyCell>
                 <TableBodyCell class="flex gap-5">
+                    <a class="text-blue-600 hover:underline" href="/">สแกนตั๋ว</a>
                     <a class="text-orange-400 hover:underline" href="/">เลื่อนตั๋ว</a>
                 </TableBodyCell>
             </TableBodyRow>
