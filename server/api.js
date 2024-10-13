@@ -13,6 +13,9 @@ import {
   getTrips,
   saveEditBus,
   getBuses,
+  checkAvailableSeats,
+  saveBookingAndPayment,
+  getSchedulePrice,
 } from "./service.js";
 const router = express.Router();
 
@@ -160,6 +163,44 @@ router.get("/trips", (req, res) => {
   getTrips(routeId, date)
     .then((trips) => {
       res.json({ trips });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.get("/available-seats/:scheduleID", (req, res) => {
+  const scheduleID = req.params.scheduleID;
+
+  checkAvailableSeats(scheduleID)
+    .then((availableSeats) => {
+      res.json({ availableSeats });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.post("/book-and-pay", (req, res) => {
+  const { booking, payment } = req.body;
+  const userId = req.session.user.details.userID;
+
+  saveBookingAndPayment(booking, payment, userId)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      console.error("Error saving booking and payment:", error);
+      res.status(500).json({ error: "Failed to save booking and payment" });
+    });
+});
+
+router.get("/getSchedulePrice/:scheduleID", (req, res) => {
+  const scheduleID = req.params.scheduleID;
+
+  getSchedulePrice(scheduleID)
+    .then((price) => {
+      res.json({ price });
     })
     .catch((error) => {
       res.status(500).json({ error });

@@ -10,23 +10,41 @@
   let allSeats: string[] = [];
   let scheduleID: string;
 
+  let seatMap = {};
+
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
     tripType = urlParams.get("type") || "1";
     scheduleID = urlParams.get("goTrip") || "";
-    fetchSeatData();
+    fetchSeatData(scheduleID);
   });
-  function fetchSeatData() {
-    // Simulating API call with both available and unavailable seats
-    availableSeats = ["A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2"];
-    unavailableSeats = ["A3", "A4", "B3", "B4", "C3", "C4", "D3", "D4"];
+  async function fetchSeatData(scheduleID) {
+    try {
+      const response = await fetch(`/api/available-seats/${scheduleID}`);
+      const data = await response.json();
 
-    // Generate all possible seats
-    allSeats = [];
-    for (let col of ["A", "B", "C", "D"]) {
-      for (let i = 1; i <= 9; i++) {
-        allSeats.push(`${col}${i}`);
+      // Process the data
+      availableSeats = data.availableSeats.map((seat) => seat.SeatCode);
+
+      seatMap = data.availableSeats.map((seat) => ({
+        code: seat.SeatCode,
+        id: seat.SeatID,
+      }));
+
+      // Generate all possible seats (adjust range as needed)
+      allSeats = [];
+      for (let col of ["A", "B", "C", "D"]) {
+        for (let i = 1; i <= 9; i++) {
+          allSeats.push(`${col}${i}`);
+        }
       }
+
+      // Calculate unavailable seats
+      unavailableSeats = allSeats.filter(
+        (seat) => !availableSeats.includes(seat)
+      );
+    } catch (error) {
+      console.error("Error fetching seat data:", error);
     }
   }
 
@@ -47,7 +65,10 @@
     if (selectedSeat && scheduleID) {
       const queryParams = new URLSearchParams();
       queryParams.set("scheduleID", scheduleID);
-      queryParams.set("seat", selectedSeat);
+      queryParams.set(
+        "seatId",
+        seatMap.find((seat) => seat.code === selectedSeat).id
+      );
       navigate(`/payment?${queryParams.toString()}`);
     }
   }
@@ -61,12 +82,12 @@
     <div class="bg-slate-100 p-5 rounded-md max-w-2xl mx-auto">
       <div class="grid grid-cols-4 gap-4">
         <div
-          class="col-span-2 border border-orange-600 rounded-md h-16 flex items-center justify-center"
+          class="col-span-2 border border-blue-600 rounded-md h-16 flex items-center justify-center"
         >
           ประตู
         </div>
         <div
-          class="col-span-2 border border-orange-600 rounded-md h-16 flex items-center justify-center"
+          class="col-span-2 border border-blue-600 rounded-md h-16 flex items-center justify-center"
         >
           พขร.
         </div>
@@ -88,13 +109,13 @@
 
         <div class="col-span-2"></div>
         <div
-          class="col-span-2 border border-orange-600 rounded-md h-16 flex items-center justify-center"
+          class="col-span-2 border border-blue-600 rounded-md h-16 flex items-center justify-center"
         >
           ประตูฉุกเฉิน
         </div>
         <div class="col-span-2"></div>
         <div
-          class="col-span-2 border border-orange-600 rounded-md h-16 flex items-center justify-center"
+          class="col-span-2 border border-blue-600 rounded-md h-16 flex items-center justify-center"
         >
           ห้องน้ำ
         </div>

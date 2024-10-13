@@ -7,49 +7,126 @@
   import { ArrowRight, Ticket, CreditCard } from "lucide-svelte";
 
   let scheduleID;
-  let seat;
+  let seatId;
   let totalPrice = 0;
-
   let showDetails = false;
+
+  // Form data
+  let firstName = "";
+  let lastName = "";
+  let contactFirstName = "";
+  let contactLastName = "";
+  let phone = "";
+  let email = "";
 
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
     scheduleID = urlParams.get("scheduleID");
-    seat = urlParams.get("seat");
+    seatId = urlParams.get("seatId");
 
-    // Simulating API data
-    if (scheduleID && seat) {
-      totalPrice = calculateTotalPrice(scheduleID, seat);
+    if (scheduleID && seatId) {
+      fetch(`/api/getSchedulePrice/${scheduleID}`)
+        .then((response) => response.json())
+        .then((data) => {
+          totalPrice = data.price;
+        });
     }
+
+    fetch("/api/user")
+      .then((response) => response.json())
+      .then((userData) => {
+        firstName = userData.user.details.fname;
+        lastName = userData.user.details.lname;
+      });
   });
 
-  function calculateTotalPrice(scheduleID, seat) {
-    // This is a mock calculation. In a real scenario, you'd fetch this from an API
-    const basePrice = 300;
-    const scheduleMultiplier = parseInt(scheduleID) * 0.1;
-    const seatMultiplier =
-      seat.charCodeAt(0) - 65 + parseInt(seat.slice(1)) * 0.05;
-    return (
-      Math.round(
-        (basePrice +
-          basePrice * scheduleMultiplier +
-          basePrice * seatMultiplier) *
-          100
-      ) / 100
-    );
-  }
-
   async function handlePayment() {
-    // In a real scenario, you'd make an API call here to process the payment
-    // and get the QR code. For this example, we'll use a placeholder image.
+    if (
+      !firstName ||
+      !lastName ||
+      !contactFirstName ||
+      !contactLastName ||
+      !phone
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please fill in all required fields!",
+      });
+      return;
+    }
+
     const result = await Swal.fire({
-      title: "QR Code for Payment",
-      imageUrl: qrcode, // Replace with actual QR code URL
+      title: "รอสักครู่... กำลังจ่ายเงินให้คุณ",
+      imageUrl: qrcode,
       imageWidth: 300,
       imageHeight: 300,
       imageAlt: "QR Code",
-      confirmButtonText: "Close",
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+      },
     });
+
+    if (result.dismiss === Swal.DismissReason.timer) {
+      await handleSuccessfulPayment();
+    }
+  }
+
+  async function saveBookingAndPayment(bookingData, paymentData) {
+    try {
+      const response = await fetch("/api/book-and-pay", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          booking: bookingData,
+          payment: paymentData,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save booking and payment");
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Error saving booking and payment:", error);
+      throw error;
+    }
+  }
+
+  // Modify the handleSuccessfulPayment function
+  async function handleSuccessfulPayment() {
+    try {
+      const bookingData = {
+        scheduleID,
+        seatId: seatId,
+      };
+
+      const paymentData = {
+        amount: totalPrice,
+        paymentMethod: "QR Code",
+      };
+
+      const result = await saveBookingAndPayment(bookingData, paymentData);
+
+      Swal.fire({
+        icon: "success",
+        title: "Booking Successful!",
+        text: `Your booking code is ${result.BookingCode}. Payment code: ${result.PaymentCode}`,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong with the booking process.",
+      });
+    }
   }
 </script>
 
@@ -61,36 +138,44 @@
       <div>Personal Details</div>
       <div class="flex gap-5 text-lg">
         <input
-          class="border border-gray-400 pl-2 rounded-md w-3/6"
+          value={firstName}
+          class="border border-gray-400 pl-2 rounded-md w-3/6 bg-gray-200"
           type="text"
           placeholder="ชื่อ"
+          disabled
         />
         <input
-          class="border border-gray-400 pl-2 rounded-md w-3/6"
+          value={lastName}
+          class="border border-gray-400 pl-2 rounded-md w-3/6 bg-gray-200"
           type="text"
           placeholder="นามสกุล"
+          disabled
         />
       </div>
     </div>
     <div class="flex flex-col text-xl mt-5 gap-5">
       <div>ข้อมูลผู้ติดต่อ</div>
       <div class="flex flex-col gap-4 text-lg">
-        <label for="first-name" class="ml-2 w-1/5">ชื่อ</label>
+        <label for="contact-first-name" class="ml-2 w-1/5">ชื่อ</label>
         <input
-          id="first-name"
+          id="contact-first-name"
+          bind:value={contactFirstName}
           class="border border-gray-400 pl-2 rounded-md w-full"
           type="text"
-          placeholder="ชื่อ"
+          placeholder="ชื่อผู้ติดต่อ"
+          required
         />
       </div>
 
       <div class="flex flex-col gap-4 text-lg">
-        <label for="last-name" class="ml-2 w-1/5">นามสกุล</label>
+        <label for="contact-last-name" class="ml-2 w-1/5">นามสกุล</label>
         <input
-          id="last-name"
+          id="contact-last-name"
+          bind:value={contactLastName}
           class="border border-gray-400 pl-2 rounded-md w-full"
           type="text"
-          placeholder="นามสกุล"
+          placeholder="นามสกุลผู้ติดต่อ"
+          required
         />
       </div>
 
@@ -98,9 +183,11 @@
         <label for="phone" class="ml-2 w-1/5">โทรศัพท์มือถือ</label>
         <input
           id="phone"
+          bind:value={phone}
           class="border border-gray-400 pl-2 rounded-md w-full"
           type="text"
           placeholder="หมายเลขโทรศัพท์มือถือ"
+          required
         />
       </div>
 
@@ -108,6 +195,7 @@
         <label for="email" class="ml-2 w-1/5">อีเมล</label>
         <input
           id="email"
+          bind:value={email}
           class="border border-gray-400 pl-2 rounded-md w-full"
           type="email"
           placeholder="กรอกอีเมล (ถ้ามี) เพื่อรับข้อมูลการจอง"
@@ -122,7 +210,7 @@
       <div class="flex justify-between items-center">
         <span class="text-gray-600 font-medium">ราคารวม</span>
         <span class="text-2xl font-bold text-blue-600"
-          >{(totalPrice + 40).toFixed(2)} บาท</span
+          >{totalPrice.toFixed(2)} บาท</span
         >
       </div>
 
@@ -145,13 +233,6 @@
               <span class="text-gray-600">ราคาตั๋ว</span>
             </div>
             <span class="font-medium">{totalPrice.toFixed(2)} บาท</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <CreditCard size={18} class="text-gray-500 mr-2" />
-              <span class="text-gray-600">ค่าธรรมเนียม</span>
-            </div>
-            <span class="font-medium">40.00 บาท</span>
           </div>
         </div>
       {/if}

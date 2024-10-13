@@ -326,6 +326,7 @@ const historyCus = (id) => {
       JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
       JOIN ROUTES R ON R.RouteID = S.RouteID
       JOIN BUSES BU ON BU.BusID = S.BusID
+      JOIN SEATS SE ON SE.SeatID = B.SeatID
       WHERE C.UserID = ?`,
       [id],
       (err, history) => {
@@ -333,7 +334,7 @@ const historyCus = (id) => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(history);
+        console.log("his", history);
         resolve(history);
       }
     );
@@ -468,6 +469,95 @@ const saveEditBus = (id) => {
   });
 };
 
+const checkAvailableSeats = (scheduleID) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT s.SeatID, s.SeatCode
+       FROM Seats s
+       LEFT JOIN Bookings b ON s.SeatID = b.SeatID AND b.ScheduleID = ?
+       WHERE b.SeatID IS NULL`,
+      [scheduleID],
+      (err, rows) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        resolve(rows);
+      }
+    );
+  });
+};
+
+const saveBookingAndPayment = (bookingData, paymentData, userId) => {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run("BEGIN TRANSACTION");
+
+      db.run(
+        `INSERT INTO Bookings (CustomerID, ScheduleID, BookingDate, SeatId, Status)
+         VALUES (?, ?, datetime('now'), ?, False)`,
+        [userId, bookingData.scheduleID, bookingData.seatId],
+        function (err) {
+          if (err) {
+            db.run("ROLLBACK");
+            return reject(err);
+          }
+
+          const bookingID = this.lastID;
+          db.run(
+            `INSERT INTO Payment (BookingID, Amount, PaymentTime, PaymentMethod)
+             VALUES (?, ?, datetime('now'), ?)`,
+            [
+              bookingID,
+              getSchedulePrice(bookingData.scheduleID),
+              paymentData.paymentMethod,
+            ],
+            function (err) {
+              if (err) {
+                db.run("ROLLBACK");
+                return reject(err);
+              }
+
+              db.run("COMMIT");
+              db.get(
+                `SELECT BookingCode, PaymentCode
+                 FROM Bookings b
+                 JOIN Payment p ON b.BookingID = p.BookingID
+                 WHERE b.BookingID = ?`,
+                [bookingID],
+                (err, row) => {
+                  if (err) {
+                    return reject(err);
+                  }
+                  resolve(row);
+                }
+              );
+            }
+          );
+        }
+      );
+    });
+  });
+};
+
+const getSchedulePrice = (scheduleID) => {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `SELECT Price
+       FROM Schedules
+       WHERE ScheduleID = ?`,
+      [scheduleID],
+      (err, row) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        resolve(row.Price);
+      }
+    );
+  });
+};
+
 export {
   registerCustomer,
   login,
@@ -482,4 +572,7 @@ export {
   getTrips,
   saveEditBus,
   getBuses,
+  checkAvailableSeats,
+  saveBookingAndPayment,
+  getSchedulePrice,
 };
