@@ -1,4 +1,4 @@
-<footer class="bg-gray-800 py-7 px-8 font-sans w-full">
+<footer class="bg-gray-800 py-5 px-8 font-sans w-full">
     <div class="flex max-lg:flex-col items-center justify-between gap-6">
       <ul class="flex flex-wrap justify-center gap-x-6 gap-4">
         <li>
@@ -76,7 +76,7 @@
       </ul>
 
       <p class="text-base text-gray-300 max-lg:order-1">
-        © ReadymadeUI. All rights reserved.
+        BusXThailand
       </p>
       <ul class="flex gap-x-6 gap-y-2 flex-wrap">
         <li>
@@ -90,7 +90,7 @@
           >
         </li>
         <li>
-          <a href="/" class="text-gray-300 hover:text-white text-base"
+          <a href="/contact" class="text-gray-300 hover:text-white text-base"
             >Contact</a
           >
         </li>

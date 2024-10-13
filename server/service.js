@@ -301,7 +301,7 @@ const historyEmp = () => {
     db.all(
       `SELECT *
       FROM BOOKINGS B
-      JOIN CUSTOMERS C ON B.CustomerID = C.CustomerID
+      JOIN CUSTOMERS C ON B.CustomerID = C.UserID
       JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
       JOIN ROUTES R ON R.RouteID = S.RouteID
       JOIN BUSES BU ON BU.BusID = S.BusID`,
@@ -317,12 +317,36 @@ const historyEmp = () => {
   });
 };
 
+const historyCus = (id) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT *
+      FROM BOOKINGS B
+      JOIN CUSTOMERS C ON B.CustomerID = C.UserID
+      JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
+      JOIN ROUTES R ON R.RouteID = S.RouteID
+      JOIN BUSES BU ON BU.BusID = S.BusID
+      WHERE C.UserID = ?`,
+      [id],
+      (err, history) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log(history);
+        resolve(history);
+      }
+    );
+  });
+};
+
 const getEmployees = () => {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT UserCode
-      FROM Users
-      WHERE UserType="Employee"`,
+      `SELECT EmployeeCode, Fname, Lname, Phone
+      FROM Employees
+      WHERE Role = ?`,
+      ["พนักงานขับรถ"],
       (err, row) => {
         if (err) {
           console.error("Error querying the database:", err.message);
@@ -335,5 +359,4 @@ const getEmployees = () => {
   });
 }
 
-
-export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp, getBusStops, getEmployees};
+export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp, getBusStops, getEmployees, historyCus};

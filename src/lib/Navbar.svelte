@@ -40,10 +40,11 @@
   class="flex shadow-md py-4 px-4 sm:px-10font-[sans-serif] min-h-[80px] tracking-wide z-50 bg-[#6439FF]"
 >
   <div class="flex flex-wrap items-center gap-5 w-full">
-    <div>
-      <p class="text-xl text-white">พิมพ์มาดาทัวร์</p>
+    <div class="ml-3 flex items-center space-x-4 rtl:space-x-reverse">
+      <img src="src/assets/logo_pim2.png" class="h-12" alt="Flowbite Logo" />
+      <span class="text-white self-center text-2xl font-semibold whitespace-nowrap dark:text-white">BusXThailand</span>
     </div>
-
+    
     <div
       id="collapseMenu"
       class="max-lg:hidden lg:!flex lg:ml-auto max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50"
