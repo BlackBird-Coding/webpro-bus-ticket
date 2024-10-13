@@ -97,6 +97,11 @@ db.serialize(() => {
   FOREIGN KEY (EmployeeID) REFERENCES Employees(UserID) ON DELETE CASCADE
 );`);
 
+  db.run(`CREATE TABLE IF NOT EXISTS Seats (
+  SeatID INTEGER PRIMARY KEY AUTOINCREMENT,
+  SeatCode VARCHAR(3) NOT NULL UNIQUE
+);`);
+
   // Create BOOKINGS table
   db.run(`CREATE TABLE IF NOT EXISTS Bookings (
   BookingID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,10 +109,11 @@ db.serialize(() => {
   CustomerID INTEGER NOT NULL,
   ScheduleID INTEGER NOT NULL,
   BookingDate DATETIME NOT NULL,
-  SeatNumber INT NOT NULL,
+  SeatID INTEGER NOT NULL,
   Status VARCHAR(50) NOT NULL,
   FOREIGN KEY (CustomerID) REFERENCES Customers(UserID) ON DELETE CASCADE,
   FOREIGN KEY (ScheduleID) REFERENCES Schedules(ScheduleID) ON DELETE CASCADE
+  FOREIGN KEY (SeatID) REFERENCES Seats(SeatID) ON DELETE CASCADE
 );`);
 
   // Create PAYMENTS table
