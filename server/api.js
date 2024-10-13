@@ -8,7 +8,8 @@ import {
   getOneRoute,
   historyEmp,
   getBusStops,
-  getEmployees
+  getEmployees,
+  historyCus
 } from "./service.js";
 const router = express.Router();
 
@@ -80,7 +81,6 @@ router.get("/BusStops", (req, res) => {
 });
 
 router.post("/EditBus", (req, res) => {
-  console.log("router", req.body.id);
   getOneRoute(req.body.id)
     .then((routes) => {
       res.json({ routes });
@@ -91,8 +91,6 @@ router.post("/EditBus", (req, res) => {
 });
 
 router.post("/DeleteRoute", (req, res) => {
-  const { id } = req.body;
-  console.log(id);
   deleteRoute(id).then(
     () => {
       res.json({ message: "Delete Route successful!" });
@@ -113,13 +111,37 @@ router.get("/history", (req, res) => {
     });
 });
 
-router.get("/employees",(req, res) => {
+router.get("/employees", (req, res) => {
   getEmployees()
-    .then((id)=>{
-      res.json({id})
+    .then((employees) => {
+      res.json({ employees });
     })
     .catch((error) => {
       res.status(500).json({ error });
     });
 });
+
+router.get("/historyCus", (req, res) => {
+  console.log('seesion', req.session)
+  historyCus(req.session.user.details.userID)
+    .then((histories) => {
+      res.json({ histories });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.get('/SaveEditBus', (req,res) => {
+  console.log('get', req.body)
+  historyCus(req.body)
+    .then((histories) => {
+      res.json({ histories });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+
 export default router;
