@@ -238,6 +238,7 @@ router.post('/AddStation', (req,res) => {
 });
 
 router.post('/AddSchedule', (req,res) => {
+  console.log('router', req.body)
   addSchedule(req.body)
     .then(() => {
       res.json({ message: "Save New Schedule successful!" });

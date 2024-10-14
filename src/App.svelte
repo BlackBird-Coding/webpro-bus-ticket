@@ -14,7 +14,6 @@
   import ContactForm from "./routes/ContactForm.svelte";
   import TicketDetails from "./routes/BookingHistory/TicketDetails.svelte";
   import ManageBus_Emp from "./routes/ManageBus_Emp/ManageBus_Emp.svelte";
-  import AddSchedule from "./routes/ManageBus_Emp/AddSchedule.svelte";
   import AddStation from "./routes/ManageBus_Emp/AddStation.svelte";
   import AddRoute from "./routes/ManageBus_Emp/AddRoute.svelte";
   import AddBus from "./routes/ManageBus_Emp/AddBus.svelte";
@@ -47,7 +46,6 @@
       <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
       <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
-      <Route path="/AddSchedule" component={AddSchedule} />
       <Route path="/AddStation" component={AddStation} />
       <Route path="/AddBus" component={AddBus} />
       <Route path="/AddRoute" component={AddRoute} />

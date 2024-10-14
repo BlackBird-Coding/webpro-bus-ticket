@@ -571,9 +571,10 @@ const checkAvailableSeats = (scheduleID) => {
 const addSchedule = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO Schedules (RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description, Image)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO Schedules (ScheduleName, RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description, Image)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
+        id.ScheduleName,
         id.RouteID,
         id.BusID,
         id.EmployeeID,
@@ -586,11 +587,13 @@ const addSchedule = (id) => {
       (err) => {
         if (err) {
           console.error("Error updating Schedules:", err.message);
-          return reject("Error updating Schedules.");
+          reject(err);
+        } else {
+          console.log("Schedule added successfully");
+          resolve();
         }
       }
     );
-    resolve();
   });
 };
 

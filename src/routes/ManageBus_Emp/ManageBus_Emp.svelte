@@ -11,6 +11,7 @@
         Tooltip,
         Button,
     } from "flowbite-svelte";
+    import { onMount } from "svelte";
 
     let schedules = [];
 
@@ -19,6 +20,8 @@
         navigate(`/EditSchedule?id=${id}&mode=${mode}`, { replace: false }); // Pass the button ID as a query parameter
     }
 
+
+function getSchedules () {
     fetch(`/api/getSchedules`, {
         method: "GET",
         headers: {
@@ -41,6 +44,12 @@
                 error,
             );
         });
+
+}
+    
+onMount(() => {
+getSchedules()
+})
 
     function deleteCard(id) {
         Swal.fire({
@@ -73,7 +82,7 @@
                             text: "เที่ยวรถถูกลบเรียบร้อยแล้ว",
                             icon: "success",
                         });
-                        location.reload();
+                        getSchedules()
                     })
                     .catch((error) => {
                         console.error(
@@ -132,8 +141,8 @@
             </div>
         </form>
 
-        <a href="/AddSchedule"
-            ><Button
+        <Button
+                on:click={() => goToPage(0, "add")}
                 id="add-schedule"
                 class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
             >
@@ -245,8 +254,7 @@
                 placement="bottom"
             >
                 Add Schedule
-            </Tooltip></a
-        >
+            </Tooltip>
 
         <a href="/AddStation"
             ><Button
@@ -352,7 +360,8 @@
             {#each schedules as data}
                 <TableBodyRow class="text-center">
                     <TableBodyCell>{data.ScheduleCode}</TableBodyCell>
-                    <TableBodyCell>{data.ScheduleName} ({data.Type})</TableBodyCell
+                    <TableBodyCell
+                        >{data.ScheduleName} ({data.Type})</TableBodyCell
                     >
                     <TableBodyCell
                         >({data.DepartureTime.toLocaleString().slice(2, -3)}) -
