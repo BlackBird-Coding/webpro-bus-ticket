@@ -30,6 +30,6 @@
   </div>
   
   <footer class="mt-10 text-center text-gray-500">
-    <p>© 2024 BusXThailand. All rights reserved.</p>
+    <p>© 2024 BusBuss. All rights reserved.</p>
   </footer>
 </div>
