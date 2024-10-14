@@ -41,6 +41,7 @@
 >
   <div class="flex flex-wrap items-center gap-5 w-full">
     <div class="ml-3 flex items-center space-x-4 rtl:space-x-reverse">
+      <img src="{logo}" class="h-24 w-24" alt="Boss Logo" />
       <span
         class="text-white self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
         >BusBuss</span
