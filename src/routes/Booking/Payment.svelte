@@ -6,8 +6,12 @@
   import { fly } from "svelte/transition";
   import { ArrowRight, Ticket, CreditCard } from "lucide-svelte";
 
-  let scheduleID;
-  let seatId;
+  let goScheduleID;
+  let goSeatId;
+  let returnScheduleID;
+  let returnSeatId;
+  let goPrice = 0;
+  let returnPrice = 0;
   let totalPrice = 0;
   let showDetails = false;
 
@@ -21,14 +25,26 @@
 
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    scheduleID = urlParams.get("scheduleID");
-    seatId = urlParams.get("seatId");
+    goScheduleID = urlParams.get("goScheduleID");
+    goSeatId = urlParams.get("goSeatId");
+    returnScheduleID = urlParams.get("returnScheduleID");
+    returnSeatId = urlParams.get("returnSeatId");
 
-    if (scheduleID && seatId) {
-      fetch(`/api/getSchedulePrice/${scheduleID}`)
+    if (goScheduleID && goSeatId) {
+      fetch(`/api/getSchedulePrice/${goScheduleID}`)
         .then((response) => response.json())
         .then((data) => {
-          totalPrice = data.price;
+          goPrice = data.price;
+          updateTotalPrice();
+        });
+    }
+
+    if (returnScheduleID && returnSeatId) {
+      fetch(`/api/getSchedulePrice/${returnScheduleID}`)
+        .then((response) => response.json())
+        .then((data) => {
+          returnPrice = data.price;
+          updateTotalPrice();
         });
     }
 
@@ -39,6 +55,10 @@
         lastName = userData.user.details.lname;
       });
   });
+
+  function updateTotalPrice() {
+    totalPrice = goPrice + returnPrice;
+  }
 
   async function handlePayment() {
     if (
@@ -100,12 +120,13 @@
     }
   }
 
-  // Modify the handleSuccessfulPayment function
   async function handleSuccessfulPayment() {
     try {
       const bookingData = {
-        scheduleID,
-        seatId: seatId,
+        goScheduleID,
+        goSeatId,
+        returnScheduleID,
+        returnSeatId,
       };
 
       const paymentData = {
@@ -230,10 +251,19 @@
           <div class="flex justify-between items-center">
             <div class="flex items-center">
               <Ticket size={18} class="text-gray-500 mr-2" />
-              <span class="text-gray-600">ราคาตั๋ว</span>
+              <span class="text-gray-600">ราคาตั๋วขาไป</span>
             </div>
-            <span class="font-medium">{totalPrice.toFixed(2)} บาท</span>
+            <span class="font-medium">{goPrice.toFixed(2)} บาท</span>
           </div>
+          {#if returnScheduleID}
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <Ticket size={18} class="text-gray-500 mr-2" />
+                <span class="text-gray-600">ราคาตั๋วขากลับ</span>
+              </div>
+              <span class="font-medium">{returnPrice.toFixed(2)} บาท</span>
+            </div>
+          {/if}
         </div>
       {/if}
 
