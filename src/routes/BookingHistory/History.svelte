@@ -116,11 +116,14 @@
           <TableBodyCell class="flex gap-5">
             <a
               class="text-orange-400 hover:underline"
-              href={`/reschedule?id=000001`}>เลื่อนตั๋ว</a
+              href={`/reschedule?code=` +
+                booking.BookingCode +
+                "&id=" +
+                booking.BookingID}>เลื่อนตั๋ว</a
             >
             <a
               class="text-green-500 hover:underline"
-              href={`/ticket-details?id=000001`}>แสดงตั๋ว</a
+              href={`/ticket-details?id=` + booking.BookingID}>แสดงตั๋ว</a
             >
           </TableBodyCell>
         </TableBodyRow>

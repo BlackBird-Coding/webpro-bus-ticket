@@ -22,6 +22,7 @@ import {
   saveBookingAndPayment,
   getSchedulePrice,
   getReturnTrips,
+  getBookingById,
 } from "./service.js";
 const router = express.Router();
 
@@ -93,10 +94,10 @@ router.get("/BusStops", (req, res) => {
 });
 
 router.post("/GetOneSchedule", (req, res) => {
-  console.log('post', req.body.id)
+  console.log("post", req.body.id);
   getOneSchedule(req.body.id)
     .then((routes) => {
-      console.log('post',routes)
+      console.log("post", routes);
 
       res.json({ routes });
     })
@@ -147,7 +148,7 @@ router.get("/historyCus", (req, res) => {
     });
 });
 
-router.post('/EditSchedule', (req,res) => {
+router.post("/EditSchedule", (req, res) => {
   EditSchedule(req.body)
     .then(() => {
       res.json({ message: "Save successful!" });
@@ -227,7 +228,7 @@ router.get("/getSchedulePrice/:scheduleID", (req, res) => {
     });
 });
 
-router.post('/AddStation', (req,res) => {
+router.post("/AddStation", (req, res) => {
   addStation(req.body)
     .then(() => {
       res.json({ message: "Save Station successful!" });
@@ -237,8 +238,8 @@ router.post('/AddStation', (req,res) => {
     });
 });
 
-router.post('/AddSchedule', (req,res) => {
-  console.log('router', req.body)
+router.post("/AddSchedule", (req, res) => {
+  console.log("router", req.body);
   addSchedule(req.body)
     .then(() => {
       res.json({ message: "Save New Schedule successful!" });
@@ -248,7 +249,7 @@ router.post('/AddSchedule', (req,res) => {
     });
 });
 
-router.post('/AddRoute', (req,res) => {
+router.post("/AddRoute", (req, res) => {
   addRoute(req.body)
     .then(() => {
       res.json({ message: "Save New Schedule successful!" });
@@ -258,10 +259,20 @@ router.post('/AddRoute', (req,res) => {
     });
 });
 
-router.post('/AddBus', (req,res) => {
+router.post("/AddBus", (req, res) => {
   addBus(req.body)
     .then(() => {
       res.json({ message: "Save New Schedule successful!" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.get("/booking/:id", (req, res) => {
+  getBookingById(req.params.id)
+    .then((bookings) => {
+      res.json({ bookings });
     })
     .catch((error) => {
       res.status(500).json({ error });
