@@ -20,7 +20,7 @@
     
     <h2 class="text-3xl font-semibold mt-8 text-indigo-700 underline">ศูนย์บริการลูกค้า</h2>
     <p class="text-gray-700 mb-4 text-lg leading-relaxed">ศูนย์บริการทางโทรศัพท์สำหรับปัญหาในการใช้บริการ</p>
-    <p class="text-gray-700 mb-8 text-lg leading-relaxed">โทรศัพท์: <span class="font-bold text-indigo-600">0902908614</span></p>
+    <p class="text-gray-700 mb-8 text-lg leading-relaxed">โทรศัพท์: <span class="font-bold text-indigo-600">0999999999</span></p>
     
     <div class="flex space-x-4 mt-6">
       <a href="https://www.facebook.com/" target="_blank" class="text-indigo-600 hover:underline text-lg">Facebook</a>
