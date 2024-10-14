@@ -25,7 +25,7 @@
     <div class="flex space-x-4 mt-6">
       <a href="https://www.facebook.com/" target="_blank" class="text-indigo-600 hover:underline text-lg">Facebook</a>
       <span class="text-gray-500">|</span>
-      <span class="text-lg">Line ID: <span class="font-bold text-indigo-600">@busxthailand</span></span>
+      <span class="text-lg">Line ID: <span class="font-bold text-indigo-600">@busbuss</span></span>
     </div>
   </div>
   
