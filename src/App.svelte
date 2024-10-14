@@ -7,7 +7,7 @@
   import Login from "./routes/Login.svelte";
   import Trip from "./routes/Booking/Trip.svelte";
   import Seat from "./routes/Booking/Seat.svelte";
-  import Payment from "./routes/Payment.svelte";
+  import Payment from "./routes/Booking/Payment.svelte";
   import Find from "./routes/Booking/Find.svelte";
   import Howto from "./routes/Howto.svelte";
   import History_Emp from "./routes/History_Emp.svelte";

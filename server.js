@@ -56,7 +56,11 @@ if (!isProduction) {
 app.use("/api", apiRouter);
 
 // Serve HTML
-app.use("*", async (req, res) => {
+app.use("*", async (req, res, next) => {
+  if (req.originalUrl.startsWith("/api")) {
+    return next();
+  }
+
   try {
     const url = req.originalUrl.replace(base, "");
 

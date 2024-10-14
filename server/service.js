@@ -299,7 +299,7 @@ const getBusStops = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(BusStops)
+        console.log(BusStops);
         resolve(BusStops);
       }
     );
@@ -349,6 +349,7 @@ const historyCus = (id) => {
       JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
       JOIN ROUTES R ON R.RouteID = S.RouteID
       JOIN BUSES BU ON BU.BusID = S.BusID
+      JOIN SEATS SE ON SE.SeatID = B.SeatID
       WHERE C.UserID = ?`,
       [id],
       (err, history) => {
@@ -356,7 +357,7 @@ const historyCus = (id) => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(history);
+        console.log("his", history);
         resolve(history);
       }
     );
@@ -375,13 +376,115 @@ const getEmployees = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(row)
+        console.log(row);
         resolve(row);
       }
     );
   });
-}
+};
 
+const getTrips = (routeId, date) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT S.*, R.RouteName
+      FROM SCHEDULES S
+      JOIN ROUTES R ON S.RouteID = R.RouteID
+      WHERE S.RouteID = ? AND DATE(S.DepartureTime) = ?`,
+      [routeId, new Date(date).toISOString().split("T")[0]], // Format date as YYYY-MM-DD
+      (err, trips) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+
+        // For each trip, fetch available seat count
+        const tripPromises = trips.map((trip) => {
+          return new Promise((resolve, reject) => {
+            db.get(
+              `SELECT COUNT(*) as AvailableSeatCount
+              FROM Seats
+              WHERE SeatID NOT IN (
+                SELECT SeatID
+                FROM Bookings
+                WHERE ScheduleID = ?
+              )`,
+              [trip.ScheduleID],
+              (err, result) => {
+                if (err) {
+                  console.error(
+                    "Error querying available seat count:",
+                    err.message
+                  );
+                  return reject("Error querying available seat count.");
+                }
+                // Attach the available seat count to the trip object
+                trip.AvailableSeat = result.AvailableSeatCount;
+                resolve(trip);
+              }
+            );
+          });
+        });
+
+        // Resolve all trips with available seat counts
+        Promise.all(tripPromises)
+          .then((tripsWithSeats) => resolve(tripsWithSeats))
+          .catch((err) => reject(err));
+      }
+    );
+  });
+};
+
+const getReturnTrips = (routeId, date) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT S.*, R2.RouteName, R2.RouteID as ReturnRouteID
+      FROM ROUTES R1
+      JOIN ROUTES R2 ON R2.Origin = R1.Destination AND R2.Destination = R1.Origin
+      JOIN SCHEDULES S ON S.RouteID = R2.RouteID
+      WHERE R1.RouteID = ? AND DATE(S.DepartureTime) = ?`,
+      [routeId, new Date(date).toISOString().split("T")[0]], // Format date as YYYY-MM-DD
+      (err, trips) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+
+        // For each trip, fetch available seat count
+        const tripPromises = trips.map((trip) => {
+          return new Promise((resolve, reject) => {
+            db.get(
+              `SELECT COUNT(*) as AvailableSeatCount
+              FROM Seats
+              WHERE SeatID NOT IN (
+                SELECT SeatID
+                FROM Bookings
+                WHERE ScheduleID = ?
+              )`,
+              [trip.ScheduleID],
+              (err, result) => {
+                if (err) {
+                  console.error(
+                    "Error querying available seat count:",
+                    err.message
+                  );
+                  return reject("Error querying available seat count.");
+                }
+                // Attach the available seat count to the trip object
+                trip.AvailableSeat = result.AvailableSeatCount;
+                resolve(trip);
+              }
+            );
+          });
+        });
+
+        // Resolve all trips with available seat counts
+        Promise.all(tripPromises)
+          .then((tripsWithSeats) => resolve(tripsWithSeats))
+          .catch((err) => reject(err));
+      }
+    );
+  });
+};
 
 const getBuses = () => {
   return new Promise((resolve, reject) => {
@@ -393,12 +496,12 @@ const getBuses = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(row)
+        console.log(row);
         resolve(row);
       }
     );
   });
-}
+};
 
 const EditSchedule = (id) => {
   return new Promise((resolve, reject) => {
@@ -416,7 +519,7 @@ const EditSchedule = (id) => {
         id.Description,
         id.Image,
         id.BusID,
-        id.ScheduleID
+        id.ScheduleID,
       ],
       (err) => {
         if (err) {
@@ -441,6 +544,25 @@ const addStation = (id) => {
           return reject("Error querying the database.");
         }
         resolve();
+      }
+    );
+  });
+};
+
+const checkAvailableSeats = (scheduleID) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT s.SeatID, s.SeatCode
+       FROM Seats s
+       LEFT JOIN Bookings b ON s.SeatID = b.SeatID AND b.ScheduleID = ?
+       WHERE b.SeatID IS NULL`,
+      [scheduleID],
+      (err, rows) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        resolve(rows);
       }
     );
   });
@@ -514,4 +636,96 @@ const addBus = (id) => {
   });
 };
 
-export { registerCustomer, login, createEmployee, getRoutes, deleteSchedule, getOneSchedule, historyEmp, getBusStops, getEmployees, historyCus, EditSchedule, getBuses, addStation, addSchedule, addRoute, addBus, getSchedules };
+const saveBookingAndPayment = (bookingData, paymentData, userId) => {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run("BEGIN TRANSACTION");
+
+      db.run(
+        `INSERT INTO Bookings (CustomerID, ScheduleID, BookingDate, SeatId, Status)
+         VALUES (?, ?, datetime('now'), ?, False)`,
+        [userId, bookingData.scheduleID, bookingData.seatId],
+        function (err) {
+          if (err) {
+            db.run("ROLLBACK");
+            return reject(err);
+          }
+
+          const bookingID = this.lastID;
+          db.run(
+            `INSERT INTO Payment (BookingID, Amount, PaymentTime, PaymentMethod)
+             VALUES (?, ?, datetime('now'), ?)`,
+            [
+              bookingID,
+              getSchedulePrice(bookingData.scheduleID),
+              paymentData.paymentMethod,
+            ],
+            function (err) {
+              if (err) {
+                db.run("ROLLBACK");
+                return reject(err);
+              }
+
+              db.run("COMMIT");
+              db.get(
+                `SELECT BookingCode, PaymentCode
+                 FROM Bookings b
+                 JOIN Payment p ON b.BookingID = p.BookingID
+                 WHERE b.BookingID = ?`,
+                [bookingID],
+                (err, row) => {
+                  if (err) {
+                    return reject(err);
+                  }
+                  resolve(row);
+                }
+              );
+            }
+          );
+        }
+      );
+    });
+  });
+};
+
+const getSchedulePrice = (scheduleID) => {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `SELECT Price
+       FROM Schedules
+       WHERE ScheduleID = ?`,
+      [scheduleID],
+      (err, row) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        resolve(row.Price);
+      }
+    );
+  });
+};
+
+export {
+  registerCustomer,
+  login,
+  createEmployee,
+  getRoutes,
+  deleteSchedule,
+  getOneSchedule,
+  historyEmp,
+  getBusStops,
+  getEmployees,
+  historyCus,
+  getTrips,
+  EditSchedule,
+  getBuses,
+  checkAvailableSeats,
+  saveBookingAndPayment,
+  getSchedulePrice,
+  getReturnTrips,
+  addStation,
+  addBus,
+  addSchedule,
+  addRoute
+};

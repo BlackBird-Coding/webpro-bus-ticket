@@ -10,7 +10,7 @@
   let destinationOptions: any[] = [];
   let originBusStops: any[] = [];
   let destinationBusStops: any[] = [];
-  let tripType = 0; // 1: One-way, 0: Round-trip
+  let tripType = "1"; // Default to 1 (One-way trip)
 
   onMount(async () => {
     try {
@@ -23,6 +23,7 @@
     }
   });
 
+  // Reactive updates when origin or destination changes
   $: if (originProvince) {
     updateDestinationOptions();
     updateOriginBusStops();
@@ -47,7 +48,7 @@
     );
     originBusStops = [
       ...new Set(matchingRoutes.map((route) => route.OriginBusStop)),
-    ]; // Changed to map `OriginBusStop`
+    ];
   }
 
   function updateDestinationBusStops() {
@@ -60,14 +61,12 @@
   }
 
   function searchTrips() {
-    // Filter the routes that match both origin and destination provinces
     const matchingRoute = routes.find(
       (route) =>
         route.OriginProvince === originProvince &&
         route.DestinationProvince === destinationProvince
     );
 
-    // If a matching route is found, log the RouteID, otherwise indicate no match
     if (matchingRoute) {
       console.log("Found RouteID:", matchingRoute.RouteID);
     } else {
@@ -83,7 +82,9 @@
       RouteID: matchingRoute?.RouteID,
     });
 
-    navigate(`/booking/trip/?id=${matchingRoute?.RouteID}`); // Adjust the route to navigate to
+    navigate(
+      `/booking/trip/?id=${matchingRoute?.RouteID}&date=${myBindDate}&type=${tripType}&return=${returnDate}`
+    );
   }
 </script>
 
@@ -103,7 +104,11 @@
   <!-- Origin Province Selection -->
   <div class="mb-3">
     <label for="origin">จังหวัดต้นทาง</label>
-    <select id="origin" bind:value={originProvince} class="w-full p-2 border">
+    <select
+      id="origin"
+      bind:value={originProvince}
+      class="w-full p-2 border rounded-lg"
+    >
       <option value="">--เลือกจังหวัด--</option>
       {#each [...new Set(routes.map((route) => route.OriginProvince))] as province}
         <option value={province}>{province}</option>
@@ -116,7 +121,7 @@
     <label for="originBusStop">จุดขึ้นรถ</label>
     <select
       id="originBusStop"
-      class="w-full p-2 border"
+      class="w-full p-2 border rounded-lg"
       disabled={!originProvince}
     >
       <option value="">--เลือกจุดขึ้นรถ--</option>
@@ -132,7 +137,7 @@
     <select
       id="destination"
       bind:value={destinationProvince}
-      class="w-full p-2 border"
+      class="w-full p-2 border rounded-lg"
       disabled={!originProvince}
     >
       <option value="">--เลือกจังหวัด--</option>
@@ -147,7 +152,7 @@
     <label for="destinationBusStop">จุดลงรถ</label>
     <select
       id="destinationBusStop"
-      class="w-full p-2 border"
+      class="w-full p-2 border rounded-lg"
       disabled={!destinationProvince}
     >
       <option value="">--เลือกจุดลงรถ--</option>
@@ -164,24 +169,26 @@
       name="outboundDate"
       type="date"
       bind:value={myBindDate}
-      class="border p-2 w-full"
+      class="border p-2 w-full rounded-lg"
     />
   </div>
 
-  <!-- Date Picker for Return -->
-  <div class="mb-3 flex">
-    <label class="w-32" for="returnDate">วันเดินทางกลับ</label>
-    <input
-      name="returnDate"
-      type="date"
-      bind:value={returnDate}
-      class="border p-2 w-full"
-    />
-  </div>
+  <!-- Date Picker for Return (Hidden for One-way trip) -->
+  {#if tripType === "0"}
+    <div class="mb-8 flex">
+      <label class="w-32" for="returnDate">วันเดินทางกลับ</label>
+      <input
+        name="returnDate"
+        type="date"
+        bind:value={returnDate}
+        class="border p-2 w-full rounded-lg"
+      />
+    </div>
+  {/if}
 
   <!-- Search Button -->
   <button
-    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+    class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg w-full"
     on:click={searchTrips}
   >
     ค้นหาเที่ยวรถ
