@@ -76,7 +76,7 @@
       </ul>
 
       <p class="text-base text-gray-300 max-lg:order-1">
-        BusXThailand
+        BusBuss
       </p>
       <ul class="flex gap-x-6 gap-y-2 flex-wrap">
         <li>

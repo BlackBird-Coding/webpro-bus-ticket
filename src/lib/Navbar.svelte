@@ -44,7 +44,7 @@
       <img src={logo} class="h-12" alt="Pim Logo" />
       <span
         class="text-white self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-        >BusXThailand</span
+        >BusBuss</span
       >
     </div>
 
