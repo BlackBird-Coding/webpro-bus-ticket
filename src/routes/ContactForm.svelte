@@ -14,7 +14,7 @@
     <p class="mt-4 text-gray-700 text-lg leading-relaxed">
       ติดต่ออีเมล: 
       <a href="mailto:info@busxthailand.in.th" class="text-indigo-600 hover:underline">
-        info@busxthailand.in.th
+        info@busbuss.in.th
       </a>
     </p>
     
