@@ -47,16 +47,15 @@
       <Route path="/booking/find" component={Find} />
       <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
-      <UserAuthCheck requiredUserType="employee">
+      <!-- <UserAuthCheck requiredUserType="employee"> -->
         <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
-        <Route path="/AddSchedule" component={AddSchedule} />
         <Route path="/AddStation" component={AddStation} />
         <Route path="/AddBus" component={AddBus} />
         <Route path="/AddRoute" component={AddRoute} />
         <Route path="/History_Emp" component={History_Emp} />
-      </UserAuthCheck>
+        <Route path="/EditSchedule" component={EditSchedule} />
+      <!-- </UserAuthCheck> -->
       <Route path="/ticket-details" component={TicketDetails} />
-      <Route path="/EditSchedule" component={EditSchedule} />
       <Route path="/reschedule" component={Reschedule} />
       <Route path="/rebooking/trip" component={ReTrip} />
     </Router>
