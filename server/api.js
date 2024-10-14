@@ -4,14 +4,19 @@ import {
   login,
   createEmployee,
   getRoutes,
-  deleteRoute,
-  getOneRoute,
+  deleteSchedule,
+  getOneSchedule,
   historyEmp,
   getBusStops,
   getEmployees,
   historyCus,
-  saveEditBus,
-  getBuses
+  EditSchedule,
+  getBuses,
+  addStation,
+  addSchedule,
+  addRoute,
+  addBus,
+  getSchedules
 } from "./service.js";
 const router = express.Router();
 
@@ -62,10 +67,10 @@ router.get("/user", (req, res) => {
   res.json({ user: req.session.user } || {});
 });
 
-router.get("/ManageBus_Emp", (req, res) => {
-  getRoutes()
-    .then((routes) => {
-      res.json({ routes });
+router.get("/getSchedules", (req, res) => {
+  getSchedules()
+    .then((schedule) => {
+      res.json({ schedule });
     })
     .catch((error) => {
       res.status(500).json({ error });
@@ -82,9 +87,12 @@ router.get("/BusStops", (req, res) => {
     });
 });
 
-router.post("/EditBus", (req, res) => {
-  getOneRoute(req.body.id)
+router.post("/GetOneSchedule", (req, res) => {
+  console.log('post', req.body.id)
+  getOneSchedule(req.body.id)
     .then((routes) => {
+      console.log('post',routes)
+
       res.json({ routes });
     })
     .catch((error) => {
@@ -92,8 +100,8 @@ router.post("/EditBus", (req, res) => {
     });
 });
 
-router.post("/DeleteRoute", (req, res) => {
-  deleteRoute(id).then(
+router.post("/DeleteSchedule", (req, res) => {
+  deleteSchedule(req.body.id).then(
     () => {
       res.json({ message: "Delete Route successful!" });
     },
@@ -134,8 +142,8 @@ router.get("/historyCus", (req, res) => {
     });
 });
 
-router.post('/SaveEditBus', (req,res) => {
-  saveEditBus(req.body)
+router.post('/EditSchedule', (req,res) => {
+  EditSchedule(req.body)
     .then(() => {
       res.json({ message: "Save successful!" });
     })
@@ -148,6 +156,46 @@ router.get("/getBuses", (req, res) => {
   getBuses()
     .then((Buses) => {
       res.json({ Buses});
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.post('/AddStation', (req,res) => {
+  addStation(req.body)
+    .then(() => {
+      res.json({ message: "Save Station successful!" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.post('/AddSchedule', (req,res) => {
+  addSchedule(req.body)
+    .then(() => {
+      res.json({ message: "Save New Schedule successful!" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.post('/AddRoute', (req,res) => {
+  addRoute(req.body)
+    .then(() => {
+      res.json({ message: "Save New Schedule successful!" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.post('/AddBus', (req,res) => {
+  addBus(req.body)
+    .then(() => {
+      res.json({ message: "Save New Schedule successful!" });
     })
     .catch((error) => {
       res.status(500).json({ error });

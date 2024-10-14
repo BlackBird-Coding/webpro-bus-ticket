@@ -54,9 +54,7 @@ db.serialize(() => {
   Name VARCHAR(100) NOT NULL,
   Address VARCHAR(200) NOT NULL,
   Subprovince VARCHAR(100) NOT NULL,
-  Province VARCHAR(100) NOT NULL,
-  Latitude DECIMAL(9,6) NOT NULL,
-  Longitude DECIMAL(9,6) NOT NULL
+  Province VARCHAR(100) NOT NULL
 );`);
 
   // Create ROUTES table
@@ -66,7 +64,6 @@ db.serialize(() => {
   RouteName VARCHAR(100) NOT NULL,
   Origin INTEGER NOT NULL,
   Destination INTEGER NOT NULL,
-  Distance DECIMAL(5,2) NOT NULL,
   FOREIGN KEY (Origin) REFERENCES BusStops(BusStopID),
   FOREIGN KEY (Destination) REFERENCES BusStops(BusStopID)
 );`);
@@ -83,6 +80,7 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS Schedules (
   ScheduleID INTEGER PRIMARY KEY AUTOINCREMENT,
   ScheduleCode TEXT GENERATED ALWAYS AS (printf('H%03d', ScheduleID)),
+  ScheduleName VARCHAR(100) NOT NULL,
   RouteID INTEGER NOT NULL,
   BusID INTEGER NOT NULL,
   EmployeeID INTEGER NOT NULL,

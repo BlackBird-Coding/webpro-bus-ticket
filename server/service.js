@@ -236,7 +236,30 @@ const getRoutes = () => {
   });
 };
 
-const getOneRoute = (id) => {
+const getSchedules = () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT S.*, B.*, R.Origin, R.Destination, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop
+       FROM Schedules S
+       JOIN Routes R ON S.RouteID = R.RouteID
+       JOIN BusStops BS1 ON R.Origin = BS1.BusStopID
+       JOIN BusStops BS2 ON R.Destination = BS2.BusStopID
+       JOIN Buses B ON B.BusID = S.BusID
+       JOIN Employees E ON E.UserID = S.EmployeeID
+       `,
+      (err, schedule) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log('function', schedule);
+        resolve(schedule);
+      }
+    );
+  });
+};
+
+const getOneSchedule = (id) => {
   console.log("fc", id);
   return new Promise((resolve, reject) => {
     db.all(
@@ -244,7 +267,7 @@ const getOneRoute = (id) => {
       BS1.Subprovince AS OriginSubprovince, BS2.Subprovince AS DestinationSubprovince, 
       BS1.Address AS OriginAddress, BS2.Address AS DestinationAddress, 
       BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.*,
-      U.UserCode, E.fname, E.lname, E.Role, E.Phone
+      U.UserCode, E.fname, E.lname, E.Phone
       FROM ROUTES R 
       JOIN BUSSTOPS BS1 ON R.Origin = BS1.BusStopID 
       JOIN BUSSTOPS BS2 ON R.Destination = BS2.BusStopID 
@@ -252,14 +275,14 @@ const getOneRoute = (id) => {
       JOIN BUSES B ON B.BusID = S.BusID 
       JOIN EMPLOYEES E ON E.UserID = S.EmployeeID
       JOIN USERS U ON E.UserID = U.UserID
-      WHERE R.RouteID = ?`,
+      WHERE S.ScheduleID = ?`,
       [id],
       (err, routes) => {
         if (err) {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(routes);
+        console.log('function', routes);
         resolve(routes);
       }
     );
@@ -283,10 +306,10 @@ const getBusStops = () => {
   });
 };
 
-const deleteRoute = (id) => {
+const deleteSchedule = (id) => {
   console.log(id);
   return new Promise((resolve, reject) => {
-    db.run(`DELETE FROM ROUTES WHERE RouteID = ?`, [id], (err) => {
+    db.run(`DELETE FROM Schedules WHERE ScheduleID = ?`, [id], (err) => {
       if (err) {
         console.error("Error querying the database:", err.message);
         return reject("Error querying the database.");
@@ -377,13 +400,15 @@ const getBuses = () => {
   });
 }
 
-const saveEditBus = (id) => {
+const EditSchedule = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
       `UPDATE Schedules
-       SET EmployeeID = ?, DepartureTime = ?, ArrivalTime = ?, Price = ?, Description = ?, Image = ?, BusID = ?
+       SET ScheduleName = ?, RouteID = ?, EmployeeID = ?, DepartureTime = ?, ArrivalTime = ?, Price = ?, Description = ?, Image = ?, BusID = ?
        WHERE ScheduleID = ?`,
       [
+        id.ScheduleName,
+        id.RouteID,
         id.EmployeeID,
         id.DepartureTime,
         id.ArrivalTime,
@@ -398,29 +423,95 @@ const saveEditBus = (id) => {
           console.error("Error updating Schedules:", err.message);
           return reject("Error updating Schedules.");
         }
-
-        // Now update Routes
-        db.run(
-          `UPDATE Routes
-           SET RouteName = ?, Origin = ?, Destination = ?
-           WHERE RouteID = ?`,
-          [
-            id.RouteName,
-            id.Origin,
-            id.Destination,
-            id.RouteID
-          ],
-          (err) => {
-            if (err) {
-              console.error("Error updating Routes:", err.message);
-              return reject("Error updating Routes.");
-            }
-            resolve();
-          }
-        );
+        resolve();
       }
     );
   });
 };
 
-export { registerCustomer, login, createEmployee, getRoutes, deleteRoute, getOneRoute, historyEmp, getBusStops, getEmployees, historyCus, saveEditBus, getBuses};
+const addStation = (id) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `INSERT INTO BusStops (Name, Address, Subprovince, Province)
+      VALUES (?, ?, ?, ?)`,
+      [id.Name, id.Address, id.Subprovince, id.Province],
+      (err) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        resolve();
+      }
+    );
+  });
+};
+
+const addSchedule = (id) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `INSERT INTO Schedules (RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description, Image)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id.RouteID,
+        id.BusID,
+        id.EmployeeID,
+        id.DepartureTime,
+        id.ArrivalTime,
+        id.Price,
+        id.Description,
+        id.Image
+      ],
+      (err) => {
+        if (err) {
+          console.error("Error updating Schedules:", err.message);
+          return reject("Error updating Schedules.");
+        }
+      }
+    );
+    resolve();
+  });
+};
+
+const addRoute = (id) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `INSERT INTO Routes (RouteName, Origin, Destination)
+       VALUES (?, ?, ?)`,
+      [
+        id.RouteName,
+        id.Origin,
+        id.Destination
+      ],
+      (err) => {
+        if (err) {
+          console.error("Error updating Schedules:", err.message);
+          return reject("Error updating Schedules.");
+        }
+      }
+    );
+    resolve()
+  });
+};
+
+
+const addBus = (id) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `INSERT INTO Buses (Capacity, Type)
+       VALUES (?, ?)`,
+      [
+        id.Capacity,
+        id.Type
+      ],
+      (err) => {
+        if (err) {
+          console.error("Error updating Schedules:", err.message);
+          return reject("Error updating Schedules.");
+        }
+      }
+    );
+    resolve()
+  });
+};
+
+export { registerCustomer, login, createEmployee, getRoutes, deleteSchedule, getOneSchedule, historyEmp, getBusStops, getEmployees, historyCus, EditSchedule, getBuses, addStation, addSchedule, addRoute, addBus, getSchedules };

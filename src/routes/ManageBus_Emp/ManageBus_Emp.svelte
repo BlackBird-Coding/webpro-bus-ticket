@@ -12,15 +12,14 @@
         Button,
     } from "flowbite-svelte";
 
-    let showTooltip = false; // state to control tooltip visibility
-    let tripdata = [];
+    let schedules = [];
 
     // Function to navigate to the second page with the ID passed in the URL
     function goToPage(id, mode) {
-        navigate(`/EditBus?id=${id}&mode=${mode}`, { replace: false }); // Pass the button ID as a query parameter
+        navigate(`/EditSchedule?id=${id}&mode=${mode}`, { replace: false }); // Pass the button ID as a query parameter
     }
 
-    fetch(`/api/ManageBus_Emp`, {
+    fetch(`/api/getSchedules`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -34,7 +33,7 @@
         })
         .then((data) => {
             console.log(data);
-            tripdata = data.routes;
+            schedules = data.schedule;
         })
         .catch((error) => {
             console.error(
@@ -55,7 +54,7 @@
             cancelButtonText: "ยกเลิก",
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch("/api/DeleteRoute", {
+                fetch("/api/DeleteSchedule", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -74,7 +73,7 @@
                             text: "เที่ยวรถถูกลบเรียบร้อยแล้ว",
                             icon: "success",
                         });
-                        location.reload()
+                        location.reload();
                     })
                     .catch((error) => {
                         console.error(
@@ -85,7 +84,6 @@
             }
         });
     }
-
 </script>
 
 <div class="m-10">
@@ -133,31 +131,120 @@
                 >
             </div>
         </form>
-        <a href="/AddBus"
+
+        <a href="/AddSchedule"
             ><Button
-                id="add-bus"
+                id="add-schedule"
                 class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
             >
                 <div>
                     <svg
                         class="w-6 h-6 fill-[#ffffff]"
-                        viewBox="0 0 448 512"
+                        version="1.1"
+                        id="_x32_"
                         xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        viewBox="0 0 512 512"
+                        xml:space="preserve"
+                        fill="#000000"
+                        ><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        ></g><g id="SVGRepo_iconCarrier">
+                            <style type="text/css">
+                                .st0 {
+                                    fill: #ffffff;
+                                }
+                            </style>
+                            <g>
+                                <rect
+                                    x="119.256"
+                                    y="222.607"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="341.863"
+                                    y="222.607"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="267.662"
+                                    y="222.607"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="119.256"
+                                    y="302.11"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="267.662"
+                                    y="302.11"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="193.46"
+                                    y="302.11"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="341.863"
+                                    y="381.612"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="267.662"
+                                    y="381.612"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <rect
+                                    x="193.46"
+                                    y="381.612"
+                                    class="st0"
+                                    width="50.881"
+                                    height="50.885"
+                                ></rect>
+                                <path
+                                    class="st0"
+                                    d="M439.277,55.046h-41.376v39.67c0,14.802-12.195,26.84-27.183,26.84h-54.025 c-14.988,0-27.182-12.038-27.182-26.84v-39.67h-67.094v39.297c0,15.008-12.329,27.213-27.484,27.213h-53.424 c-15.155,0-27.484-12.205-27.484-27.213V55.046H72.649c-26.906,0-48.796,21.692-48.796,48.354v360.246 c0,26.661,21.89,48.354,48.796,48.354h366.628c26.947,0,48.87-21.692,48.87-48.354V103.4 C488.147,76.739,466.224,55.046,439.277,55.046z M453.167,462.707c0,8.56-5.751,14.309-14.311,14.309H73.144 c-8.56,0-14.311-5.749-14.311-14.309V178.089h394.334V462.707z"
+                                ></path>
+                                <path
+                                    class="st0"
+                                    d="M141.525,102.507h53.392c4.521,0,8.199-3.653,8.199-8.144v-73.87c0-11.3-9.27-20.493-20.666-20.493h-28.459 c-11.395,0-20.668,9.192-20.668,20.493v73.87C133.324,98.854,137.002,102.507,141.525,102.507z"
+                                ></path>
+                                <path
+                                    class="st0"
+                                    d="M316.693,102.507h54.025c4.348,0,7.884-3.513,7.884-7.826V20.178C378.602,9.053,369.474,0,358.251,0H329.16 c-11.221,0-20.349,9.053-20.349,20.178v74.503C308.81,98.994,312.347,102.507,316.693,102.507z"
+                                ></path>
+                            </g>
+                        </g></svg
                     >
-                        <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                        <path
-                            d="M224 0C348.8 0 448 35.2 448 80V96 416c0 17.7-14.3 32-32 32v32c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V448H128v32c0 17.7-14.3 32-32 32H64c-17.7 0-32-14.3-32-32l0-32c-17.7 0-32-14.3-32-32V96 80C0 35.2 99.2 0 224 0zM64 128V256c0 17.7 14.3 32 32 32H352c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32H96c-17.7 0-32 14.3-32 32zM80 400a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm288 0a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"
-                        ></path>
-                    </svg>
                 </div></Button
             >
             <Tooltip
                 class="text-xs z-50 py-1"
                 type="dark"
-                triggeredBy="#add-bus"
+                triggeredBy="#add-schedule"
                 placement="bottom"
             >
-                Add Trip
+                Add Schedule
             </Tooltip></a
         >
 
@@ -184,7 +271,69 @@
                 triggeredBy="#add-station"
                 placement="bottom"
             >
-                Add Stop
+                Add Station
+            </Tooltip></a
+        >
+        <a href="/AddBus"
+            ><Button
+                id="add-bus"
+                class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
+            >
+                <div>
+                    <svg
+                        class="w-6 h-6 fill-[#ffffff]"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <path
+                            d="M224 0C348.8 0 448 35.2 448 80V96 416c0 17.7-14.3 32-32 32v32c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V448H128v32c0 17.7-14.3 32-32 32H64c-17.7 0-32-14.3-32-32l0-32c-17.7 0-32-14.3-32-32V96 80C0 35.2 99.2 0 224 0zM64 128V256c0 17.7 14.3 32 32 32H352c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32H96c-17.7 0-32 14.3-32 32zM80 400a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm288 0a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"
+                        ></path>
+                    </svg>
+                </div></Button
+            >
+            <Tooltip
+                class="text-xs z-50 py-1"
+                type="dark"
+                triggeredBy="#add-bus"
+                placement="bottom"
+            >
+                Add Bus
+            </Tooltip></a
+        >
+        <a href="/AddRoute"
+            ><Button
+                id="add-route"
+                class="ml-0 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
+            >
+                <div>
+                    <svg
+                        class="w-6 h-6 fill-none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="#ffffff"
+                        ><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        ></g><g id="SVGRepo_iconCarrier">
+                            <path
+                                d="M6 21C7.5 19.4 9 17.9673 9 16.2C9 14.4327 7.65685 13 6 13C4.34315 13 3 14.4327 3 16.2C3 17.9673 4.5 19.4 6 21ZM6 21H17.5C18.8807 21 20 19.8807 20 18.5C20 17.1193 18.8807 16 17.5 16H15M18 11C19.5 9.4 21 7.96731 21 6.2C21 4.43269 19.6569 3 18 3C16.3431 3 15 4.43269 15 6.2C15 7.96731 16.5 9.4 18 11ZM18 11H14.5C13.1193 11 12 12.1193 12 13.5C12 14.8807 13.1193 16 14.5 16H15.6"
+                                stroke="#ffffff"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></path>
+                        </g></svg
+                    >
+                </div></Button
+            >
+            <Tooltip
+                class="text-xs z-50 py-1"
+                type="dark"
+                triggeredBy="#add-route"
+                placement="bottom"
+            >
+                Add Route
             </Tooltip></a
         >
     </div>
@@ -200,28 +349,33 @@
             <TableHeadCell>Action</TableHeadCell>
         </TableHead>
         <TableBody>
-            {#each tripdata as trip}
+            {#each schedules as data}
                 <TableBodyRow class="text-center">
-                    <TableBodyCell>{trip.RouteCode}</TableBodyCell>
-                    <TableBodyCell>{trip.RouteName} ({trip.Type})</TableBodyCell
+                    <TableBodyCell>{data.ScheduleCode}</TableBodyCell>
+                    <TableBodyCell>{data.ScheduleName} ({data.Type})</TableBodyCell
                     >
                     <TableBodyCell
-                        >({trip.DepartureTime.toLocaleString().slice(2, -3)}) - ({trip.ArrivalTime.toLocaleString().slice(2, -3)})</TableBodyCell
+                        >({data.DepartureTime.toLocaleString().slice(2, -3)}) -
+                        ({data.ArrivalTime.toLocaleString().slice(
+                            2,
+                            -3,
+                        )})</TableBodyCell
                     >
-                    <TableBodyCell>{trip.Capacity}</TableBodyCell>
+                    <TableBodyCell>{data.Capacity}</TableBodyCell>
                     <TableBodyCell>
                         <button
-                            on:click={() => goToPage(trip.RouteID, 'view')}
+                            on:click={() => goToPage(data.ScheduleID, "view")}
                             class="text-blue-500 hover:underline">คลิก</button
                         >
                     </TableBodyCell>
                     <TableBodyCell class="flex gap-5">
                         <button
-                            on:click={() => goToPage(trip.RouteID, 'edit')}
-                            class="text-orange-400 hover:text-aorange-500 hover:underline">แก้ไข</button
+                            on:click={() => goToPage(data.ScheduleID, "edit")}
+                            class="text-orange-400 hover:text-aorange-500 hover:underline"
+                            >แก้ไข</button
                         >
                         <button
-                            on:click={deleteCard(trip.RouteID)}
+                            on:click={deleteCard(data.ScheduleID)}
                             class="text-red-600 hover:underline"
                             id="showCardButton"
                         >

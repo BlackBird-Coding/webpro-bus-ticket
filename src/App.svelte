@@ -14,9 +14,11 @@
   import ContactForm from "./routes/ContactForm.svelte";
   import TicketDetails from "./routes/BookingHistory/TicketDetails.svelte";
   import ManageBus_Emp from "./routes/ManageBus_Emp/ManageBus_Emp.svelte";
-  import AddBus from "./routes/ManageBus_Emp/AddBus.svelte";
+  import AddSchedule from "./routes/ManageBus_Emp/AddSchedule.svelte";
   import AddStation from "./routes/ManageBus_Emp/AddStation.svelte";
-  import EditBus from "./routes/ManageBus_Emp/EditBus.svelte";
+  import AddRoute from "./routes/ManageBus_Emp/AddRoute.svelte";
+  import AddBus from "./routes/ManageBus_Emp/AddBus.svelte";
+  import EditSchedule from "./routes/ManageBus_Emp/EditSchedule.svelte";
   import Navbar from "./lib/Navbar.svelte";
   import Footer from "./lib/Footer.svelte";
   import Reschedule from "./routes/BookingHistory/Reschedule.svelte";
@@ -45,11 +47,13 @@
       <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
       <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
-      <Route path="/AddBus" component={AddBus} />
+      <Route path="/AddSchedule" component={AddSchedule} />
       <Route path="/AddStation" component={AddStation} />
+      <Route path="/AddBus" component={AddBus} />
+      <Route path="/AddRoute" component={AddRoute} />
       <Route path="/History_Emp" component={History_Emp} />
       <Route path="/ticket-details" component={TicketDetails} />
-      <Route path="/EditBus" component={EditBus} />
+      <Route path="/EditSchedule" component={EditSchedule} />
       <Route path="/reschedule" component={Reschedule} />
     </Router>
   </main>

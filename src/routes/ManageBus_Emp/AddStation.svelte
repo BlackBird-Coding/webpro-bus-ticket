@@ -1,39 +1,73 @@
 <script>
-    import Map from "@anoram/leaflet-svelte";
+    import Swal from "sweetalert2";
+    import { navigate } from "svelte-routing";
 
-    let options = {
-        zoom: 5,
-        center: [13, 80],
-        mapID: "map",
-        markers: [
-            {
-                lat: 13,
-                lng: 80,
-                popup: {
-                    isOpen: true,
-                    text: `Static Marker`,
-                },
-            },
-        ],
+    let busstop = {
+        Name: null,
+        Address: null,
+        Subprovince: null,
+        Province: null,
     };
 
-    let MAP_EL;
-    let latlng = "";
-    let lt = "",
-        ln = "";
-    async function init() {
-        let map = MAP_EL.getMap();
-        // You can write almost any leaflet functions
-        map.on("click", function (e) {
-            latlng = e.latlng;
-            lt = e.latlng.lat;
-            ln = e.latlng.lng;
-            var popLocation = e.latlng;
-            L.popup()
-                .setLatLng(popLocation)
-                .setContent(`<p>${e.latlng}</p>`)
-                .openOn(map);
+    async function saveChanges() {
+        try {
+            const res = await fetch(`/api/AddStation`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(busstop),
+            });
+
+            console.log("Received response:", res);
+
+            if (!res.ok) {
+                const text = await res.text();
+                console.error(
+                    `HTTP error! status: ${res.status}, body: ${text}`,
+                );
+                throw new Error(
+                    `HTTP error! status: ${res.status}, body: ${text}`,
+                );
+            }
+
+            const data = await res.json();
+            console.log("Response data:", data);
+            console.log("Successfully saved Bus");
+            return data; // Return the data in case it's needed later
+        } catch (error) {
+            console.error("SaveRoute error:", error);
+            throw error; // Re-throw the error to be caught in saveEdit
+        }
+    }
+
+    async function saveEdit() {
+        const result = await Swal.fire({
+            title: "คุณต้องการบันทึกจุดขึ้นรถ-ลงรถนี้หรือไม่?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "บันทึก",
+            denyButtonText: `ไม่บันทึก`,
+            cancelButtonText: "ยกเลิก",
         });
+        if (result.isConfirmed) {
+            try {
+                await saveChanges();
+                console.log("sussces");
+                await Swal.fire("บันทึกจุดขึ้นรถ-ลงรถเรียบร้อย!", "", "success");
+                navigate(`/ManageBus_Emp`, { replace: true });
+            } catch (error) {
+                console.error("SaveRoute error:", error);
+                await Swal.fire(
+                    "เกิดข้อผิดพลาด!",
+                    "ไม่สามารถบันทึกข้อมูลได้",
+                    "error",
+                );
+            }
+        } else if (result.isDenied) {
+            await Swal.fire("การบันทึกถูกยกเลิก", "", "info");
+            navigate(`/ManageBus_Emp`, { replace: true });
+        }
     }
 </script>
 
@@ -51,14 +85,16 @@
                 <div
                     class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6"
                 >
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-6">
                         <label
                             for="first-name"
                             class="block text-base font-medium leading-6 text-gray-900"
-                            >ชื่อ</label
+                            >ชื่อจุดขึ้นรถ-ลงรถ</label
                         >
                         <div class="mt-2">
                             <input
+                                bind:value={busstop.Name}
+                                required
                                 type="text"
                                 name="first-name"
                                 id="first-name"
@@ -68,14 +104,16 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-6">
                         <label
                             for="last-name"
                             class="block text-base font-medium leading-6 text-gray-900"
-                            >รายละเอียด</label
+                            >ที่อยู่</label
                         >
                         <div class="mt-2">
-                            <input
+                            <textarea
+                                bind:value={busstop.Address}
+                                required
                                 type="text"
                                 name="last-name"
                                 id="last-name"
@@ -87,118 +125,40 @@
 
                     <div class="sm:col-span-3">
                         <label
-                            for="start-time"
-                            class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
+                            for="last-name"
+                            class="block text-base font-medium leading-6 text-gray-900"
                             >อำเภอ</label
                         >
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
-                            </div>
-                            <input
-                                type="time"
-                                id="start-time"
-                                class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                min="09:00"
-                                max="18:00"
-                                value="00:00"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-3">
-                        <label
-                            for="start-time"
-                            class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-                            >จังหวัด</label
-                        >
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
-                            </div>
-                            <input
-                                type="time"
-                                id="start-time"
-                                class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                min="09:00"
-                                max="18:00"
-                                value="00:00"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-3">
-                        <label
-                            for="latitude"
-                            class="block text-base font-medium leading-6 text-gray-900"
-                            >ละติจุด</label
-                        >
                         <div class="mt-2">
                             <input
-                                value={lt}
-                                disabled
+                                bind:value={busstop.Subprovince}
+                                required
                                 type="text"
-                                name="latitude"
-                                id="latitude"
-                                autocomplete="given-name"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-3">
-                        <label
-                            for="longitude"
-                            class="block text-base font-medium leading-6 text-gray-900"
-                            >ลองจิจุด</label
-                        >
-                        <div class="mt-2">
-                            <input
-                                value={ln}
-                                disabled
-                                type="text"
-                                name="longitude"
-                                id="longitude"
+                                name="last-name"
+                                id="last-name"
                                 autocomplete="family-name"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
-                </div>
-                <br>
-                <br>
-                <div class="map">
-                    <Map {options} bind:this={MAP_EL} on:ready={init} />
+                    <div class="sm:col-span-3">
+                        <label
+                            for="last-name"
+                            class="block text-base font-medium leading-6 text-gray-900"
+                            >จังหวัด</label
+                        >
+                        <div class="mt-2">
+                            <input
+                                bind:value={busstop.Province}
+                                required
+                                type="text"
+                                name="last-name"
+                                id="last-name"
+                                autocomplete="family-name"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -209,7 +169,8 @@
                     >Cancel</button
                 >
                 <button
-                    type="submit"
+                    on:click={saveEdit}
+                    type="button"
                     class="rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >Save</button
                 >
@@ -219,8 +180,4 @@
 </div>
 
 <style>
-    .map {
-        height: 300px;
-        width: auto;
-    }
 </style>

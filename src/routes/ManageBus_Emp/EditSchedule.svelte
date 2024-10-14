@@ -3,9 +3,9 @@
     import { Tooltip, Button } from "flowbite-svelte";
     import Swal from "sweetalert2";
     import Trip from "../Booking/Trip.svelte";
-    import { Route } from "svelte-routing";
+    import { Route, navigate } from "svelte-routing";
     import { Upload } from "lucide-svelte";
-    import { base64 } from "@sveu/browser"
+    import { base64 } from "@sveu/browser";
 
     let inputs = [{}]; // Array to store input values
     let id = null;
@@ -14,6 +14,7 @@
     let mode = null;
     let BusStops = [];
     let Buses = [];
+    let routes = []
 
     let departureDateTime = null;
     let departureDate = null;
@@ -28,37 +29,39 @@
 
     let fileInput;
     let previewImage = null;
+    let errorMessage = "";
+    let maxFileSizeMB = 1; // Default max file size is 1MB
 
-  const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
-  function handleFileChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImage = e.target.result;
-        dispatch('change', { image: e.target.result });
-      };
-      reader.readAsDataURL(file);
+    function handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage = e.target.result;
+                dispatch("change", { image: e.target.result });
+            };
+            reader.readAsDataURL(file);
+        }
     }
-  }
 
-  function handleDragOver(event) {
-    event.preventDefault();
-  }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImage = e.target.result;
-        dispatch('change', { image: e.target.result });
-      };
-      reader.readAsDataURL(file);
+    function handleDragOver(event) {
+        event.preventDefault();
     }
-  }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage = e.target.result;
+                dispatch("change", { image: e.target.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
 
     fetch("/api/employees", {
         method: "GET",
@@ -70,8 +73,26 @@
             return res.json();
         })
         .then((data) => {
-            console.log(data);
             employees = data.employees;
+        })
+        .catch((error) => {
+            console.error(
+                "There was a problem with the fetch operation:",
+                error,
+            );
+        });
+
+    fetch("/api/routes", {
+        method: "GET",
+    })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return res.json();
+        })
+        .then((data) => {
+            routes = data.routes;
         })
         .catch((error) => {
             console.error(
@@ -90,7 +111,6 @@
             return res.json();
         })
         .then((data) => {
-            console.log(data);
             Buses = data.Buses;
         })
         .catch((error) => {
@@ -111,7 +131,6 @@
         })
         .then((data) => {
             BusStops = data.BusStops;
-            console.log(data);
         })
         .catch((error) => {
             console.error(
@@ -138,12 +157,12 @@
         });
     }
 
-    function saveChanges() {
+    async function saveChanges() {
         // Prepare the data to be sent
         dataToSend = {
             ScheduleID: tripdata.ScheduleID,
+            ScheduleName: tripdata.ScheduleName,
             RouteID: tripdata.RouteID,
-            RouteName: tripdata.RouteName,
             BusID: tripdata.BusID,
             Price: tripdata.Price,
             EmployeeID: tripdata.EmployeeID,
@@ -153,62 +172,79 @@
                 departureDate + " " + departureTime + ".00",
             ),
             ArrivalTime: new Date(arrivalDate + " " + arrivalTime + ".00"),
-            DriverID: tripdata.DriverID,
+            EmployeeID: tripdata.EmployeeID,
             Description: tripdata.Description,
-            Image: tripdata.Image
+            Image: tripdata.Image,
         };
         console.log("datatosent:", JSON.stringify(dataToSend));
-        console.log("image", tripdata.Image)
-        console.log("image", base64(tripdata.Image))
+        console.log("image", tripdata.Image);
+        console.log("image", base64(tripdata.Image));
 
-        fetch(`/api/SaveEditBus`, {
+        try {
+            console.log("Starting saveChanges function");
+            console.log("Route data being sent:", route);
+
+            const res = await fetch(`/api/EditSchedule`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(dataToSend),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    return res.text().then((text) => {
-                        throw new Error(
-                            `HTTP error! status: ${res.status}, body: ${text}`,
-                        );
-                    });
-                }
-                return res.json();
-            })
-            .then((data) => {
-                console.log("Successfully saved changes:", data);
-                // Handle successful save (e.g., show a success message to the user)
-            })
-            .catch((error) => {
-                console.error("SaveEditBus error:", error);
             });
+
+            console.log("Received response:", res);
+
+            if (!res.ok) {
+                const text = await res.text();
+                console.error(
+                    `HTTP error! status: ${res.status}, body: ${text}`,
+                );
+                throw new Error(
+                    `HTTP error! status: ${res.status}, body: ${text}`,
+                );
+            }
+
+            const data = await res.json();
+            console.log("Response data:", data);
+            console.log("Successfully saved Bus");
+            return data; // Return the data in case it's needed later
+        } catch (error) {
+            console.error("SaveRoute error:", error);
+            throw error; // Re-throw the error to be caught in saveEdit
+        }
     }
 
-    function saveEdit() {
-        Swal.fire({
-            title: "คุณต้องการบันทึกการแก้ไขหรือไม่?",
+
+    async function saveEdit() {
+        const result = await Swal.fire({
+            title: "คุณต้องการบันทึกตารางเดินรถนี้หรือไม่?",
             showDenyButton: true,
             showCancelButton: true,
             confirmButtonText: "บันทึก",
             denyButtonText: `ไม่บันทึก`,
-            cancelButtonText: "ยกเลิก",
-        }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-                tripdata.Image = previewImage;
-                saveChanges();
-                Swal.fire("บันทึกเรียบร้อย!", "", "success");
-                toggleDisabled();
-            } else if (result.isDenied) {
-                Swal.fire("การแก้ไขถูกยกเลิก", "", "info");
-                toggleDisabled();
-            }
         });
-    }
 
+        if (result.isConfirmed) {
+            try {
+                tripdata.Image = previewImage;
+                await saveChanges();
+                console.log("sussces");
+                await Swal.fire("บันทึกเรียบร้อย!", "", "success");
+                navigate(`/ManageBus_Emp`, { replace: true });
+            } catch (error) {
+                console.error("SaveRoute error:", error);
+                await Swal.fire(
+                    "เกิดข้อผิดพลาด!",
+                    "ไม่สามารถบันทึกข้อมูลได้",
+                    "error",
+                );
+            }
+        } else if (result.isDenied) {
+            await Swal.fire("การบันทึกถูกยกเลิก", "", "info");
+            navigate(`/ManageBus_Emp`, { replace: true });
+        }
+    }
+    
     function addInput() {
         // Add a new empty input field
         inputs = [...inputs, {}];
@@ -236,7 +272,7 @@
             isDisabled = true;
         }
 
-        fetch(`/api/EditBus`, {
+        fetch(`/api/GetOneSchedule`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -283,7 +319,7 @@
             cancelButtonText: "ยกเลิก",
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch("/api/DeleteRoute", {
+                fetch("/api/DeleteSchedule", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -302,7 +338,7 @@
                             text: "เที่ยวรถถูกลบเรียบร้อยแล้ว",
                             icon: "success",
                         });
-                        location.reload();
+                        navigate(`/ManageBus_Emp`, { replace: true });
                     })
                     .catch((error) => {
                         console.error(
@@ -325,7 +361,7 @@
                             <h1
                                 class="text-2xl font-semibold leading-7 text-gray-900"
                             >
-                                {tripdata.RouteCode}: {tripdata.RouteName}
+                                {tripdata.ScheduleCode}: {tripdata.ScheduleName}
                             </h1>
                             <p class="mt-3 text-xs text-red-500">
                                 หากต้องการแก้ไขข้อมูล ให้คลิกปุ่มแก้ไขทางด้านขวา
@@ -364,7 +400,7 @@
                             </Tooltip>
 
                             <Button
-                                on:click={deleteCard(tripdata.RouteID)}
+                                on:click={deleteCard(tripdata.ScheduleID)}
                                 id="add-station"
                                 type="button"
                                 class="ml-0 text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
@@ -401,18 +437,18 @@
                     <div class="sm:col-span-6">
                         <label
                             for="name"
-                            class="block text-base font-medium leading-6 text-gray-900"
+                            class="block text-base font-medium leading-6"
                             >ชื่อเที่ยวรถ</label
                         >
                         <div class="mt-2">
                             <input
                                 disabled={isDisabled}
-                                bind:value={tripdata.RouteName}
+                                bind:value={tripdata.ScheduleName}
                                 type="text"
                                 name="name"
                                 id="name"
                                 autocomplete="given-name"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
@@ -506,14 +542,14 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-3">
-                        <label
-                            for="origin-bus-stop"
-                            class="block text-base font-medium leading-6 text-gray-900"
-                            >สถานีต้นทาง</label
-                        >
-                        <div class="mt-2">
-                            {#if isDisabled}
+                    {#if isDisabled}
+                        <div class="sm:col-span-3">
+                            <label
+                                for="origin-bus-stop"
+                                class="block text-base font-medium leading-6 text-gray-900"
+                                >สถานีต้นทาง</label
+                            >
+                            <div class="mt-2">
                                 <textarea
                                     disabled
                                     value={tripdata.OriginBusStop +
@@ -528,21 +564,57 @@
                                     autocomplete="given-name"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
-                            {:else}
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label
+                                for="destination-bus-stop"
+                                class="block text-base font-medium leading-6 text-gray-900"
+                                >สถานีปลายทาง</label
+                            >
+                            <div class="mt-2">
+                                <textarea
+                                    disabled
+                                    value={tripdata.DestinationBusStop +
+                                        "\n" +
+                                        tripdata.DestinationAddress +
+                                        " " +
+                                        tripdata.DestinationSubprovince +
+                                        " " +
+                                        tripdata.DestinationProvince}
+                                    type="text"
+                                    name="destination-bus-stop"
+                                    id="destination-bus-stop"
+                                    autocomplete="given-name"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                            </div>
+                        </div>
+                    {:else}
+                        <div class="sm:col-span-6">
+                            <label
+                                for="type"
+                                class="block text-base font-medium leading-6 text-gray-900"
+                                >เส้นทางการเดินทาง (สถานีต้นทาง - ปลายทาง)</label
+                            >
+                            <div class="mt-2">
                                 <select
-                                    id="origin-bus-stop"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    bind:value={tripdata.Origin}
+                                    bind:value={tripdata.RouteID}
+                                    name="route"
+                                    id="route"
+                                    autocomplete="address-level2"
+                                    class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 >
-                                    {#each BusStops as data}
-                                        <option value={data.BusStopID}
-                                            >{data.Name}</option
-                                        >
+                                    {#each routes as data}
+                                        <option value={data.RouteID}>
+                                            {data.RouteCode}: {data.OriginBusStop} - {data.DestinationBusStop}
+                                        </option>
                                     {/each}
                                 </select>
-                            {/if}
+                            </div>
                         </div>
-                    </div>
+                    {/if}
 
                     <div class="sm:col-span-3">
                         <label
@@ -607,45 +679,6 @@
                                     </svg>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-3">
-                        <label
-                            for="destination-bus-stop"
-                            class="block text-base font-medium leading-6 text-gray-900"
-                            >สถานีปลายทาง</label
-                        >
-                        <div class="mt-2">
-                            {#if isDisabled}
-                                <textarea
-                                    disabled
-                                    value={tripdata.DestinationBusStop +
-                                        "\n" +
-                                        tripdata.DestinationAddress +
-                                        " " +
-                                        tripdata.DestinationSubprovince +
-                                        " " +
-                                        tripdata.DestinationProvince}
-                                    type="text"
-                                    name="destination-bus-stop"
-                                    id="destination-bus-stop"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            {:else}
-                                <select
-                                    id="destination-bus-stop"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    bind:value={tripdata.Destination}
-                                >
-                                    {#each BusStops as data}
-                                        <option value={data.BusStopID}
-                                            >{data.Name}</option
-                                        >
-                                    {/each}
-                                </select>
-                            {/if}
                         </div>
                     </div>
 
@@ -732,7 +765,7 @@
                                     name="empID"
                                     id="empID"
                                     autocomplete="address-level2"
-                                    class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    class="block w-full rounded-md border-0 py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 >
                                     {#each employees as employee}
                                         <option value={employee.UserID}>
@@ -795,52 +828,54 @@
                             >รูปภาพ</label
                         >
                         {#if isDisabled}
-  <img class="mt-3" src={tripdata.Image} alt="" />
-{:else}
-  <div
-    class="mt-3 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
-    on:dragover={handleDragOver}
-    on:drop={handleDrop}
-    role="button"
-    tabindex="0"
-    aria-label="อัพโหลดรูปภาพ"
-  >
-    <div class="text-center">
-      {#if previewImage}
-        <img
-          src={previewImage}
-          alt="รูปภาพที่อัพโหลด"
-          class="mx-auto h-32 w-32 object-cover rounded-lg"
-        />
-      {:else}
-        <Upload
-          class="mx-auto h-12 w-12 text-gray-300"
-        />
-      {/if}
-      <div class="mt-4 flex text-sm leading-6 text-gray-600">
-        <label
-          for="file-upload"
-          class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-        >
-          <span>อัพโหลดรูปภาพ</span>
-          <input
-            id="file-upload"
-            name="file-upload"
-            type="file"
-            class="sr-only"
-            on:change={handleFileChange}
-            bind:this={fileInput}
-            accept="image/*"
-          />
-        </label>
-        <p class="pl-1">หรือลากและวาง</p>
-      </div>
-      <p class="text-xs leading-5 text-gray-600">
-        PNG, JPG, GIF ไม่เกิน 10MB
-      </p>
-    </div>
-  </div>
-{/if}
+                            <img class="mt-3" src={tripdata.Image} alt="" />
+                        {:else}
+                            <div
+                                class="mt-3 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                                on:dragover={handleDragOver}
+                                on:drop={handleDrop}
+                                role="button"
+                                tabindex="0"
+                                aria-label="อัพโหลดรูปภาพ"
+                            >
+                                <div class="text-center">
+                                    {#if previewImage}
+                                        <img
+                                            src={previewImage}
+                                            alt="รูปภาพที่อัพโหลด"
+                                            class="mx-auto h-32 w-32 object-cover rounded-lg"
+                                        />
+                                    {:else}
+                                        <Upload
+                                            class="mx-auto h-12 w-12 text-gray-300"
+                                        />
+                                    {/if}
+                                    <div
+                                        class="mt-4 flex text-sm leading-6 text-gray-600"
+                                    >
+                                        <label
+                                            for="file-upload"
+                                            class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                                        >
+                                            <span>อัพโหลดรูปภาพ</span>
+                                            <input
+                                                id="file-upload"
+                                                name="file-upload"
+                                                type="file"
+                                                class="sr-only"
+                                                on:change={handleFileChange}
+                                                bind:this={fileInput}
+                                                accept="image/*"
+                                            />
+                                        </label>
+                                        <p class="pl-1">หรือลากและวาง</p>
+                                    </div>
+                                    <p class="text-xs leading-5 text-gray-600">
+                                        PNG, JPG, GIF ไม่เกิน 10MB
+                                    </p>
+                                </div>
+                            </div>
+                        {/if}
                     </div>
                 </div>
             </div>
