@@ -252,7 +252,7 @@ const getSchedules = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log('function', schedule);
+        console.log("function", schedule);
         resolve(schedule);
       }
     );
@@ -282,7 +282,7 @@ const getOneSchedule = (id) => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log('function', routes);
+        console.log("function", routes);
         resolve(routes);
       }
     );
@@ -581,7 +581,7 @@ const addSchedule = (id) => {
         id.ArrivalTime,
         id.Price,
         id.Description,
-        id.Image
+        id.Image,
       ],
       (err) => {
         if (err) {
@@ -599,11 +599,7 @@ const addRoute = (id) => {
     db.run(
       `INSERT INTO Routes (RouteName, Origin, Destination)
        VALUES (?, ?, ?)`,
-      [
-        id.RouteName,
-        id.Origin,
-        id.Destination
-      ],
+      [id.RouteName, id.Origin, id.Destination],
       (err) => {
         if (err) {
           console.error("Error updating Schedules:", err.message);
@@ -611,20 +607,16 @@ const addRoute = (id) => {
         }
       }
     );
-    resolve()
+    resolve();
   });
 };
-
 
 const addBus = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
       `INSERT INTO Buses (Capacity, Type)
        VALUES (?, ?)`,
-      [
-        id.Capacity,
-        id.Type
-      ],
+      [id.Capacity, id.Type],
       (err) => {
         if (err) {
           console.error("Error updating Schedules:", err.message);
@@ -632,7 +624,7 @@ const addBus = (id) => {
         }
       }
     );
-    resolve()
+    resolve();
   });
 };
 
@@ -641,49 +633,115 @@ const saveBookingAndPayment = (bookingData, paymentData, userId) => {
     db.serialize(() => {
       db.run("BEGIN TRANSACTION");
 
-      db.run(
-        `INSERT INTO Bookings (CustomerID, ScheduleID, BookingDate, SeatId, Status)
-         VALUES (?, ?, datetime('now'), ?, False)`,
-        [userId, bookingData.scheduleID, bookingData.seatId],
-        function (err) {
-          if (err) {
-            db.run("ROLLBACK");
-            return reject(err);
-          }
-
-          const bookingID = this.lastID;
+      const insertBooking = (scheduleID, seatId, paymentID) => {
+        return new Promise((resolve, reject) => {
           db.run(
-            `INSERT INTO Payment (BookingID, Amount, PaymentTime, PaymentMethod)
-             VALUES (?, ?, datetime('now'), ?)`,
-            [
-              bookingID,
-              getSchedulePrice(bookingData.scheduleID),
-              paymentData.paymentMethod,
-            ],
+            `INSERT INTO Bookings (CustomerID, ScheduleID, BookingDate, SeatID, Status, PaymentID)
+             VALUES (?, ?, datetime('now'), ?, False, ?)`,
+            [userId, scheduleID, seatId, paymentID],
             function (err) {
               if (err) {
-                db.run("ROLLBACK");
-                return reject(err);
+                reject(err);
+              } else {
+                resolve(this.lastID);
               }
-
-              db.run("COMMIT");
-              db.get(
-                `SELECT BookingCode, PaymentCode
-                 FROM Bookings b
-                 JOIN Payment p ON b.BookingID = p.BookingID
-                 WHERE b.BookingID = ?`,
-                [bookingID],
-                (err, row) => {
-                  if (err) {
-                    return reject(err);
-                  }
-                  resolve(row);
-                }
-              );
             }
           );
-        }
-      );
+        });
+      };
+
+      const insertPayment = (amount, paymentMethod) => {
+        return new Promise((resolve, reject) => {
+          db.run(
+            `INSERT INTO Payment (Amount, PaymentTime, PaymentMethod)
+             VALUES (?, datetime('now'), ?)`,
+            [amount, paymentMethod],
+            function (err) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(this.lastID);
+              }
+            }
+          );
+        });
+      };
+
+      const getSchedulePriceAsync = (scheduleID) => {
+        return new Promise((resolve, reject) => {
+          db.get(
+            "SELECT Price FROM Schedules WHERE ScheduleID = ?",
+            [scheduleID],
+            (err, row) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(row ? row.Price : 0);
+              }
+            }
+          );
+        });
+      };
+
+      Promise.all([
+        getSchedulePriceAsync(bookingData.goScheduleID),
+        bookingData.returnScheduleID
+          ? getSchedulePriceAsync(bookingData.returnScheduleID)
+          : Promise.resolve(0),
+      ])
+        .then(([goPrice, returnPrice]) => {
+          const totalAmount = goPrice + returnPrice;
+          return insertPayment(totalAmount, paymentData.paymentMethod);
+        })
+        .then((paymentID) => {
+          return Promise.all([
+            insertBooking(
+              bookingData.goScheduleID,
+              bookingData.goSeatId,
+              paymentID
+            ),
+            bookingData.returnScheduleID
+              ? insertBooking(
+                  bookingData.returnScheduleID,
+                  bookingData.returnSeatId,
+                  paymentID
+                )
+              : Promise.resolve(null),
+          ]).then(([goBookingID, returnBookingID]) => ({
+            goBookingID,
+            returnBookingID,
+            paymentID,
+          }));
+        })
+        .then(({ goBookingID, returnBookingID, paymentID }) => {
+          return new Promise((resolve, reject) => {
+            db.get(
+              `SELECT b1.BookingCode as GoBookingCode, 
+                      p.PaymentCode,
+                      b2.BookingCode as ReturnBookingCode
+               FROM Bookings b1
+               JOIN Payment p ON b1.PaymentID = p.PaymentID
+               LEFT JOIN Bookings b2 ON p.PaymentID = b2.PaymentID AND b2.BookingID != b1.BookingID
+               WHERE b1.BookingID = ?`,
+              [goBookingID],
+              (err, row) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(row);
+                }
+              }
+            );
+          });
+        })
+        .then((result) => {
+          db.run("COMMIT");
+          resolve(result);
+        })
+        .catch((err) => {
+          db.run("ROLLBACK");
+          reject(err);
+        });
     });
   });
 };
@@ -728,5 +786,5 @@ export {
   addStation,
   addBus,
   addSchedule,
-  addRoute
+  addRoute,
 };

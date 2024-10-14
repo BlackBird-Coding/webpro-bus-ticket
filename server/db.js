@@ -108,20 +108,20 @@ db.serialize(() => {
   BookingDate DATETIME NOT NULL,
   SeatID INTEGER NOT NULL,
   Status VARCHAR(50) NOT NULL,
+  PaymentID INTEGER,
   FOREIGN KEY (CustomerID) REFERENCES Customers(UserID) ON DELETE CASCADE,
-  FOREIGN KEY (ScheduleID) REFERENCES Schedules(ScheduleID) ON DELETE CASCADE
-  FOREIGN KEY (SeatID) REFERENCES Seats(SeatID) ON DELETE CASCADE
+  FOREIGN KEY (ScheduleID) REFERENCES Schedules(ScheduleID) ON DELETE CASCADE,
+  FOREIGN KEY (SeatID) REFERENCES Seats(SeatID) ON DELETE CASCADE,
+  FOREIGN KEY (PaymentID) REFERENCES Payment(PaymentID) ON DELETE SET NULL
 );`);
 
   // Create PAYMENTS table
   db.run(`CREATE TABLE IF NOT EXISTS Payment (
   PaymentID INTEGER PRIMARY KEY AUTOINCREMENT,
   PaymentCode TEXT GENERATED ALWAYS AS (printf('P%03d', PaymentID)),
-  BookingID INTEGER NOT NULL,
   Amount DECIMAL(10,2) NOT NULL,
   PaymentTime DATETIME NOT NULL,
-  PaymentMethod VARCHAR(50) NOT NULL,
-  FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID) ON DELETE CASCADE
+  PaymentMethod VARCHAR(50) NOT NULL
 );`);
 
   console.log("Tables created successfully.");

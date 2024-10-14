@@ -47,7 +47,7 @@
           `/api/return-trips?routeId=${routeId}&date=${returnDate}`
         );
         const returnData = await returnResponse.json();
-        returnTrips = returnData.returnTrips || [];
+        returnTrips = returnData.trips || [];
       }
     } catch (err) {
       console.error("Error fetching trip data:", err);
@@ -56,27 +56,29 @@
 
   function selectTrip(scheduleId: string, isReturn: boolean = false) {
     if (isReturn) {
-      selectedReturnTrip = scheduleId;
+      selectedReturnTrip =
+        selectedReturnTrip === scheduleId ? null : scheduleId;
     } else {
-      selectedGoTrip = scheduleId;
-    }
-
-    if (
-      tripType === "1" ||
-      (tripType === "0" && selectedGoTrip && selectedReturnTrip)
-    ) {
-      proceedToSeatSelection();
+      selectedGoTrip = selectedGoTrip === scheduleId ? null : scheduleId;
     }
   }
 
   function proceedToSeatSelection() {
+    if (!selectedGoTrip || (tripType === "0" && !selectedReturnTrip)) {
+      alert("Please select both outbound and return trips before proceeding.");
+      return;
+    }
+
     const queryParams = new URLSearchParams();
-    queryParams.set("goTrip", selectedGoTrip!);
+    queryParams.set("goTrip", selectedGoTrip);
     if (tripType === "0" && selectedReturnTrip) {
       queryParams.set("returnTrip", selectedReturnTrip);
     }
     navigate(`/seat?${queryParams.toString()}`);
   }
+
+  $: isSubmitDisabled =
+    !selectedGoTrip || (tripType === "0" && !selectedReturnTrip);
 </script>
 
 <div class="flex ml-16">
@@ -99,10 +101,8 @@
         <TableBody>
           {#each goTrips as trip}
             <TableBodyRow
-              class="text-center cursor-pointer hover:bg-gray-100 {selectedGoTrip ===
-              trip.ScheduleId
-                ? 'bg-blue-300'
-                : ''}"
+              class="text-center cursor-pointer"
+              color={selectedGoTrip === trip.ScheduleID ? "green" : "default"}
               on:click={() => selectTrip(trip.ScheduleID)}
             >
               <TableBodyCell>{trip.DepartureTime}</TableBodyCell>
@@ -131,11 +131,11 @@
           <TableBody>
             {#each returnTrips as trip}
               <TableBodyRow
+                class="text-center cursor-pointer"
+                color={selectedReturnTrip === trip.ScheduleID
+                  ? "green"
+                  : "default"}
                 on:click={() => selectTrip(trip.ScheduleID, true)}
-                class="text-center cursor-pointer hover:bg-gray-100 {selectedGoTrip ===
-                trip.ScheduleId
-                  ? 'bg-blue-300'
-                  : ''}"
               >
                 <TableBodyCell>{trip.DepartureTime}</TableBodyCell>
                 <TableBodyCell>{trip.RouteName}</TableBodyCell>
@@ -148,16 +148,14 @@
       </div>
     {/if}
 
-    {#if tripType === "0" && (!selectedGoTrip || !selectedReturnTrip)}
-      <div class="flex justify-center my-5">
-        <button
-          class="bg-orange-500 text-2xl text-white px-3 py-1 rounded-md hover:bg-orange-600"
-          on:click={proceedToSeatSelection}
-          disabled={!selectedGoTrip || !selectedReturnTrip}
-        >
-          ดำเนินการต่อ
-        </button>
-      </div>
-    {/if}
+    <div class="flex justify-center my-5">
+      <button
+        class="bg-orange-500 text-2xl text-white px-3 py-1 rounded-md hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        on:click={proceedToSeatSelection}
+        disabled={isSubmitDisabled}
+      >
+        ดำเนินการต่อ
+      </button>
+    </div>
   </div>
 </div>
