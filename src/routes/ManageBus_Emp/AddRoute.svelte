@@ -2,10 +2,7 @@
     import { onMount, createEventDispatcher } from "svelte";
     import { Tooltip, Button } from "flowbite-svelte";
     import Swal from "sweetalert2";
-    import Trip from "../Booking/Trip.svelte";
     import { Route, navigate } from "svelte-routing";
-    import { Upload } from "lucide-svelte";
-    import { base64 } from "@sveu/browser";
 
     let BusStops = [];
     let route = {
@@ -117,15 +114,15 @@
     <form style="margin: 4% 5%;">
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-6">
-                <h2 class="text-2xl font-semibold leading-7 text-gray-900">
-                    เพิ่มเส้นทางการเดินทาง
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 flex items-center gap-x-3">
+                    <b>เพิ่มเส้นทางการเดินทาง</b>
                 </h2>
-                <p class="mt-1 text-sm leading-6 text-gray-600">
+                <p class="mt-2 text-sm leading-6 text-gray-600">
                     กรุณากรอกรายละเอียดเส้นทางการเดินทางที่ต้องการเพิ่ม
                 </p>
 
                 <div
-                    class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6"
+                    class="mt-8 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6"
                 >
                     <div class="sm:col-span-full">
                         <label

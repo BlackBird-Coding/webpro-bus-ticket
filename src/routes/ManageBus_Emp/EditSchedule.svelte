@@ -2,12 +2,9 @@
     import { onMount, createEventDispatcher } from "svelte";
     import { Tooltip, Button } from "flowbite-svelte";
     import Swal from "sweetalert2";
-    import Trip from "../Booking/Trip.svelte";
     import { Route, navigate } from "svelte-routing";
-    import { Upload } from "lucide-svelte";
-    import { base64 } from "@sveu/browser";
+    import SvgSchedule from "../../lib/components/SvgSchedule.svelte"
 
-    let inputs = [{}]; // Array to store input values
     let id = null;
     let tripdata = [];
     let isDisabled = true; // เริ่มต้นไม่ disabled
@@ -19,43 +16,8 @@
     let employees = [];
     let dataToSend = [];
 
-    let fileInput;
-    let previewImage = null;
-    let errorMessage = "";
-    let maxFileSizeMB = 1; // Default max file size is 1MB
     let api = null;
     let now = null;
-
-    const dispatch = createEventDispatcher();
-
-    function handleFileChange(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImage = e.target.result;
-                dispatch("change", { image: e.target.result });
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function handleDragOver(event) {
-        event.preventDefault();
-    }
-
-    function handleDrop(event) {
-        event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImage = e.target.result;
-                dispatch("change", { image: e.target.result });
-            };
-            reader.readAsDataURL(file);
-        }
-    }
 
     fetch("/api/employees", {
         method: "GET",
@@ -154,23 +116,7 @@
     }
 
     async function saveChanges() {
-        // Prepare the data to be sent
-        dataToSend = {
-            ScheduleID: tripdata.ScheduleID,
-            ScheduleName: tripdata.ScheduleName,
-            RouteID: tripdata.RouteID,
-            BusID: tripdata.BusID,
-            Price: tripdata.Price,
-            EmployeeID: tripdata.EmployeeID,
-            Origin: tripdata.Origin,
-            Destination: tripdata.Destination,
-            DepartureTime: tripdata.DepartureTime,
-            ArrivalTime: tripdata.ArrivalTime,
-            EmployeeID: tripdata.EmployeeID,
-            Description: tripdata.Description,
-            Image: tripdata.Image,
-        };
-        console.log("datatosent:", JSON.stringify(dataToSend));
+        console.log("datatosent:", JSON.stringify(tripdata));
         console.log("image", tripdata.Image);
         console.log("image", base64(tripdata.Image));
 
@@ -244,17 +190,10 @@
         }
     }
 
-    function getFormattedTime(date) {
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-        return `${hours}:${minutes}`;
-    }
-
-    // Extract the ID from the URL when the page loads
     onMount(() => {
         now = new Date();
         now.setHours(now.getHours() + 7);
-        now = now.toISOString().slice(0, 16)
+        now = now.toISOString().slice(0, 16);
         let urlParams = new URLSearchParams(window.location.search);
         id = urlParams.get("id"); // Get the "id" from the query string
         mode = urlParams.get("mode");
@@ -364,9 +303,11 @@
                                 <h1
                                     class="text-2xl font-semibold leading-7 text-gray-900"
                                 >
-                                    {tripdata.ScheduleCode}: {tripdata.ScheduleName}
+                                    <b
+                                        >{tripdata.ScheduleCode}: {tripdata.ScheduleName}</b
+                                    >
                                 </h1>
-                                <p class="mt-3 text-xs text-red-500">
+                                <p class="mt-2 text-xs text-red-500">
                                     หากต้องการแก้ไขข้อมูล
                                     ให้คลิกปุ่มแก้ไขทางด้านขวา
                                 </p>
@@ -438,98 +379,12 @@
                     {:else}
                         <div>
                             <h1
-                                class="text-2xl font-semibold leading-7 text-gray-900 flex items-center"
+                                class="text-2xl font-bold leading-7 text-gray-900 flex items-center gap-x-3"
                             >
                                 เพิ่มตารางการเดินรถ
-                                <svg
-                                    class="w-6 h-6 ml-2 fill-current"
-                                    version="1.1"
-                                    id="_x32_"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                                    viewBox="0 0 512 512"
-                                    xml:space="preserve"
-                                >
-                                    <g>
-                                        <rect
-                                            x="119.256"
-                                            y="222.607"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="341.863"
-                                            y="222.607"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="267.662"
-                                            y="222.607"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="119.256"
-                                            y="302.11"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="267.662"
-                                            y="302.11"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="193.46"
-                                            y="302.11"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="341.863"
-                                            y="381.612"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="267.662"
-                                            y="381.612"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <rect
-                                            x="193.46"
-                                            y="381.612"
-                                            class="st0"
-                                            width="50.881"
-                                            height="50.885"
-                                        ></rect>
-                                        <path
-                                            class="st0"
-                                            d="M439.277,55.046h-41.376v39.67c0,14.802-12.195,26.84-27.183,26.84h-54.025 c-14.988,0-27.182-12.038-27.182-26.84v-39.67h-67.094v39.297c0,15.008-12.329,27.213-27.484,27.213h-53.424 c-15.155,0-27.484-12.205-27.484-27.213V55.046H72.649c-26.906,0-48.796,21.692-48.796,48.354v360.246 c0,26.661,21.89,48.354,48.796,48.354h366.628c26.947,0,48.87-21.692,48.87-48.354V103.4 C488.147,76.739,466.224,55.046,439.277,55.046z M453.167,462.707c0,8.56-5.751,14.309-14.311,14.309H73.144 c-8.56,0-14.311-5.749-14.311-14.309V178.089h394.334V462.707z"
-                                        ></path>
-                                        <path
-                                            class="st0"
-                                            d="M141.525,102.507h53.392c4.521,0,8.199-3.653,8.199-8.144v-73.87c0-11.3-9.27-20.493-20.666-20.493h-28.459 c-11.395,0-20.668,9.192-20.668,20.493v73.87C133.324,98.854,137.002,102.507,141.525,102.507z"
-                                        ></path>
-                                        <path
-                                            class="st0"
-                                            d="M316.693,102.507h54.025c4.348,0,7.884-3.513,7.884-7.826V20.178C378.602,9.053,369.474,0,358.251,0H329.16 c-11.221,0-20.349,9.053-20.349,20.178v74.503C308.81,98.994,312.347,102.507,316.693,102.507z"
-                                        ></path>
-                                    </g>
-                                </svg>
+                                <SvgSchedule></SvgSchedule>
                             </h1>
-                            <p class="mt-3 text-base text-gray-900 mb-6">
+                            <p class="mt-2 text-base text-gray-900 mb-6">
                                 กรุณากรอกรายละเอียดตารางการเดินรถที่ต้องการเพิ่ม
                             </p>
                         </div>
@@ -558,7 +413,7 @@
                 {/if}
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6"
+                    class="mt-5 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6"
                 >
                     {#if !isDisabled}
                         <div class="sm:col-span-4 sm:col-start-1">
@@ -760,7 +615,7 @@
                 </div>
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-4"
+                    class="mt-5 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-4"
                 >
                     <h2
                         class="text-base font-semibold leading-7 text-black mb-1"
@@ -768,53 +623,26 @@
                         พนักงานขับรถ (หลัก)
                     </h2>
 
-                    {#each inputs as input, index}
-                        <div class="sm:col-span-4 sm:col-start-1">
-                            <div>
-                                <select
-                                    bind:value={tripdata.EmployeeID}
-                                    disabled={isDisabled}
-                                    name="empID"
-                                    id="empID"
-                                    autocomplete="address-level2"
-                                    class="block w-full rounded-md border-0 py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                >
-                                    <option value="">เลือกพนักงานขับรถ</option>
-                                    {#each employees as employee}
-                                        <option value={employee.UserID}>
-                                            {employee.EmployeeCode} - {employee.Fname}
-                                            {employee.Lname} ({employee.Phone})
-                                        </option>
-                                    {/each}
-                                </select>
-                            </div>
-                        </div>
-                    {/each}
-                    <!--
-                    <div class="sm:col-span-1">
-                        <button
-                            on:click={addInput}
-                            type="button"
-                            class=" bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 mt-2 mb-6 rounded inline-flex items-center"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-4 mr-2"
+                    <div class="sm:col-span-4 sm:col-start-1">
+                        <div>
+                            <select
+                                bind:value={tripdata.EmployeeID}
+                                disabled={isDisabled}
+                                name="empID"
+                                id="empID"
+                                autocomplete="address-level2"
+                                class="block w-full rounded-md border-0 py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                />
-                            </svg>
-                            <span class="text-sm">เพิ่มพนักงาน</span>
-                        </button>
+                                <option value="">เลือกพนักงานขับรถ</option>
+                                {#each employees as employee}
+                                    <option value={employee.UserID}>
+                                        {employee.EmployeeCode} - {employee.Fname}
+                                        {employee.Lname} ({employee.Phone})
+                                    </option>
+                                {/each}
+                            </select>
+                        </div>
                     </div>
-                -->
 
                     <div class="col-span-full mb-6 mt-4">
                         <label
