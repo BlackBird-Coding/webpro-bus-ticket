@@ -14,7 +14,6 @@
   import ContactForm from "./routes/ContactForm.svelte";
   import TicketDetails from "./routes/BookingHistory/TicketDetails.svelte";
   import ManageBus_Emp from "./routes/ManageBus_Emp/ManageBus_Emp.svelte";
-  import AddSchedule from "./routes/ManageBus_Emp/AddSchedule.svelte";
   import AddStation from "./routes/ManageBus_Emp/AddStation.svelte";
   import AddRoute from "./routes/ManageBus_Emp/AddRoute.svelte";
   import AddBus from "./routes/ManageBus_Emp/AddBus.svelte";

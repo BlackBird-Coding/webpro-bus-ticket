@@ -14,15 +14,7 @@
     let mode = null;
     let BusStops = [];
     let Buses = [];
-    let routes = []
-
-    let departureDateTime = null;
-    let departureDate = null;
-    let departureTime = null;
-
-    let arrivalDateTime = null;
-    let arrivalDate = null;
-    let arrivalTime = null;
+    let routes = [];
 
     let employees = [];
     let dataToSend = [];
@@ -31,6 +23,8 @@
     let previewImage = null;
     let errorMessage = "";
     let maxFileSizeMB = 1; // Default max file size is 1MB
+    let api = null;
+    let now = null;
 
     const dispatch = createEventDispatcher();
 
@@ -92,6 +86,7 @@
             return res.json();
         })
         .then((data) => {
+            console.log(data);
             routes = data.routes;
         })
         .catch((error) => {
@@ -130,6 +125,7 @@
             return res.json();
         })
         .then((data) => {
+            console.log(data);
             BusStops = data.BusStops;
         })
         .catch((error) => {
@@ -168,10 +164,8 @@
             EmployeeID: tripdata.EmployeeID,
             Origin: tripdata.Origin,
             Destination: tripdata.Destination,
-            DepartureTime: new Date(
-                departureDate + " " + departureTime + ".00",
-            ),
-            ArrivalTime: new Date(arrivalDate + " " + arrivalTime + ".00"),
+            DepartureTime: tripdata.DepartureTime,
+            ArrivalTime: tripdata.ArrivalTime,
             EmployeeID: tripdata.EmployeeID,
             Description: tripdata.Description,
             Image: tripdata.Image,
@@ -180,16 +174,22 @@
         console.log("image", tripdata.Image);
         console.log("image", base64(tripdata.Image));
 
+        if (mode == "add") {
+            api = `/api/AddSchedule`;
+        } else {
+            api = `/api/EditSchedule`;
+        }
+
         try {
             console.log("Starting saveChanges function");
-            console.log("Route data being sent:", route);
+            console.log("Route data being sent");
 
-            const res = await fetch(`/api/EditSchedule`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(dataToSend),
+            const res = await fetch(api, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataToSend),
             });
 
             console.log("Received response:", res);
@@ -206,14 +206,13 @@
 
             const data = await res.json();
             console.log("Response data:", data);
-            console.log("Successfully saved Bus");
+            console.log("Successfully saved Schedule");
             return data; // Return the data in case it's needed later
         } catch (error) {
             console.error("SaveRoute error:", error);
             throw error; // Re-throw the error to be caught in saveEdit
         }
     }
-
 
     async function saveEdit() {
         const result = await Swal.fire({
@@ -244,25 +243,19 @@
             navigate(`/ManageBus_Emp`, { replace: true });
         }
     }
-    
-    function addInput() {
-        // Add a new empty input field
-        inputs = [...inputs, {}];
-    }
 
-    function handleInputChange(event, index) {
-        // Update the specific input field's value
-        inputs[index] = event.target.value;
-    }
-
-    function submitForm() {
-        // Do something with form data (e.g., submit)
-        console.log(inputs);
+    function getFormattedTime(date) {
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `${hours}:${minutes}`;
     }
 
     // Extract the ID from the URL when the page loads
     onMount(() => {
-        const urlParams = new URLSearchParams(window.location.search);
+        now = new Date();
+        now.setHours(now.getHours() + 7);
+        now = now.toISOString().slice(0, 16)
+        let urlParams = new URLSearchParams(window.location.search);
         id = urlParams.get("id"); // Get the "id" from the query string
         mode = urlParams.get("mode");
 
@@ -270,41 +263,50 @@
             isDisabled = false;
         } else if (mode == "view") {
             isDisabled = true;
+        } else if (mode == "add") {
+            isDisabled = false;
+            tripdata = {
+                ScheduleName: "",
+                BusID: "",
+                Price: "",
+                EmployeeID: "",
+                Origin: "",
+                Destination: "",
+                DepartureTime: "",
+                ArrivalTime: "",
+                DriverID: "",
+                Description: "",
+                Image: "",
+            };
         }
 
-        fetch(`/api/GetOneSchedule`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id }),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return res.json();
+        if (mode == "edit" || mode == "view") {
+            fetch(`/api/GetOneSchedule`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
             })
-            .then((data) => {
-                console.log("fetch", data);
-                tripdata = data.routes[0];
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log("fetch", data);
+                    tripdata = data.routes[0];
 
-                previewImage = tripdata.Image;
-
-                departureDateTime = new Date(tripdata.DepartureTime);
-                departureDate = departureDateTime.toISOString().split("T")[0];
-                departureTime = departureDateTime.toTimeString().slice(0, 5);
-
-                arrivalDateTime = new Date(tripdata.ArrivalTime);
-                arrivalDate = arrivalDateTime.toISOString().split("T")[0];
-                arrivalTime = arrivalDateTime.toTimeString().slice(0, 5);
-            })
-            .catch((error) => {
-                console.error(
-                    "There was a problem with the fetch operation:",
-                    error,
-                );
-            });
+                    previewImage = tripdata.Image;
+                })
+                .catch((error) => {
+                    console.error(
+                        "There was a problem with the fetch operation:",
+                        error,
+                    );
+                });
+        }
     });
 
     function deleteCard(id) {
@@ -356,79 +358,180 @@
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
                 <div class="flex flex-wrap items-center justify-between w-full">
-                    {#if isDisabled}
+                    {#if mode != "add"}
+                        {#if isDisabled}
+                            <div>
+                                <h1
+                                    class="text-2xl font-semibold leading-7 text-gray-900"
+                                >
+                                    {tripdata.ScheduleCode}: {tripdata.ScheduleName}
+                                </h1>
+                                <p class="mt-3 text-xs text-red-500">
+                                    หากต้องการแก้ไขข้อมูล
+                                    ให้คลิกปุ่มแก้ไขทางด้านขวา
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <Button
+                                    on:click={toggleDisabled}
+                                    id="add-bus"
+                                    class="ml-0 text-white bg-amber-400 hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
+                                >
+                                    <div>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="size-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                            />
+                                        </svg>
+                                    </div></Button
+                                >
+                                <Tooltip
+                                    class="text-xs z-50 py-1"
+                                    type="dark"
+                                    triggeredBy="#add-bus"
+                                    placement="bottom"
+                                >
+                                    แก้ไขข้อมูล
+                                </Tooltip>
+
+                                <Button
+                                    on:click={deleteCard(tripdata.ScheduleID)}
+                                    id="add-station"
+                                    type="button"
+                                    class="ml-0 text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
+                                    ><div>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="size-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                                            />
+                                        </svg>
+                                    </div></Button
+                                >
+                                <Tooltip
+                                    class="text-xs z-50 py-1"
+                                    type="dark"
+                                    triggeredBy="#add-station"
+                                    placement="bottom"
+                                >
+                                    ลบเที่ยวรถ
+                                </Tooltip>
+                            </div>
+                        {/if}
+                    {:else}
                         <div>
                             <h1
-                                class="text-2xl font-semibold leading-7 text-gray-900"
+                                class="text-2xl font-semibold leading-7 text-gray-900 flex items-center"
                             >
-                                {tripdata.ScheduleCode}: {tripdata.ScheduleName}
+                                เพิ่มตารางการเดินรถ
+                                <svg
+                                    class="w-6 h-6 ml-2 fill-current"
+                                    version="1.1"
+                                    id="_x32_"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    viewBox="0 0 512 512"
+                                    xml:space="preserve"
+                                >
+                                    <g>
+                                        <rect
+                                            x="119.256"
+                                            y="222.607"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="341.863"
+                                            y="222.607"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="267.662"
+                                            y="222.607"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="119.256"
+                                            y="302.11"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="267.662"
+                                            y="302.11"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="193.46"
+                                            y="302.11"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="341.863"
+                                            y="381.612"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="267.662"
+                                            y="381.612"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <rect
+                                            x="193.46"
+                                            y="381.612"
+                                            class="st0"
+                                            width="50.881"
+                                            height="50.885"
+                                        ></rect>
+                                        <path
+                                            class="st0"
+                                            d="M439.277,55.046h-41.376v39.67c0,14.802-12.195,26.84-27.183,26.84h-54.025 c-14.988,0-27.182-12.038-27.182-26.84v-39.67h-67.094v39.297c0,15.008-12.329,27.213-27.484,27.213h-53.424 c-15.155,0-27.484-12.205-27.484-27.213V55.046H72.649c-26.906,0-48.796,21.692-48.796,48.354v360.246 c0,26.661,21.89,48.354,48.796,48.354h366.628c26.947,0,48.87-21.692,48.87-48.354V103.4 C488.147,76.739,466.224,55.046,439.277,55.046z M453.167,462.707c0,8.56-5.751,14.309-14.311,14.309H73.144 c-8.56,0-14.311-5.749-14.311-14.309V178.089h394.334V462.707z"
+                                        ></path>
+                                        <path
+                                            class="st0"
+                                            d="M141.525,102.507h53.392c4.521,0,8.199-3.653,8.199-8.144v-73.87c0-11.3-9.27-20.493-20.666-20.493h-28.459 c-11.395,0-20.668,9.192-20.668,20.493v73.87C133.324,98.854,137.002,102.507,141.525,102.507z"
+                                        ></path>
+                                        <path
+                                            class="st0"
+                                            d="M316.693,102.507h54.025c4.348,0,7.884-3.513,7.884-7.826V20.178C378.602,9.053,369.474,0,358.251,0H329.16 c-11.221,0-20.349,9.053-20.349,20.178v74.503C308.81,98.994,312.347,102.507,316.693,102.507z"
+                                        ></path>
+                                    </g>
+                                </svg>
                             </h1>
-                            <p class="mt-3 text-xs text-red-500">
-                                หากต้องการแก้ไขข้อมูล ให้คลิกปุ่มแก้ไขทางด้านขวา
+                            <p class="mt-3 text-base text-gray-900 mb-6">
+                                กรุณากรอกรายละเอียดตารางการเดินรถที่ต้องการเพิ่ม
                             </p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <Button
-                                on:click={toggleDisabled}
-                                id="add-bus"
-                                class="ml-0 text-white bg-amber-400 hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
-                            >
-                                <div>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke-width="1.5"
-                                        stroke="currentColor"
-                                        class="size-6"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                                        />
-                                    </svg>
-                                </div></Button
-                            >
-                            <Tooltip
-                                class="text-xs z-50 py-1"
-                                type="dark"
-                                triggeredBy="#add-bus"
-                                placement="bottom"
-                            >
-                                แก้ไขข้อมูล
-                            </Tooltip>
-
-                            <Button
-                                on:click={deleteCard(tripdata.ScheduleID)}
-                                id="add-station"
-                                type="button"
-                                class="ml-0 text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
-                                ><div>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke-width="1.5"
-                                        stroke="currentColor"
-                                        class="size-6"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                                        />
-                                    </svg>
-                                </div></Button
-                            >
-                            <Tooltip
-                                class="text-xs z-50 py-1"
-                                type="dark"
-                                triggeredBy="#add-station"
-                                placement="bottom"
-                            >
-                                ลบเที่ยวรถ
-                            </Tooltip>
                         </div>
                     {/if}
                 </div>
@@ -458,32 +561,30 @@
                     class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6"
                 >
                     {#if !isDisabled}
-                        {#each inputs as input, index}
-                            <div class="sm:col-span-4 sm:col-start-1">
-                                <label
-                                    for="type"
-                                    class="block text-base font-medium leading-6 text-gray-900"
-                                    >รถบัส</label
+                        <div class="sm:col-span-4 sm:col-start-1">
+                            <label
+                                for="type"
+                                class="block text-base font-medium leading-6 text-gray-900"
+                                >รถบัส</label
+                            >
+                            <div class="mt-2">
+                                <select
+                                    bind:value={tripdata.BusID}
+                                    name="bus"
+                                    id="bus"
+                                    autocomplete="address-level2"
+                                    class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 >
-                                <div class="mt-2">
-                                    <select
-                                        bind:value={tripdata.BusID}
-                                        disabled={isDisabled}
-                                        name="bus"
-                                        id="bus"
-                                        autocomplete="address-level2"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    >
-                                        {#each Buses as data}
-                                            <option value={data.BusID}>
-                                                {data.BusCode}: {data.Type}
-                                                {data.Capacity} ที่นั่ง
-                                            </option>
-                                        {/each}
-                                    </select>
-                                </div>
+                                    <option value="">เลือกรถบัส</option>
+                                    {#each Buses as data}
+                                        <option value={data.BusID}>
+                                            {data.BusCode}: {data.Type}
+                                            {data.Capacity} ที่นั่ง
+                                        </option>
+                                    {/each}
+                                </select>
                             </div>
-                        {/each}
+                        </div>
                     {:else}
                         <div class="sm:col-span-2">
                             <label
@@ -533,7 +634,7 @@
                             <input
                                 disabled={isDisabled}
                                 bind:value={tripdata.Price}
-                                type="text"
+                                type="number"
                                 name="price"
                                 id="price"
                                 autocomplete="given-name"
@@ -606,9 +707,13 @@
                                     autocomplete="address-level2"
                                     class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 >
+                                    <option value=""
+                                        >เลือกเส้นทางการเดินทาง</option
+                                    >
                                     {#each routes as data}
                                         <option value={data.RouteID}>
-                                            {data.RouteCode}: {data.OriginBusStop} - {data.DestinationBusStop}
+                                            {data.RouteCode}: {data.OriginBusStop}
+                                            - {data.DestinationBusStop}
                                         </option>
                                     {/each}
                                 </select>
@@ -623,63 +728,17 @@
                         >
                             เวลาออกเดินทาง
                         </label>
-                        <div class="flex space-x-4">
-                            <div class="relative w-1/2">
-                                <input
-                                    disabled={isDisabled}
-                                    type="date"
-                                    bind:value={arrivalDate}
-                                    id="departure-date"
-                                    class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                />
-                                <div
-                                    class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-                                >
-                                    <svg
-                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                            clip-rule="evenodd"
-                                        ></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="relative w-1/2">
-                                <input
-                                    disabled={isDisabled}
-                                    bind:value={arrivalTime}
-                                    type="time"
-                                    id="departure-time"
-                                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    min="09:00"
-                                    max="18:00"
-                                    required
-                                />
-
-                                <div
-                                    class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none"
-                                >
-                                    <svg
-                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+                        <input
+                            type="datetime-local"
+                            bind:value={tripdata.DepartureTime}
+                            id="departure-date"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            disabled={isDisabled}
+                            min={now}
+                        />
+                        <div
+                            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+                        ></div>
                     </div>
 
                     <div class="sm:col-span-3">
@@ -689,61 +748,14 @@
                         >
                             เวลาถึงปลายทาง
                         </label>
-                        <div class="flex space-x-4">
-                            <div class="relative w-1/2">
-                                <input
-                                    type="date"
-                                    bind:value={departureDate}
-                                    id="departure-date"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    disabled={isDisabled}
-                                />
-                                <div
-                                    class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-                                >
-                                    <svg
-                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                            clip-rule="evenodd"
-                                        ></path>
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <div class="relative w-1/2">
-                                <input
-                                    disabled={isDisabled}
-                                    bind:value={departureTime}
-                                    type="time"
-                                    id="departure-time"
-                                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    required
-                                />
-                                <div
-                                    class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none"
-                                >
-                                    <svg
-                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+                        <input
+                            type="datetime-local"
+                            bind:value={tripdata.ArrivalTime}
+                            id="departure-date"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            disabled={isDisabled}
+                            min={tripdata.DepartureTime}
+                        />
                     </div>
                 </div>
 
@@ -767,6 +779,7 @@
                                     autocomplete="address-level2"
                                     class="block w-full rounded-md border-0 py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 >
+                                    <option value="">เลือกพนักงานขับรถ</option>
                                     {#each employees as employee}
                                         <option value={employee.UserID}>
                                             {employee.EmployeeCode} - {employee.Fname}
@@ -819,63 +832,6 @@
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             ></textarea>
                         </div>
-                    </div>
-
-                    <div class="col-span-full">
-                        <label
-                            for="cover-photo"
-                            class="block text-base font-medium leading-6 text-gray-900"
-                            >รูปภาพ</label
-                        >
-                        {#if isDisabled}
-                            <img class="mt-3" src={tripdata.Image} alt="" />
-                        {:else}
-                            <div
-                                class="mt-3 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
-                                on:dragover={handleDragOver}
-                                on:drop={handleDrop}
-                                role="button"
-                                tabindex="0"
-                                aria-label="อัพโหลดรูปภาพ"
-                            >
-                                <div class="text-center">
-                                    {#if previewImage}
-                                        <img
-                                            src={previewImage}
-                                            alt="รูปภาพที่อัพโหลด"
-                                            class="mx-auto h-32 w-32 object-cover rounded-lg"
-                                        />
-                                    {:else}
-                                        <Upload
-                                            class="mx-auto h-12 w-12 text-gray-300"
-                                        />
-                                    {/if}
-                                    <div
-                                        class="mt-4 flex text-sm leading-6 text-gray-600"
-                                    >
-                                        <label
-                                            for="file-upload"
-                                            class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                                        >
-                                            <span>อัพโหลดรูปภาพ</span>
-                                            <input
-                                                id="file-upload"
-                                                name="file-upload"
-                                                type="file"
-                                                class="sr-only"
-                                                on:change={handleFileChange}
-                                                bind:this={fileInput}
-                                                accept="image/*"
-                                            />
-                                        </label>
-                                        <p class="pl-1">หรือลากและวาง</p>
-                                    </div>
-                                    <p class="text-xs leading-5 text-gray-600">
-                                        PNG, JPG, GIF ไม่เกิน 10MB
-                                    </p>
-                                </div>
-                            </div>
-                        {/if}
                     </div>
                 </div>
             </div>
