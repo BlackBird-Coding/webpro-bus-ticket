@@ -18,8 +18,6 @@ import {
   addBus,
   getSchedules,
   getTrips,
-  saveEditBus,
-  getBuses,
   checkAvailableSeats,
   saveBookingAndPayment,
   getSchedulePrice,
