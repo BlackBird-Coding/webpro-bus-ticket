@@ -3,7 +3,7 @@
   import { userStore } from "@/lib/stores/userStore.svelte";
   import { navigate } from "svelte-routing";
   import Swal from "sweetalert2";
-  import logo from "@/assets/logo_pim2.png";
+  import logo from "@/assets/logo_boss.png";
   async function handleLogout() {
     try {
       const response = await fetch("/api/logout", {
@@ -41,7 +41,7 @@
 >
   <div class="flex flex-wrap items-center gap-5 w-full">
     <div class="ml-3 flex items-center space-x-4 rtl:space-x-reverse">
-      <img src={logo} class="h-12" alt="Pim Logo" />
+      <img src={logo} class="h-12" alt="Boss Logo" />
       <span
         class="text-white self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
         >BusBuss</span
