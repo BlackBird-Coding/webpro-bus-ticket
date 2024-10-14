@@ -411,6 +411,58 @@ const getTrips = (routeId, date) => {
   });
 };
 
+const getReturnTrips = (routeId, date) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT S.*, R2.RouteName, R2.RouteID as ReturnRouteID
+      FROM ROUTES R1
+      JOIN ROUTES R2 ON R2.Origin = R1.Destination AND R2.Destination = R1.Origin
+      JOIN SCHEDULES S ON S.RouteID = R2.RouteID
+      WHERE R1.RouteID = ? AND DATE(S.DepartureTime) = ?`,
+      [routeId, new Date(date).toISOString().split("T")[0]], // Format date as YYYY-MM-DD
+      (err, trips) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+
+        // For each trip, fetch available seat count
+        const tripPromises = trips.map((trip) => {
+          return new Promise((resolve, reject) => {
+            db.get(
+              `SELECT COUNT(*) as AvailableSeatCount
+              FROM Seats
+              WHERE SeatID NOT IN (
+                SELECT SeatID
+                FROM Bookings
+                WHERE ScheduleID = ?
+              )`,
+              [trip.ScheduleID],
+              (err, result) => {
+                if (err) {
+                  console.error(
+                    "Error querying available seat count:",
+                    err.message
+                  );
+                  return reject("Error querying available seat count.");
+                }
+                // Attach the available seat count to the trip object
+                trip.AvailableSeat = result.AvailableSeatCount;
+                resolve(trip);
+              }
+            );
+          });
+        });
+
+        // Resolve all trips with available seat counts
+        Promise.all(tripPromises)
+          .then((tripsWithSeats) => resolve(tripsWithSeats))
+          .catch((err) => reject(err));
+      }
+    );
+  });
+};
+
 const getBuses = () => {
   return new Promise((resolve, reject) => {
     db.all(
@@ -575,4 +627,5 @@ export {
   checkAvailableSeats,
   saveBookingAndPayment,
   getSchedulePrice,
+  getReturnTrips,
 };

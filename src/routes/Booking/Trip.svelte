@@ -44,7 +44,7 @@
 
       if (tripType === "0" && returnDate) {
         const returnResponse = await fetch(
-          `/api/trips?routeId=${routeId}&date=${returnDate}`
+          `/api/return-trips?routeId=${routeId}&date=${returnDate}`
         );
         const returnData = await returnResponse.json();
         returnTrips = returnData.returnTrips || [];
