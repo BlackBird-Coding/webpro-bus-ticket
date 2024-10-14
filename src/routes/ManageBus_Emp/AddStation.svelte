@@ -75,15 +75,15 @@
     <form style="margin: 4% 5%;">
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-xl font-semibold leading-7 text-gray-900">
-                    เพิ่มจุดขึ้นรถ-ลงรถ
+                <h2 class="text-2xl font-semibold leading-7 text-gray-900">
+                    <b>เพิ่มจุดขึ้นรถ-ลงรถ</b>
                 </h2>
-                <p class="mt-1 text-sm leading-6 text-gray-600">
+                <p class="mt-2 text-sm leading-6 text-gray-600">
                     กรุณากรอกรายละเอียดจุดขึ้นรถ-ลงรถที่ต้องการเพิ่ม
                 </p>
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6"
+                    class="mt-8 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6"
                 >
                     <div class="sm:col-span-6">
                         <label
