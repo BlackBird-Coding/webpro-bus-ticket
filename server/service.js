@@ -764,6 +764,30 @@ const getSchedulePrice = (scheduleID) => {
   });
 };
 
+const getBookingById = (bookingId) => {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `SELECT B.*, C.*, S.*, R.*, BU.*, SE.*
+      FROM BOOKINGS B
+      JOIN CUSTOMERS C ON B.CustomerID = C.UserID
+      JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
+      JOIN ROUTES R ON R.RouteID = S.RouteID
+      JOIN BUSES BU ON BU.BusID = S.BusID
+      JOIN SEATS SE ON SE.SeatID = B.SeatID
+      WHERE B.BookingID = ?`,
+      [bookingId],
+      (err, booking) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        console.log("Booking:", booking);
+        resolve(booking);
+      }
+    );
+  });
+};
+
 export {
   registerCustomer,
   login,
@@ -787,4 +811,5 @@ export {
   addBus,
   addSchedule,
   addRoute,
+  getBookingById,
 };

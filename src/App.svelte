@@ -22,6 +22,8 @@
   import Navbar from "./lib/Navbar.svelte";
   import Footer from "./lib/Footer.svelte";
   import Reschedule from "./routes/BookingHistory/Reschedule.svelte";
+  import ReTrip from "./routes/ReBooking/ReTrip.svelte";
+  import UserAuthCheck from "./lib/components/UserAuthCheck.svelte";
 
   // import { onMount } from "svelte";
   // import { userStore } from "./lib/stores/userStore.svelte";
@@ -46,15 +48,18 @@
       <Route path="/booking/find" component={Find} />
       <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
-      <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
-      <Route path="/AddSchedule" component={AddSchedule} />
-      <Route path="/AddStation" component={AddStation} />
-      <Route path="/AddBus" component={AddBus} />
-      <Route path="/AddRoute" component={AddRoute} />
-      <Route path="/History_Emp" component={History_Emp} />
+      <UserAuthCheck requiredUserType="employee">
+        <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
+        <Route path="/AddSchedule" component={AddSchedule} />
+        <Route path="/AddStation" component={AddStation} />
+        <Route path="/AddBus" component={AddBus} />
+        <Route path="/AddRoute" component={AddRoute} />
+        <Route path="/History_Emp" component={History_Emp} />
+      </UserAuthCheck>
       <Route path="/ticket-details" component={TicketDetails} />
       <Route path="/EditSchedule" component={EditSchedule} />
       <Route path="/reschedule" component={Reschedule} />
+      <Route path="/rebooking/trip" component={ReTrip} />
     </Router>
   </main>
   <Footer></Footer>
