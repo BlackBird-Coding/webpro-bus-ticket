@@ -1,5 +1,5 @@
 <script>
-  import banner from "@/assets/banner.jpg"
+  import banner from "@/assets/banner_tm3.jpg"
   import bangkok from "@/assets/bangkok.jpg"
   import chiangmai from "@/assets/chiangmai.jpg"
   import loei from "@/assets/loei.jpg"
