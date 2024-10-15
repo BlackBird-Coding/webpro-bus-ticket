@@ -532,7 +532,7 @@ const EditSchedule = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
       `UPDATE Schedules
-       SET ScheduleName = ?, RouteID = ?, EmployeeID = ?, DepartureTime = ?, ArrivalTime = ?, Price = ?, Description = ?, BusID = ?
+       SET ScheduleName = ?, RouteID = ?, EmployeeID = ?, DepartureTime = DATETIME(?), ArrivalTime = ?, Price = ?, Description = ?, BusID = ?
        WHERE ScheduleID = ?`,
       [
         id.ScheduleName,
@@ -596,7 +596,7 @@ const checkAvailableSeats = (scheduleID) => {
 const addSchedule = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO Schedules (ScheduleName, RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description)
+      `INSERT INTO Schedules (ScheduleName, RouteID, BusID, EmployeeID, DATETIME(DepartureTime), ArrivalTime, Price, Description)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id.ScheduleName,
