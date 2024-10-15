@@ -3,7 +3,7 @@
   import { userStore } from "@/lib/stores/userStore.svelte";
   import { navigate } from "svelte-routing";
   import Swal from "sweetalert2";
-  import logo from "@/assets/logo_pim2.png";
+  import logo from "@/assets/logo_boss.png";
   import { onMount } from "svelte";
 
   let isMenuOpen = false;
