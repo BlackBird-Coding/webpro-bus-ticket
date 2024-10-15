@@ -641,9 +641,9 @@ const addRoute = (id) => {
 const addBus = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO Buses (Capacity, Type)
+      `INSERT INTO Buses (Name, Type)
        VALUES (?, ?)`,
-      [id.Capacity, id.Type],
+      [id.Name, id.Type],
       (err) => {
         if (err) {
           console.error("Error updating Schedules:", err.message);

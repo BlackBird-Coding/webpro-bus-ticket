@@ -72,7 +72,7 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS Buses (
   BusID INTEGER PRIMARY KEY AUTOINCREMENT,
   BusCode TEXT GENERATED ALWAYS AS (printf('B%03d', BusID)),
-  Capacity INT NOT NULL,
+  Name VARCHAR(100) NULL,
   Type VARCHAR(50) NOT NULL
 );`);
 
