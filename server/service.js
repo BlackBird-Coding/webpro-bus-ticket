@@ -53,7 +53,6 @@ const registerCustomer = async (fname, lname, phone, email, password) => {
       );
     });
 
-    console.log("Customer registered successfully!");
     return "Customer registered successfully!";
   } catch (error) {
     console.error(error.message);
@@ -207,7 +206,6 @@ const createEmployee = async (
       );
     });
 
-    console.log("Employee registered successfully!");
     return "Employee registered successfully!";
   } catch (error) {
     console.error(error.message);
@@ -229,7 +227,6 @@ const getRoutes = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(routes);
         resolve(routes);
       }
     );
@@ -252,7 +249,6 @@ const getSchedules = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log("function", schedule);
         resolve(schedule);
       }
     );
@@ -260,7 +256,6 @@ const getSchedules = () => {
 };
 
 const getOneSchedule = (id) => {
-  console.log("fc", id);
   return new Promise((resolve, reject) => {
     db.all(
       `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, 
@@ -282,7 +277,6 @@ const getOneSchedule = (id) => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log("function", routes);
         resolve(routes);
       }
     );
@@ -299,7 +293,6 @@ const getBusStops = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(BusStops);
         resolve(BusStops);
       }
     );
@@ -307,7 +300,6 @@ const getBusStops = () => {
 };
 
 const deleteSchedule = (id) => {
-  console.log(id);
   return new Promise((resolve, reject) => {
     db.run(`DELETE FROM Schedules WHERE ScheduleID = ?`, [id], (err) => {
       if (err) {
@@ -333,7 +325,6 @@ const historyEmp = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(history);
         resolve(history);
       }
     );
@@ -357,7 +348,6 @@ const historyCus = (id) => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log("his", history);
         resolve(history);
       }
     );
@@ -376,7 +366,6 @@ const getEmployees = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(row);
         resolve(row);
       }
     );
@@ -496,7 +485,6 @@ const getBuses = () => {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
         }
-        console.log(row);
         resolve(row);
       }
     );

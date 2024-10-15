@@ -29,7 +29,6 @@ import {
 const router = express.Router();
 
 router.post("/register", (req, res) => {
-  console.log("Request body:", req.body);
   const { fname, lname, dob, gender, number, email, password } = req.body;
   registerCustomer(fname, lname, number, email, password).then(
     () => {
@@ -43,10 +42,8 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
-  console.log("Request body:", req.body);
   login(email, password).then(
     (user) => {
-      console.log("User:", user);
       req.session.user = user;
       res.json({ message: "Login successful!", user });
     },
@@ -96,11 +93,8 @@ router.get("/BusStops", (req, res) => {
 });
 
 router.post("/GetOneSchedule", (req, res) => {
-  console.log("post", req.body.id);
   getOneSchedule(req.body.id)
     .then((routes) => {
-      console.log("post", routes);
-
       res.json({ routes });
     })
     .catch((error) => {
@@ -140,7 +134,6 @@ router.get("/employees", (req, res) => {
 });
 
 router.get("/historyCus", (req, res) => {
-  console.log("seesion", req.session);
   historyCus(req.session.user.details.userID)
     .then((histories) => {
       res.json({ histories });
@@ -255,7 +248,6 @@ router.post("/AddStation", (req, res) => {
 });
 
 router.post("/AddSchedule", (req, res) => {
-  console.log("router", req.body);
   addSchedule(req.body)
     .then(() => {
       res.json({ message: "Save New Schedule successful!" });
