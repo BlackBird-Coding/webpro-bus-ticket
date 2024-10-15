@@ -234,12 +234,30 @@ const createEmployee = async (
 const getRoutes = () => {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.Capacity, B.Type
+      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*,  B.Type
        FROM ROUTES R
        JOIN BUSSTOPS BS1 ON R.Origin = BS1.BusStopID
        JOIN BUSSTOPS BS2 ON R.Destination = BS2.BusStopID
        JOIN SCHEDULES S ON S.RouteID = R.RouteID 
        JOIN BUSES B ON B.BusID = S.BusID`,
+      (err, routes) => {
+        if (err) {
+          console.error("Error querying the database:", err.message);
+          return reject("Error querying the database.");
+        }
+        resolve(routes);
+      }
+    );
+  });
+};
+
+const getRouteOnly = () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop
+       FROM ROUTES R
+       JOIN BUSSTOPS BS1 ON R.Origin = BS1.BusStopID
+       JOIN BUSSTOPS BS2 ON R.Destination = BS2.BusStopID`,
       (err, routes) => {
         if (err) {
           console.error("Error querying the database:", err.message);
@@ -514,7 +532,7 @@ const EditSchedule = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
       `UPDATE Schedules
-       SET ScheduleName = ?, RouteID = ?, EmployeeID = ?, DepartureTime = ?, ArrivalTime = ?, Price = ?, Description = ?, Image = ?, BusID = ?
+       SET ScheduleName = ?, RouteID = ?, EmployeeID = ?, DepartureTime = ?, ArrivalTime = ?, Price = ?, Description = ?, BusID = ?
        WHERE ScheduleID = ?`,
       [
         id.ScheduleName,
@@ -524,7 +542,6 @@ const EditSchedule = (id) => {
         id.ArrivalTime,
         id.Price,
         id.Description,
-        id.Image,
         id.BusID,
         id.ScheduleID,
       ],
@@ -565,6 +582,7 @@ const checkAvailableSeats = (scheduleID) => {
        WHERE b.SeatID IS NULL`,
       [scheduleID],
       (err, rows) => {
+        s;
         if (err) {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");
@@ -578,8 +596,8 @@ const checkAvailableSeats = (scheduleID) => {
 const addSchedule = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO Schedules (ScheduleName, RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description, Image)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO Schedules (ScheduleName, RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id.ScheduleName,
         id.RouteID,
@@ -589,7 +607,6 @@ const addSchedule = (id) => {
         id.ArrivalTime,
         id.Price,
         id.Description,
-        id.Image,
       ],
       (err) => {
         if (err) {
@@ -978,4 +995,5 @@ export {
   getBookingById,
   saveRebookingAndPayment,
   scanTicket,
+  getRouteOnly,
 };
