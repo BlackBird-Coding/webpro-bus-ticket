@@ -44,13 +44,6 @@
           updateTotalPrice();
         });
     }
-
-    fetch("/api/user")
-      .then((response) => response.json())
-      .then((userData) => {
-        firstName = userData.user.details.fname;
-        lastName = userData.user.details.lname;
-      });
   });
 
   function updateTotalPrice() {
@@ -58,6 +51,15 @@
   }
 
   async function handlePayment() {
+    if (!firstName || !lastName) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "กรุณากรอกชื่อและนามสกุลของคุณ",
+      });
+      return;
+    }
+
     const result = await Swal.fire({
       title: "รอสักครู่... กำลังจ่ายเงินให้คุณ",
       imageUrl: qrcode,
@@ -79,7 +81,7 @@
 
   async function saveBookingAndPayment(bookingData, paymentData) {
     try {
-      const response = await fetch("/api/book-and-pay", {
+      const response = await fetch("/api/book-and-pay-emp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,6 +111,7 @@
         goSeatId,
         returnScheduleID,
         returnSeatId,
+        Name: firstName + " " + lastName,
       };
 
       const paymentData = {
@@ -122,7 +125,7 @@
         icon: "success",
         title: "การจองสำเร็จ!",
       }).then(() => {
-        navigate("/history");
+        navigate("/History_Emp");
       });
     } catch (error) {
       Swal.fire({
@@ -142,18 +145,16 @@
       <div>Personal Details</div>
       <div class="flex gap-5 text-lg">
         <input
-          value={firstName}
-          class="border border-gray-400 pl-2 rounded-md w-3/6 bg-gray-200"
+          bind:value={firstName}
+          class="border border-gray-400 pl-2 rounded-md w-3/6"
           type="text"
           placeholder="ชื่อ"
-          disabled
         />
         <input
-          value={lastName}
-          class="border border-gray-400 pl-2 rounded-md w-3/6 bg-gray-200"
+          bind:value={lastName}
+          class="border border-gray-400 pl-2 rounded-md w-3/6"
           type="text"
           placeholder="นามสกุล"
-          disabled
         />
       </div>
     </div>

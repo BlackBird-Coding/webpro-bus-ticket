@@ -55,7 +55,9 @@
         <TableBodyRow class="text-center">
           <TableBodyCell>{data.BookingCode}</TableBodyCell>
           <TableBodyCell
-            >{data.Fname} {data.Lname} ({data.Gender})</TableBodyCell
+            >{data.CustomerName}{data.Gender
+              ? ` (${data.Gender})`
+              : ""}</TableBodyCell
           >
           <TableBodyCell
             >{data.ScheduleCode}: {data.ScheduleName} ({data.Type})</TableBodyCell

@@ -148,6 +148,13 @@
               >ตรวจสอบประวัติการจอง</a
             >
           </li>
+          <li>
+            <a
+              href="/booking_emp/find"
+              class="text-white hover:text-[#F5F5F5] font-semibold block text-[15px] py-2 lg:py-0"
+              >ซื้อตั๋ว</a
+            >
+          </li>
         </UserAuthCheck>
         <UserAuthCheck
           requiredUserType="employee"

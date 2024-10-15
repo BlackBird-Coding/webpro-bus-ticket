@@ -11,6 +11,7 @@
   let originBusStops: any[] = [];
   let destinationBusStops: any[] = [];
   let tripType = "1"; // Default to 1 (One-way trip)
+  export let path = "booking/trip";
 
   onMount(async () => {
     try {
@@ -83,7 +84,7 @@
     });
 
     navigate(
-      `/booking/trip/?id=${matchingRoute?.RouteID}&date=${myBindDate}&type=${tripType}&return=${returnDate}`
+      `/${path}/?id=${matchingRoute?.RouteID}&date=${myBindDate}&type=${tripType}&return=${returnDate}`
     );
   }
 </script>
