@@ -35,7 +35,7 @@
       console.error("There was a problem with the fetch operation:", error);
     });
 
-  fetch("/api//routeOnly", {
+  fetch("/api/routeOnly", {
     method: "GET",
   })
     .then((res) => {
@@ -286,209 +286,14 @@
                   id="add-bus"
                   class="ml-0 text-white bg-amber-400 hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-3 py-2"
                 >
-                    {#if !isDisabled}
-                        <div class="sm:col-span-4 sm:col-start-1">
-                            <label
-                                for="type"
-                                class="block text-base font-medium leading-6 text-gray-900"
-                                >รถบัส</label
-                            >
-                            <div class="mt-2">
-                                <select
-                                    bind:value={tripdata.BusID}
-                                    name="bus"
-                                    id="bus"
-                                    autocomplete="address-level2"
-                                    class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                >
-                                    <option value="">เลือกรถบัส</option>
-                                    {#each Buses as data}
-                                        <option value={data.BusID}>
-                                            {data.BusCode}: {data.Name} ({data.Type})
-                                        </option>
-                                    {/each}
-                                </select>
-                            </div>
-                        </div>
-                    {:else}
-                        <div class="sm:col-span-2">
-                            <label
-                                for="type"
-                                class="block text-base font-medium leading-6 text-gray-900"
-                                >ประเภทรถ</label
-                            >
-                            <div class="mt-2">
-                                <input
-                                    disabled
-                                    bind:value={tripdata.Type}
-                                    type="text"
-                                    name="type"
-                                    id="type"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            </div>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label
-                                for="capacity"
-                                class="block text-base font-medium leading-6 text-gray-900"
-                                >จำนวนที่นั่ง</label
-                            >
-                            <div class="mt-2">
-                                <input
-                                    disabled={isDisabled}
-                                    value={tripdata.Capacity}
-                                    type="text"
-                                    name="capacity"
-                                    id="capacity"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            </div>
-                        </div>
-                    {/if}
-
-                    <div class="sm:col-span-2">
-                        <label
-                            for="price"
-                            class="block text-base font-medium leading-6 text-gray-900"
-                            >ราคา</label
-                        >
-                        <div class="mt-2">
-                            <input
-                                disabled={isDisabled}
-                                bind:value={tripdata.Price}
-                                type="number"
-                                name="price"
-                                id="price"
-                                autocomplete="given-name"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            />
-                        </div>
-                    </div>
-
-                    {#if isDisabled}
-                        <div class="sm:col-span-3">
-                            <label
-                                for="origin-bus-stop"
-                                class="block text-base font-medium leading-6 text-gray-900"
-                                >สถานีต้นทาง</label
-                            >
-                            <div class="mt-2">
-                                <textarea
-                                    disabled
-                                    value={tripdata.OriginBusStop +
-                                        "\n" +
-                                        tripdata.OriginAddress +
-                                        " " +
-                                        tripdata.OriginSubprovince +
-                                        " " +
-                                        tripdata.OriginProvince}
-                                    name="origin-bus-stop"
-                                    id="origin-bus-stop"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-3">
-                            <label
-                                for="destination-bus-stop"
-                                class="block text-base font-medium leading-6 text-gray-900"
-                                >สถานีปลายทาง</label
-                            >
-                            <div class="mt-2">
-                                <textarea
-                                    disabled
-                                    value={tripdata.DestinationBusStop +
-                                        "\n" +
-                                        tripdata.DestinationAddress +
-                                        " " +
-                                        tripdata.DestinationSubprovince +
-                                        " " +
-                                        tripdata.DestinationProvince}
-                                    type="text"
-                                    name="destination-bus-stop"
-                                    id="destination-bus-stop"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                />
-                            </div>
-                        </div>
-                    {:else}
-                        <div class="sm:col-span-6">
-                            <label
-                                for="type"
-                                class="block text-base font-medium leading-6 text-gray-900"
-                                >เส้นทางการเดินทาง (สถานีต้นทาง - ปลายทาง)</label
-                            >
-                            <div class="mt-2">
-                                <select
-                                    bind:value={tripdata.RouteID}
-                                    name="route"
-                                    id="route"
-                                    autocomplete="address-level2"
-                                    class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                >
-                                    <option value=""
-                                        >เลือกเส้นทางการเดินทาง</option
-                                    >
-                                    {#each routes as data}
-                                        <option value={data.RouteID}>
-                                            {data.RouteCode}: {data.OriginBusStop}
-                                            - {data.DestinationBusStop}
-                                        </option>
-                                    {/each}
-                                </select>
-                            </div>
-                        </div>
-                    {/if}
-
-                    <div class="sm:col-span-3">
-                        <label
-                            for="departure-time"
-                            class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-                        >
-                            เวลาออกเดินทาง
-                        </label>
-                        <input
-                            type="datetime-local"
-                            bind:value={tripdata.DepartureTime}
-                            id="departure-date"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            disabled={isDisabled}
-                            min={now}
-                        />
-                        <div
-                            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-                        ></div>
-                    </div>
-
-                    <div class="sm:col-span-3">
-                        <label
-                            for="departure-time"
-                            class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-                        >
-                            เวลาถึงปลายทาง
-                        </label>
-                        <input
-                            type="datetime-local"
-                            bind:value={tripdata.ArrivalTime}
-                            id="departure-date"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            disabled={isDisabled}
-                            min={tripdata.DepartureTime}
-                        />
-                    </div>
-                </div>
-
-                <div
-                    class="mt-5 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-4"
-                >
-                    <h2
-                        class="text-base font-semibold leading-7 text-black mb-1"
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-6"
                     >
                       <path
                         stroke-linecap="round"
@@ -592,8 +397,7 @@
                   <option value="">เลือกรถบัส</option>
                   {#each Buses as data}
                     <option value={data.BusID}>
-                      {data.BusCode}: {data.Type}
-                      {data.Capacity} ที่นั่ง
+                      {data.BusCode}: {data.Name} ({data.Type})
                     </option>
                   {/each}
                 </select>
