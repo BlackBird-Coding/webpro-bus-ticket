@@ -142,7 +142,7 @@
           </li>
           <li>
             <a
-              href="/Scan"
+              href="/scan"
               class="text-white hover:text-[#F5F5F5] font-semibold block text-[15px] py-2 lg:py-0"
               >สแกนตั๋วเดินทาง</a
             >
