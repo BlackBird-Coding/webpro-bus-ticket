@@ -109,8 +109,11 @@
             denyButtonText: `ไม่`,
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
+            if (result.isConfirmed & mode != 'add') {
                 toggleDisabled();
+            }
+            else if (result.isConfirmed & mode == 'add') {
+                navigate(`/ManageBus_Emp`, { replace: true });
             }
         });
     }
