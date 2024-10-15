@@ -5,11 +5,13 @@
   let ticketId = "";
   let ticketCode = "";
   let newDate = "";
+  let routeId = "";
 
   onMount(() => {
     const params = new URLSearchParams(window.location.search);
     ticketId = params.get("id") || "";
     ticketCode = params.get("code") || "";
+    routeId = params.get("route") || "";
   });
 </script>
 
@@ -63,7 +65,14 @@
       <button
         type="button"
         on:click={() =>
-          navigate("/rebooking/trip?id=" + ticketId + "&date=" + newDate)}
+          navigate(
+            "/rebooking/trip?id=" +
+              ticketId +
+              "&date=" +
+              newDate +
+              "&route=" +
+              routeId
+          )}
         class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-600 transition duration-300"
       >
         ดำเนินการต่อ

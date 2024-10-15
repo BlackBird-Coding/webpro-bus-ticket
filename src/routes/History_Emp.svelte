@@ -1,69 +1,83 @@
 <script>
-    import {
-        Table,
-        TableBody,
-        TableBodyCell,
-        TableBodyRow,
-        TableHead,
-        TableHeadCell,
-    } from "flowbite-svelte";
+  import {
+    Table,
+    TableBody,
+    TableBodyCell,
+    TableBodyRow,
+    TableHead,
+    TableHeadCell,
+  } from "flowbite-svelte";
 
-    let history = [];
+  let history = [];
 
-    fetch(`/api/history`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
+  fetch(`/api/history`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return res.json();
     })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return res.json();
-        })
-        .then((data) => {
-            console.log(data);
-            history = data.history;
-        })
-        .catch((error) => {
-            console.error(
-                "There was a problem with the fetch operation:",
-                error,
-            );
-        });
+    .then((data) => {
+      console.log(data);
+      history = data.history;
+    })
+    .catch((error) => {
+      console.error("There was a problem with the fetch operation:", error);
+    });
 </script>
 
 <div class="m-10">
-    <div class="flex flex-wrap items-center gap-5 w-full mb-8">
-        <h1 class="flex text-2xl row-span-3"><b>ตรวจสอบประวัติการจอง</b></h1>
-    </div>
+  <div class="flex flex-wrap items-center gap-5 w-full mb-8">
+    <h1 class="flex text-2xl row-span-3"><b>ตรวจสอบประวัติการจอง</b></h1>
+  </div>
 
-    <Table hoverable={true}>
-        <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
-            <TableHeadCell>เลขที่การจอง</TableHeadCell>
-            <TableHeadCell>ผู้โดยสาร</TableHeadCell>
-            <TableHeadCell>เที่ยวรถ</TableHeadCell>
-            <TableHeadCell>เวลาออกเดินทาง - ถึงปลายทาง</TableHeadCell>
-            <TableHeadCell>เลขที่นั่ง</TableHeadCell>
-            <TableHeadCell>สถานะการจอง</TableHeadCell>
-            <TableHeadCell>Action</TableHeadCell>
-        </TableHead>
-        <TableBody>
-            {#each history as data}
-            <TableBodyRow class="text-center">
-                <TableBodyCell>{data.BookingCode}</TableBodyCell>
-                <TableBodyCell>{data.Fname} {data.Lname} ({data.Gender})</TableBodyCell>
-                <TableBodyCell>{data.RouteCode}: {data.RouteName} ({data.Type})</TableBodyCell>
-                <TableBodyCell>({data.DepartureTime.slice(2, -3)}) - ({data.ArrivalTime.slice(2, -3)})</TableBodyCell>
-                <TableBodyCell>{data.SeatNumber}</TableBodyCell>
-                <TableBodyCell>{data.Status}</TableBodyCell>
-                <TableBodyCell class="flex gap-5">
-                    <a class="text-blue-600 hover:underline" href="/">สแกนตั๋ว</a>
-                    <a class="text-orange-400 hover:underline" href="/">เลื่อนตั๋ว</a>
-                </TableBodyCell>
-            </TableBodyRow>
-            {/each}
-        </TableBody>
-    </Table>
+  <Table hoverable={true}>
+    <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
+      <TableHeadCell>เลขที่การจอง</TableHeadCell>
+      <TableHeadCell>ผู้โดยสาร</TableHeadCell>
+      <TableHeadCell>เที่ยวรถ</TableHeadCell>
+      <TableHeadCell>เวลาออกเดินทาง - ถึงปลายทาง</TableHeadCell>
+      <TableHeadCell>เลขที่นั่ง</TableHeadCell>
+      <TableHeadCell>สถานะการจอง</TableHeadCell>
+      <TableHeadCell>Action</TableHeadCell>
+    </TableHead>
+    <TableBody>
+      {#each history as data}
+        <TableBodyRow class="text-center">
+          <TableBodyCell>{data.BookingCode}</TableBodyCell>
+          <TableBodyCell
+            >{data.Fname} {data.Lname} ({data.Gender})</TableBodyCell
+          >
+          <TableBodyCell
+            >{data.RouteCode}: {data.RouteName} ({data.Type})</TableBodyCell
+          >
+          <TableBodyCell
+            >({data.DepartureTime.slice(2, -3)}) - ({data.ArrivalTime.slice(
+              2,
+              -3
+            )})</TableBodyCell
+          >
+          <TableBodyCell>{data.SeatNumber}</TableBodyCell>
+          <TableBodyCell>{data.Status}</TableBodyCell>
+          <TableBodyCell class="flex gap-5">
+            <a class="text-blue-600 hover:underline" href="/">สแกนตั๋ว</a>
+            <a
+              class="text-orange-400 hover:underline"
+              href={`/reschedule?code=` +
+                data.BookingCode +
+                "&id=" +
+                data.BookingID +
+                "&route=" +
+                data.RouteID}>เลื่อนตั๋ว</a
+            >
+          </TableBodyCell>
+        </TableBodyRow>
+      {/each}
+    </TableBody>
+  </Table>
 </div>

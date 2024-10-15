@@ -749,6 +749,142 @@ const saveBookingAndPayment = (bookingData, paymentData, userId) => {
   });
 };
 
+const saveRebookingAndPayment = (rebookingData, paymentData, userId) => {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run("BEGIN TRANSACTION");
+
+      const updateBooking = (
+        bookingId,
+        scheduleID,
+        seatId,
+        paymentId = null
+      ) => {
+        return new Promise((resolve, reject) => {
+          db.run(
+            `UPDATE Bookings 
+             SET ScheduleID = ?, SeatID = ?, PaymentID = ?
+             WHERE BookingID = ?`,
+            [scheduleID, seatId, paymentId, bookingId],
+            function (err) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(this.changes);
+              }
+            }
+          );
+        });
+      };
+
+      const insertPayment = (amount, paymentMethod) => {
+        return new Promise((resolve, reject) => {
+          db.run(
+            `INSERT INTO Payment (Amount, PaymentTime, PaymentMethod)
+             VALUES (?, datetime('now'), ?)`,
+            [amount, paymentMethod],
+            function (err) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(this.lastID);
+              }
+            }
+          );
+        });
+      };
+
+      const getNewSchedulePrice = (scheduleID) => {
+        return new Promise((resolve, reject) => {
+          db.get(
+            "SELECT Price FROM Schedules WHERE ScheduleID = ?",
+            [scheduleID],
+            (err, row) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(row ? row.Price : 0);
+              }
+            }
+          );
+        });
+      };
+
+      const getOldBookingPrice = (bookingId) => {
+        return new Promise((resolve, reject) => {
+          db.get(
+            `SELECT s.Price 
+             FROM Bookings b
+             JOIN Schedules s ON b.ScheduleID = s.ScheduleID
+             WHERE b.BookingID = ?`,
+            [bookingId],
+            (err, row) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(row ? row.Price : 0);
+              }
+            }
+          );
+        });
+      };
+
+      Promise.all([
+        getNewSchedulePrice(rebookingData.scheduleID),
+        getOldBookingPrice(rebookingData.bookingId),
+      ])
+        .then(([newPrice, oldPrice]) => {
+          const priceDifference = newPrice - oldPrice;
+          if (priceDifference > 0 && paymentData) {
+            return insertPayment(
+              priceDifference,
+              paymentData.paymentMethod
+            ).then((paymentId) => {
+              return updateBooking(
+                rebookingData.bookingId,
+                rebookingData.scheduleID,
+                rebookingData.seatId,
+                paymentId
+              ).then(() => paymentId);
+            });
+          } else {
+            return updateBooking(
+              rebookingData.bookingId,
+              rebookingData.scheduleID,
+              rebookingData.seatId
+            ).then(() => null);
+          }
+        })
+        .then((paymentId) => {
+          return new Promise((resolve, reject) => {
+            db.get(
+              `SELECT b.BookingCode, p.PaymentCode
+               FROM Bookings b
+               LEFT JOIN Payment p ON b.PaymentID = p.PaymentID
+               WHERE b.BookingID = ?`,
+              [rebookingData.bookingId],
+              (err, row) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(row);
+                }
+              }
+            );
+          });
+        })
+        .then((result) => {
+          db.run("COMMIT");
+          resolve(result);
+        })
+        .catch((err) => {
+          db.run("ROLLBACK");
+          reject(err);
+        });
+    });
+  });
+};
+
 const getSchedulePrice = (scheduleID) => {
   return new Promise((resolve, reject) => {
     db.get(
@@ -791,6 +927,24 @@ const getBookingById = (bookingId) => {
   });
 };
 
+const scanTicket = (bookingCode) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `UPDATE Bookings
+       SET Status = True
+       WHERE BookingCode = ?`,
+      [bookingCode],
+      (err) => {
+        if (err) {
+          console.error("Error updating the database:", err.message);
+          return reject("Error updating the database.");
+        }
+        resolve("Ticket scanned successfully.");
+      }
+    );
+  });
+};
+
 export {
   registerCustomer,
   login,
@@ -815,4 +969,6 @@ export {
   addSchedule,
   addRoute,
   getBookingById,
+  saveRebookingAndPayment,
+  scanTicket,
 };

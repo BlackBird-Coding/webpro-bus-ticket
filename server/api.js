@@ -23,6 +23,8 @@ import {
   getSchedulePrice,
   getReturnTrips,
   getBookingById,
+  saveRebookingAndPayment,
+  scanTicket,
 } from "./service.js";
 const router = express.Router();
 
@@ -216,6 +218,20 @@ router.post("/book-and-pay", (req, res) => {
     });
 });
 
+router.post("/rebook-and-pay", (req, res) => {
+  const { rebooking, payment } = req.body;
+  const userId = req.session.user.details.userID;
+
+  saveRebookingAndPayment(rebooking, payment, userId)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      console.error("Error saving rebooking and payment:", error);
+      res.status(500).json({ error: "Failed to save rebooking and payment" });
+    });
+});
+
 router.get("/getSchedulePrice/:scheduleID", (req, res) => {
   const scheduleID = req.params.scheduleID;
 
@@ -273,6 +289,16 @@ router.get("/booking/:id", (req, res) => {
   getBookingById(req.params.id)
     .then((bookings) => {
       res.json({ bookings });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.post("/scan", (req, res) => {
+  scanTicket(req.body.code)
+    .then((result) => {
+      res.json(result);
     })
     .catch((error) => {
       res.status(500).json({ error });

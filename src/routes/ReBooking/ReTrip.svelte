@@ -11,14 +11,16 @@
   import { navigate } from "svelte-routing";
 
   let routeId = "";
+  let id = "";
   let goTrips: any[] = [];
   let tripDate = "";
   let selectedGoTrip: string | null = null;
 
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    routeId = urlParams.get("id") || "";
+    routeId = urlParams.get("route") || "";
     tripDate = urlParams.get("date") || "";
+    id = urlParams.get("id") || "";
 
     fetchTripData(routeId, tripDate);
   });
@@ -26,7 +28,7 @@
   async function fetchTripData(routeId: string, tripDate: string) {
     try {
       const response = await fetch(
-        `/api/trips?routeId=${routeId}&date=${tripDate}`
+        `/api/trips?routeId=${routeId}&date=${tripDate}&id=${id}`
       );
       const data = await response.json();
       goTrips = data.trips || [];
@@ -47,6 +49,7 @@
 
     const queryParams = new URLSearchParams();
     queryParams.set("goTrip", selectedGoTrip);
+    queryParams.set("id", id);
     navigate(`/rebooking/seat?${queryParams.toString()}`);
   }
 
