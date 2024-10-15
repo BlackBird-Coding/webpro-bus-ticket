@@ -108,14 +108,14 @@
 
       Swal.fire({
         icon: "success",
-        title: "Rebooking Successful!",
-        text: `Your new booking code is ${result.BookingCode}. No additional payment was required.`,
+        title: "การจองใหม่สำเร็จ!",
+        text: `รหัสการจองใหม่ของคุณคือ ${result.BookingCode}. ไม่จำเป็นต้องชำระเงินเพิ่มเติม.`,
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Oops...",
-        text: "Something went wrong with the rebooking process.",
+        title: "โอ๊ะ...",
+        text: "เกิดข้อผิดพลาดบางอย่างในกระบวนการจองใหม่.",
       });
     }
   }
@@ -137,14 +137,14 @@
 
       Swal.fire({
         icon: "success",
-        title: "Rebooking Successful!",
-        text: `Your new booking code is ${result.BookingCode}. Payment code: ${result.PaymentCode}`,
+        title: "การจองใหม่สำเร็จ!",
+        text: `รหัสการจองใหม่ของคุณคือ ${result.BookingCode}. รหัสการชำระเงิน: ${result.PaymentCode}`,
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Oops...",
-        text: "Something went wrong with the rebooking and payment process.",
+        title: "โอ๊ะ...",
+        text: "เกิดข้อผิดพลาดบางอย่างในกระบวนการจองใหม่และการชำระเงิน.",
       });
     }
   }

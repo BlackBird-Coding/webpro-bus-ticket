@@ -123,7 +123,7 @@
 
       Swal.fire({
         icon: "success",
-        title: "Booking Successful!",
+        title: "การจองสำเร็จ!",
       }).then(() => {
         navigate("/History_Emp");
       });
@@ -131,7 +131,7 @@
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Something went wrong with the booking process.",
+        text: "เกิดข้อผิดพลาดในกระบวนการจอง",
       });
     }
   }
