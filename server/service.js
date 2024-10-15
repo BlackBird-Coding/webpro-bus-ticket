@@ -234,7 +234,7 @@ const createEmployee = async (
 const getRoutes = () => {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.Capacity, B.Type
+      `SELECT R.*, BS1.Province AS OriginProvince, BS2.Province AS DestinationProvince, BS1.Name AS OriginBusStop, BS2.Name AS DestinationBusStop, S.*, B.Type
        FROM ROUTES R
        JOIN BUSSTOPS BS1 ON R.Origin = BS1.BusStopID
        JOIN BUSSTOPS BS2 ON R.Destination = BS2.BusStopID

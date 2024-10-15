@@ -3,7 +3,7 @@
     import { Tooltip, Button } from "flowbite-svelte";
     import Swal from "sweetalert2";
     import { Route, navigate } from "svelte-routing";
-    import SvgSchedule from "../../lib/components/SvgSchedule.svelte"
+    import SvgSchedule from "../../lib/components/SvgSchedule.svelte";
 
     let id = null;
     let tripdata = [];
@@ -109,10 +109,9 @@
             denyButtonText: `ไม่`,
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed & mode != 'add') {
+            if (result.isConfirmed & (mode != "add")) {
                 toggleDisabled();
-            }
-            else if (result.isConfirmed & mode == 'add') {
+            } else if (result.isConfirmed & (mode == "add")) {
                 navigate(`/ManageBus_Emp`, { replace: true });
             }
         });
@@ -214,7 +213,7 @@
                 DepartureTime: "",
                 ArrivalTime: "",
                 DriverID: "",
-                Description: ""
+                Description: "",
             };
         }
 
