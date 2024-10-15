@@ -30,7 +30,15 @@ const router = express.Router();
 
 router.post("/register", (req, res) => {
   const { fname, lname, dob, gender, number, email, password } = req.body;
-  registerCustomer(fname, lname, number, email, password).then(
+  registerCustomer({
+    fname,
+    lname,
+    phone: number,
+    email,
+    password,
+    dob,
+    gender,
+  }).then(
     () => {
       res.json({ message: "Customer registration successful!" });
     },

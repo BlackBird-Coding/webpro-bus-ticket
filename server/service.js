@@ -1,61 +1,79 @@
 import bcrypt from "bcrypt";
 import db from "./db.js";
 
-const registerCustomer = async (fname, lname, phone, email, password) => {
+const registerCustomer = async (customer) => {
   const saltRounds = 10;
 
+  console.log("Registering customer:", customer);
+
   try {
-    // Check if the email already exists in the USERS table
-    const user = await new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM Users WHERE Email = ?`, [email], (err, user) => {
-        if (err) {
-          reject("Error querying the database.");
-        } else {
-          resolve(user);
-        }
+    // Start a transaction
+    await new Promise((resolve, reject) => {
+      db.run("BEGIN TRANSACTION", (err) => {
+        if (err) reject(err);
+        else resolve();
       });
     });
 
-    if (user) {
-      throw new Error("Email already exists. Please use another email.");
+    try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(customer.password, saltRounds);
+
+      // Insert user
+      const userId = await new Promise((resolve, reject) => {
+        db.run(
+          `INSERT INTO Users (Username, Email, Password, UserType) VALUES (?, ?, ?, ?)`,
+          [customer.email, customer.email, hashedPassword, "Customer"],
+          function (err) {
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve(this.lastID);
+          }
+        );
+      });
+
+      // Insert customer
+      await new Promise((resolve, reject) => {
+        db.run(
+          `INSERT INTO Customers (UserID, Fname, Lname, Phone, Gender, DOB) VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            userId,
+            customer.fname,
+            customer.lname,
+            customer.phone,
+            customer.gender,
+            customer.dob,
+          ],
+          (err) => {
+            if (err) reject(err);
+            else resolve();
+          }
+        );
+      });
+
+      // Commit the transaction
+      await new Promise((resolve, reject) => {
+        db.run("COMMIT", (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      console.log(
+        `Customer ${customer.fname} ${customer.lname} registered successfully!`
+      );
+      return `Customer ${customer.fname} ${customer.lname} registered successfully!`;
+    } catch (error) {
+      // If there's an error, roll back the transaction
+      await new Promise((resolve) => {
+        db.run("ROLLBACK", resolve);
+      });
+      throw error;
     }
-
-    // Hash the password before storing it
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Insert customer details into CUSTOMERS table
-    const customerId = await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO Customers (Fname, Lname, Phone, Email) VALUES (?, ?, ?, ?)`,
-        [fname, lname, phone, email],
-        function (err) {
-          if (err) {
-            reject("Error inserting customer.");
-          } else {
-            resolve(this.lastID); // Return the newly inserted CustomerID
-          }
-        }
-      );
-    });
-
-    // Insert user's login details into USERS table
-    await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO Users (Username, Email, Password, UserType, CustomerID) VALUES (?, ?, ?, 'customer', ?)`,
-        [email, email, hashedPassword, customerId],
-        (err) => {
-          if (err) {
-            reject("Error inserting user.");
-          } else {
-            resolve();
-          }
-        }
-      );
-    });
-
-    return "Customer registered successfully!";
   } catch (error) {
-    console.error(error.message);
+    console.error("Error registering customer:", error.message);
     throw new Error(error.message);
   }
 };
