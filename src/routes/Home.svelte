@@ -12,7 +12,7 @@
   <img class="w-full object-cover" src="{banner}" alt="Banner">
   <div class="flex flex-col items-center mt-12">
     <div class="font-sans py-4 mx-auto lg:max-w-6xl md:max-w-4xl sm:max-w-md">
-      <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-12">เส้นทางยอดนิยม</h2>
+      <h2 class="text-3xl font-extrabold text-gray-800 text-center mb-12">เส้นทางยอดนิยม</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
         <!-- Bangkok -->
@@ -98,7 +98,7 @@
   </div>
 
   <div class="flex flex-col items-center mt-12">
-    <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-12">วิธีการจองและชำระเงิน</h2>
+    <h2 class="text-3xl font-extrabold text-gray-800 text-center mb-12">วิธีการจองและชำระเงิน</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 text-md">
 
       <!-- Step 1 -->

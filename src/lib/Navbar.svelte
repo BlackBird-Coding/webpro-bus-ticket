@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import UserAuthCheck from "@/lib/components/UserAuthCheck.svelte";
   import { userStore } from "@/lib/stores/userStore.svelte";
   import { navigate } from "svelte-routing";
@@ -43,8 +43,8 @@
   }
 </script>
 
-<header class="flex justify-between items-center bg-[#6439FF] p-4 shadow-md z-50">
-  <div class="flex items-center gap-4">
+<header class="flex justify-between items-center bg-[#6439FF] p-5 shadow-md z-50">
+  <div class="flex items-center gap-5">
     <img src="{logo}" class="h-12 w-12" alt="Boss Logo" />
     <span class="text-white text-xl font-semibold">BusBuss</span>
   </div>
@@ -63,37 +63,37 @@
         <a href="/" class="text-white text-lg font-semibold">หน้าแรก</a>
       </li>
       <li>
-        <a href="/contact" class="text-white text-lg font-semibold">ติดต่อเรา</a>
+        <a href="/contact" class="text-white text-base ">ติดต่อเรา</a>
       </li>
       <li>
-        <a href="/register" class="text-white text-lg font-semibold">ลงทะเบียน</a>
+        <a href="/register" class="text-white text-base">ลงทะเบียน</a>
       </li>
       <li>
-        <a href="/login" class="text-white text-lg font-semibold">เข้าสู่ระบบ</a>
+        <a href="/login" class="text-white text-base">เข้าสู่ระบบ</a>
       </li>
     </ul>
   </nav>
 
   <!-- Desktop menu -->
   <nav class="hidden lg:flex space-x-6">
-    <ul class="flex items-center space-x-4">
+    <ul class="flex items-center space-x-8">
       <li>
-        <a href="/" class="text-white font-semibold hover:underline">หน้าแรก</a>
+        <a href="/" class="text-white text-base font-semibold hover:underline">หน้าแรก</a>
       </li>
       <li>
-        <a href="/contact" class="text-white font-semibold hover:underline">ติดต่อเรา</a>
+        <a href="/contact" class="text-white text-base font-semibold hover:underline">ติดต่อเรา</a>
       </li>
       <UserAuthCheck showWhenLoggedIn={false}>
         <li>
-          <a href="/register" class="px-4 py-2 text-[15px] rounded font-semibold text-[#6439FF] border-2 border-[#6439FF] hover:bg-slate-200 transition-all ease-in-out duration-300 bg-[#FFFFFF]">ลงทะเบียน</a>
+          <a href="/register" class="px-4 py-2 text-base rounded font-semibold text-[#6439FF] border-2 border-[#6439FF] hover:bg-slate-200 transition-all ease-in-out duration-300 bg-[#FFFFFF]">ลงทะเบียน</a>
         </li>
         <li>
-          <a href="/login" class="px-4 py-2 text-[15px] rounded font-semibold text-[#6439FF] border-2 border-[#6439FF] hover:bg-slate-200 transition-all ease-in-out duration-300 bg-[#FFFFFF]">เข้าสู่ระบบ</a>
+          <a href="/login" class="px-4 py-2 text-base rounded font-semibold text-[#6439FF] border-2 border-[#6439FF] hover:bg-slate-200 transition-all ease-in-out duration-300 bg-[#FFFFFF]">เข้าสู่ระบบ</a>
         </li>
       </UserAuthCheck>
       <UserAuthCheck showWhenLoggedIn={true}>
         <li>
-          <button class="px-4 py-2 text-[15px] rounded font-semibold text-[#6439FF] border-2 border-[#6439FF] hover:bg-slate-200 transition-all ease-in-out duration-300 bg-[#FFFFFF]" on:click={handleLogout}>ออกจากระบบ</button>
+          <button class="px-4 py-2 text-lg rounded font-semibold text-[#6439FF] border-2 border-[#6439FF] hover:bg-slate-200 transition-all ease-in-out duration-300 bg-[#FFFFFF]" on:click={handleLogout}>ออกจากระบบ</button>
         </li>
       </UserAuthCheck>
     </ul>
