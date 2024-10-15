@@ -60,7 +60,7 @@
       <TableHeadCell>เที่ยวรถ</TableHeadCell>
       <TableHeadCell>เลขที่นั่ง</TableHeadCell>
       <TableHeadCell>ราคาสุทธิ</TableHeadCell>
-      <TableHeadCell>สถานะการจอง</TableHeadCell>
+      <TableHeadCell>สถานะการใช้งาน</TableHeadCell>
       <TableHeadCell>Action</TableHeadCell>
     </TableHead>
     <TableBody>

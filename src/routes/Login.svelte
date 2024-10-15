@@ -29,7 +29,7 @@
           // Update the userStore with the new login state
           userStore.setUser({
             userType: data.user.userType,
-            role: data.user.role, // Make sure your API returns the role
+            role: data.user.details.role, // Make sure your API returns the role
             // Add any other user data you want to store
           });
 

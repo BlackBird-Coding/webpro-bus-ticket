@@ -9,6 +9,10 @@
   } from "flowbite-svelte";
 
   let history = [];
+  let statusToText = {
+    0: "ยังไม่ใช้งาน",
+    1: "ใช้งานแล้ว",
+  };
 
   fetch(`/api/history`, {
     method: "GET",
@@ -43,7 +47,7 @@
       <TableHeadCell>เที่ยวรถ</TableHeadCell>
       <TableHeadCell>เวลาออกเดินทาง - ถึงปลายทาง</TableHeadCell>
       <TableHeadCell>เลขที่นั่ง</TableHeadCell>
-      <TableHeadCell>สถานะการจอง</TableHeadCell>
+      <TableHeadCell>สถานะการใช้งาน</TableHeadCell>
       <TableHeadCell>Action</TableHeadCell>
     </TableHead>
     <TableBody>
@@ -62,8 +66,8 @@
               -3
             )})</TableBodyCell
           >
-          <TableBodyCell>{data.SeatNumber}</TableBodyCell>
-          <TableBodyCell>{data.Status}</TableBodyCell>
+          <TableBodyCell>{data.SeatCode}</TableBodyCell>
+          <TableBodyCell>{statusToText[data.Status]}</TableBodyCell>
           <TableBodyCell class="flex gap-5">
             <a class="text-blue-600 hover:underline" href="/">สแกนตั๋ว</a>
             <a

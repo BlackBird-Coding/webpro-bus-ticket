@@ -37,10 +37,11 @@
           if (!response.ok) throw new Error("Auth check failed");
           const userData = await response.json();
           if (userData && Object.keys(userData).length > 0) {
+            console.log("User data:", userData);
             set({
               isLoggedIn: true,
               userType: userData.user.userType || "",
-              role: userData.user.role || "",
+              role: userData.user.details.role || "",
               isLoading: false,
             });
           } else {

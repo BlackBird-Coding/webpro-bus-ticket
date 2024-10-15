@@ -319,7 +319,8 @@ const historyEmp = () => {
       JOIN CUSTOMERS C ON B.CustomerID = C.UserID
       JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
       JOIN ROUTES R ON R.RouteID = S.RouteID
-      JOIN BUSES BU ON BU.BusID = S.BusID`,
+      JOIN BUSES BU ON BU.BusID = S.BusID
+      JOIN SEATS SE ON SE.SeatID = B.SeatID`,
       (err, history) => {
         if (err) {
           console.error("Error querying the database:", err.message);
