@@ -14,7 +14,6 @@
   let routes = [];
 
   let employees = [];
-  let dataToSend = [];
 
   let api = null;
   let now = null;
@@ -123,7 +122,7 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(tripdata),
       });
 
       console.log("Received response:", res);
