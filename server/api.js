@@ -25,6 +25,7 @@ import {
   getBookingById,
   saveRebookingAndPayment,
   scanTicket,
+  getRouteOnly,
 } from "./service.js";
 const router = express.Router();
 
@@ -68,6 +69,16 @@ router.post("/logout", (req, res) => {
 
 router.get("/routes", (req, res) => {
   getRoutes()
+    .then((routes) => {
+      res.json({ routes });
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+});
+
+router.get("/routeOnly", (req, res) => {
+  getRouteOnly()
     .then((routes) => {
       res.json({ routes });
     })
