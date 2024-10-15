@@ -153,7 +153,7 @@
           <div
             class="text-lg border-[3px] border-black rounded-md flex items-center justify-center pl-3"
           >
-            www.testtest.com<svg
+            www.busbuss.com<svg
               class="w-7 ml-2 aspect-square"
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -166,7 +166,7 @@
             >
           </div>
         </div>
-        <div>1. เข้าเว็บไซต์ www.busticket.in.th</div>
+        <div>1. เข้าเว็บไซต์ www.busbuss.com</div>
       </div>
 
       <!-- Step 2 -->
