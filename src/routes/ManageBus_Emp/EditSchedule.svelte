@@ -304,7 +304,7 @@
                                     <option value="">เลือกรถบัส</option>
                                     {#each Buses as data}
                                         <option value={data.BusID}>
-                                            {data.BusCode}: {data.Type}
+                                            {data.BusCode}: {data.Name} ({data.Type})
                                         </option>
                                     {/each}
                                 </select>
