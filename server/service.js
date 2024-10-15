@@ -583,7 +583,6 @@ const checkAvailableSeats = (scheduleID) => {
        WHERE b.SeatID IS NULL`,
       [scheduleID],
       (err, rows) => {
-        s;
         if (err) {
           console.error("Error querying the database:", err.message);
           return reject("Error querying the database.");

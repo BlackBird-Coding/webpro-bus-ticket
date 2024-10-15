@@ -27,6 +27,11 @@
   import UserAuthCheck from "./lib/components/UserAuthCheck.svelte";
   import Scan from "./routes/Scan.svelte";
 
+  import TripEmp from "./routes/Booking_Emp/Trip.svelte";
+  import SeatEmp from "./routes/Booking_Emp/Seat.svelte";
+  import PaymentEmp from "./routes/Booking_Emp/Payment.svelte";
+  import FindEmp from "./routes/Booking_Emp/Find.svelte";
+
   // import { onMount } from "svelte";
   // import { userStore } from "./lib/stores/userStore.svelte";
 
@@ -63,6 +68,11 @@
       <Route path="/rebooking/trip" component={ReTrip} />
       <Route path="/rebooking/seat" component={ReSeat} />
       <Route path="/rebooking/payment" component={RePayment} />
+
+      <Route path="/booking_emp/trip" component={TripEmp} />
+      <Route path="/booking_emp/seat" component={SeatEmp} />
+      <Route path="/booking_emp/payment" component={PaymentEmp} />
+      <Route path="/booking_emp/find" component={FindEmp} />
 
       <Route path="/scan" component={Scan} />
     </Router>

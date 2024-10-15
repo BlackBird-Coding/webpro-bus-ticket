@@ -48,13 +48,6 @@
           updateTotalPrice();
         });
     }
-
-    fetch("/api/user")
-      .then((response) => response.json())
-      .then((userData) => {
-        firstName = userData.user.details.fname;
-        lastName = userData.user.details.lname;
-      });
   });
 
   function updateTotalPrice() {
@@ -162,17 +155,15 @@
       <div class="flex gap-5 text-lg">
         <input
           value={firstName}
-          class="border border-gray-400 pl-2 rounded-md w-3/6 bg-gray-200"
+          class="border border-gray-400 pl-2 rounded-md w-3/6"
           type="text"
           placeholder="ชื่อ"
-          disabled
         />
         <input
           value={lastName}
-          class="border border-gray-400 pl-2 rounded-md w-3/6 bg-gray-200"
+          class="border border-gray-400 pl-2 rounded-md w-3/6"
           type="text"
           placeholder="นามสกุล"
-          disabled
         />
       </div>
     </div>
