@@ -290,7 +290,7 @@ router.get("/booking/:id", (req, res) => {
 router.post("/scan", (req, res) => {
   scanTicket(req.body.code)
     .then((result) => {
-      res.json(result);
+      res.json({ success: true, message: result });
     })
     .catch((error) => {
       res.status(500).json({ error });

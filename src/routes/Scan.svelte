@@ -1,19 +1,25 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { navigate } from "svelte-routing";
   import jsQR from "jsqr"; // Make sure to install this package
+  import Swal from "sweetalert2";
 
   let ticketId = "";
   let videoElem;
   let canvasElem;
+  let stream;
 
   onMount(() => {
     setupCamera();
   });
 
+  onDestroy(() => {
+    closeCamera();
+  });
+
   async function setupCamera() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       });
       videoElem.srcObject = stream;
@@ -22,7 +28,18 @@
       requestAnimationFrame(tick);
     } catch (error) {
       console.error("Error accessing camera:", error);
-      alert("ไม่สามารถเข้าถึงกล้องได้ กรุณาตรวจสอบการอนุญาตการใช้งานกล้อง");
+      Swal.fire({
+        icon: "error",
+        title: "ไม่สามารถเข้าถึงกล้อง",
+        text: "กรุณาอนุญาตให้เข้าถึงกล้องของคุณ",
+      });
+    }
+  }
+
+  function closeCamera() {
+    if (stream) {
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
     }
   }
 
@@ -61,17 +78,35 @@
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            navigate(`/ticket/${ticketId}`);
+            Swal.fire({
+              icon: "success",
+              title: "สแกนตั๋วสำเร็จ",
+              text: data.message,
+            }).then(() => {
+              window.location.reload();
+            });
           } else {
-            alert("ไม่พบข้อมูลตั๋ว กรุณาลองอีกครั้ง");
+            Swal.fire({
+              icon: "error",
+              title: "ไม่สามารถสแกนตั๋ว",
+              text: data.message,
+            });
           }
         })
         .catch((error) => {
           console.error("Error:", error);
-          alert("เกิดข้อผิดพลาดในการสแกนตั๋ว กรุณาลองอีกครั้ง");
+          Swal.fire({
+            icon: "error",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้",
+          });
         });
     } else {
-      alert("กรุณาสแกน QR Code หรือป้อนรหัสตั๋ว");
+      Swal.fire({
+        icon: "error",
+        title: "ไม่สามารถสแกนตั๋ว",
+        text: "กรุณาสแกน QR Code หรือป้อนรหัสตั๋ว",
+      });
     }
   }
 </script>
