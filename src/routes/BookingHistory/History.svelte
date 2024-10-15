@@ -72,7 +72,7 @@
           >
           <TableBodyCell>{booking.Phone}</TableBodyCell>
           <TableBodyCell>{booking.DepartureTime}</TableBodyCell>
-          <TableBodyCell>{booking.RouteName} ({booking.Type})</TableBodyCell>
+          <TableBodyCell>{booking.ScheduleName} ({booking.Type})</TableBodyCell>
           <TableBodyCell>{booking.SeatCode}</TableBodyCell>
           <TableBodyCell>{booking.Price}</TableBodyCell>
           <TableBodyCell>{statusToText[booking.Status]}</TableBodyCell>

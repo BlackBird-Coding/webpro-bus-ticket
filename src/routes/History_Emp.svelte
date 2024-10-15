@@ -58,7 +58,7 @@
             >{data.Fname} {data.Lname} ({data.Gender})</TableBodyCell
           >
           <TableBodyCell
-            >{data.RouteCode}: {data.RouteName} ({data.Type})</TableBodyCell
+            >{data.ScheduleCode}: {data.ScheduleName} ({data.Type})</TableBodyCell
           >
           <TableBodyCell
             >({data.DepartureTime.slice(2, -3)}) - ({data.ArrivalTime.slice(
