@@ -102,7 +102,7 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS Bookings (
   BookingID INTEGER PRIMARY KEY AUTOINCREMENT,
   BookingCode TEXT GENERATED ALWAYS AS (printf('K%03d', BookingID)),
-  CustomerID INTEGER NOT NULL,
+  CustomerID INTEGER,
   ScheduleID INTEGER NOT NULL,
   BookingTime DATETIME NOT NULL,
   SeatID INTEGER NOT NULL,

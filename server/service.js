@@ -21,9 +21,10 @@ const registerCustomer = async (customer) => {
 
       // Insert user
       const userId = await new Promise((resolve, reject) => {
+        const [username] = customer.email.split("@");
         db.run(
           `INSERT INTO Users (Username, Email, Password, UserType) VALUES (?, ?, ?, ?)`,
-          [customer.email, customer.email, hashedPassword, "Customer"],
+          [username, customer.email, hashedPassword, "Customer"],
           function (err) {
             if (err) {
               reject(err);
