@@ -596,8 +596,8 @@ const checkAvailableSeats = (scheduleID) => {
 const addSchedule = (id) => {
   return new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO Schedules (ScheduleName, RouteID, BusID, EmployeeID, DATETIME(DepartureTime), ArrivalTime, Price, Description)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO Schedules (ScheduleName, RouteID, BusID, EmployeeID, DepartureTime, ArrivalTime, Price, Description)
+       VALUES (?, ?, ?, ?, DATETIME(?), DATETIME(?), ?, ?)`,
       [
         id.ScheduleName,
         id.RouteID,

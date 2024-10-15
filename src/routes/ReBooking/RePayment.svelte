@@ -4,6 +4,7 @@
   import qrcode from "@/assets/QRCode.png";
   import { fly } from "svelte/transition";
   import { ArrowRight, Ticket, CreditCard } from "lucide-svelte";
+  import { navigate } from "svelte-routing";
 
   let scheduleID;
   let seatId;
@@ -110,6 +111,8 @@
         icon: "success",
         title: "การจองใหม่สำเร็จ!",
         text: `รหัสการจองใหม่ของคุณคือ ${result.BookingCode}. ไม่จำเป็นต้องชำระเงินเพิ่มเติม.`,
+      }).then(() => {
+        navigate("/history", { replace: true });
       });
     } catch (error) {
       Swal.fire({
