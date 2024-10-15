@@ -69,7 +69,6 @@
           <TableBodyCell>{data.SeatCode}</TableBodyCell>
           <TableBodyCell>{statusToText[data.Status]}</TableBodyCell>
           <TableBodyCell class="flex gap-5">
-            <a class="text-blue-600 hover:underline" href="/">สแกนตั๋ว</a>
             <a
               class="text-orange-400 hover:underline"
               href={`/reschedule?code=` +
