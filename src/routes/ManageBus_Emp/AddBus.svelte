@@ -4,7 +4,7 @@
     import { navigate } from "svelte-routing";
 
     let bus = {
-        Capacity: '',
+        Name: '',
         Type: ''
     };
 
@@ -105,7 +105,7 @@
                         >
                         <div class="mt-2">
                             <input
-                                bind:value={bus.Capacity}
+                                bind:value={bus.Name}
                                 type="text"
                                 name="trip-name"
                                 id="trip-name"

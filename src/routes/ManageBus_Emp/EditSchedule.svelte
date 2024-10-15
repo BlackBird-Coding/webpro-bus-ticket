@@ -431,7 +431,6 @@
                                     {#each Buses as data}
                                         <option value={data.BusID}>
                                             {data.BusCode}: {data.Type}
-                                            {data.Capacity} ที่นั่ง
                                         </option>
                                     {/each}
                                 </select>
