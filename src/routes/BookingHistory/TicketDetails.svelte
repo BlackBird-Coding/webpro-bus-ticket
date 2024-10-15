@@ -10,6 +10,10 @@
   let error = null;
 
   let html2pdf;
+  let statusToText = {
+    0: "ยังไม่ใช้งาน",
+    1: "ใช้งานแล้ว",
+  };
 
   onMount(async () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -27,9 +31,7 @@
         }
         ticket = (await response.json()).bookings;
         console.log("Ticket data:", ticket);
-        generateQRCode(
-          `Ticket ID: ${ticket.BookingCode}, Name: ${ticket.Fname} ${ticket.Lname}`
-        );
+        generateQRCode(ticket.BookingCode);
       } catch (err) {
         error = err.message;
       } finally {
@@ -64,161 +66,29 @@
   }
 
   function printTicket() {
-    const printWindow = window.open("", "", "width=800,height=600");
+    const printWindow = window.open("", "_blank");
     printWindow.document.write(`
       <html>
       <head>
         <title>Print Ticket</title>
         <style>
-          @media print {
-            body, html {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              overflow: hidden;
-            }
-            .ticket-container {
-              page-break-inside: avoid;
-              page-break-after: avoid;
-              break-inside: avoid;
-            }
-          }
-          body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f3f4f6;
-          }
-          .ticket-container {
-            background-color: #fff;
-            border: 2px solid #ddd;
-            padding: 20px;
-            border-radius: 15px;
-            max-width: 700px;
-            margin: 50px auto;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-          }
-          .ticket-header {
-            background-color: #0069d9;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            border-radius: 12px 12px 0 0;
-            letter-spacing: 1.5px;
-          }
-          .ticket-details {
-            margin-top: 20px;
-            padding: 20px;
-            font-size: 16px;
-            line-height: 1.8;
-            background-color: #f9fafb;
-            border-radius: 10px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
-          }
-          .ticket-details p {
-            margin: 5px 0;
-            font-size: 16px;
-            color: #333;
-          }
-          .ticket-details .section {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ececec;
-            padding-bottom: 15px;
-          }
-          .ticket-details strong {
-            display: inline-block;
-            width: 120px;
-            color: #0069d9;
-          }
-          .ticket-info {
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f1f6fb;
-            margin-bottom: 20px;
-            border-left: 5px solid #0069d9;
-          }
-          .qr-code {
-            text-align: center;
-            margin: 30px 0;
-          }
-          .qr-code img {
-            border: 3px solid #0069d9;
-            border-radius: 12px;
-            width: 150px;
-            height: 150px;
-          }
-          .ticket-footer {
-            text-align: center;
-            font-size: 12px;
-            color: #888;
-            margin-top: 15px;
-          }
-          .barcode {
-            width: 100%;
-            height: 50px;
-            background: repeating-linear-gradient(90deg, #000 0, #000 20%, transparent 20%, transparent 40%);
-            background-size: 4px 100%;
-            border-radius: 10px;
-            margin-top: 30px;
-          }
-          .ticket-logo {
-            width: 80px;
-            margin: 0 auto;
-            display: block;
-            margin-bottom: 20px;
-          }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .ticket { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; }
+        .ticket h1 { font-size: 24px; }
+        .ticket p { font-size: 18px; }
+        .ticket img { display: block; margin: 20px auto; }
+        button { display: none; }
         </style>
       </head>
       <body>
-        <div class="ticket-container">
-          <!-- Logo Section (Optional) -->
-          <img src="https://via.placeholder.com/80x80?text=Logo" alt="Company Logo" class="ticket-logo">
-          <div class="ticket-header">
-            Bus Ticket
-          </div>
-          <div class="ticket-details">
-            <div class="section">
-              <p><strong>Ticket No.:</strong> ${ticket.BookingCode}</p>
-              <p><strong>Status:</strong> ${ticket.Status}</p>
-            </div>
-            <div class="ticket-info">
-              <div class="section">
-                <p><strong>From:</strong> กรุงเทพ</p>
-                <p><strong>To:</strong> หัวหิน</p>
-              </div>
-              <div class="section">
-                <p><strong>Date of Travel:</strong> ${ticket.DepartureTime}</p>
-                <p><strong>Seat No.:</strong> ${ticket.SeatCode}</p>
-              </div>
-              <div class="section">
-                <p><strong>Price:</strong> ${ticket.Price} บาท</p>
-              </div>
-            </div>
-            <div class="qr-code">
-              <p><strong>Scan QR Code for boarding:</strong></p>
-              <img src="${qrCodeDataUrl}" alt="QR Code">
-            </div>
-            <div class="barcode"></div>
-          </div>
-          <div class="ticket-footer">
-            <p>Thank you for choosing our service. Have a safe journey!</p>
-          </div>
+        <div class="ticket">
+        ${ticketContent.innerHTML}
         </div>
       </body>
-    </html>
+      </html>
     `);
-
     printWindow.document.close();
-    printWindow.focus();
     printWindow.print();
-    printWindow.close();
   }
 </script>
 
@@ -284,7 +154,7 @@
     <!-- Status Section -->
     <div class="bg-green-500 p-3 rounded-lg mb-4 text-center shadow-sm">
       <p class="text-lg font-semibold text-white">
-        Status: {ticket.Status}
+        Status: {statusToText[ticket.Status]}
       </p>
     </div>
 

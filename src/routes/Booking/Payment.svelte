@@ -5,6 +5,7 @@
   import qrcode from "@/assets/QRCode.png";
   import { fly } from "svelte/transition";
   import { ArrowRight, Ticket, CreditCard } from "lucide-svelte";
+  import { navigate } from "svelte-routing";
 
   let goScheduleID;
   let goSeatId;
@@ -139,7 +140,8 @@
       Swal.fire({
         icon: "success",
         title: "Booking Successful!",
-        text: `Your booking code is ${result.BookingCode}. Payment code: ${result.PaymentCode}`,
+      }).then(() => {
+        navigate("/history");
       });
     } catch (error) {
       Swal.fire({

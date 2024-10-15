@@ -639,7 +639,7 @@ const saveBookingAndPayment = (bookingData, paymentData, userId) => {
       const insertBooking = (scheduleID, seatId, paymentID) => {
         return new Promise((resolve, reject) => {
           db.run(
-            `INSERT INTO Bookings (CustomerID, ScheduleID, BookingDate, SeatID, Status, PaymentID)
+            `INSERT INTO Bookings (CustomerID, ScheduleID, BookingTime, SeatID, Status, PaymentID)
              VALUES (?, ?, datetime('now'), ?, False, ?)`,
             [userId, scheduleID, seatId, paymentID],
             function (err) {

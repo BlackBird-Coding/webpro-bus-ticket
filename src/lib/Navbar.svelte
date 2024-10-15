@@ -125,7 +125,10 @@
             >
           </li>
         </UserAuthCheck>
-        <UserAuthCheck requiredUserType="employee">
+        <UserAuthCheck
+          requiredUserType="employee"
+          requiredRole="พนักงานจัดการเที่ยวรถ"
+        >
           <li>
             <a
               href="/ManageBus_Emp"
@@ -133,6 +136,11 @@
               >จัดการเที่ยวรถ</a
             >
           </li>
+        </UserAuthCheck>
+        <UserAuthCheck
+          requiredUserType="employee"
+          requiredRole="พนักงานหน้าเคาน์เตอร์"
+        >
           <li>
             <a
               href="/History_Emp"
@@ -140,6 +148,11 @@
               >ตรวจสอบประวัติการจอง</a
             >
           </li>
+        </UserAuthCheck>
+        <UserAuthCheck
+          requiredUserType="employee"
+          requiredRole="พนักงานตรวจตั๋ว"
+        >
           <li>
             <a
               href="/scan"

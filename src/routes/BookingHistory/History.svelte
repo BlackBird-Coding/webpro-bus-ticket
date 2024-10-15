@@ -12,6 +12,11 @@
 
   let bookings = [];
 
+  let statusToText = {
+    0: "ยังไม่ใช้งาน",
+    1: "ใช้งานแล้ว",
+  };
+
   fetch(`/api/historyCus`, {
     method: "GET",
     headers: {
@@ -66,11 +71,11 @@
             >{booking.Fname} {booking.Lname} ({booking.Gender})</TableBodyCell
           >
           <TableBodyCell>{booking.Phone}</TableBodyCell>
-          <TableBodyCell>{booking.BookingDate.slice(2, -3)}</TableBodyCell>
+          <TableBodyCell>{booking.DepartureTime}</TableBodyCell>
           <TableBodyCell>{booking.RouteName} ({booking.Type})</TableBodyCell>
           <TableBodyCell>{booking.SeatCode}</TableBodyCell>
           <TableBodyCell>{booking.Price}</TableBodyCell>
-          <TableBodyCell>{booking.Status}</TableBodyCell>
+          <TableBodyCell>{statusToText[booking.Status]}</TableBodyCell>
           <TableBodyCell class="flex gap-5">
             <a
               class="text-orange-400 hover:underline"
