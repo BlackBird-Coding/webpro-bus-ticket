@@ -180,8 +180,8 @@
         <TableHead class="bg-slate-200 rounded-md py-2 text-base text-center">
             <TableHeadCell>เลขเที่ยวรถ</TableHeadCell>
             <TableHeadCell>เที่ยวรถ</TableHeadCell>
+            <TableHeadCell>ประเภทรถ</TableHeadCell>
             <TableHeadCell>เวลาออกเดินทาง - ถึงปลายทาง</TableHeadCell>
-            <TableHeadCell>จำนวนที่นั่ง</TableHeadCell>
             <TableHeadCell>รายละเอียด</TableHeadCell>
             <TableHeadCell>Action</TableHeadCell>
         </TableHead>
@@ -190,8 +190,9 @@
                 <TableBodyRow class="text-center">
                     <TableBodyCell>{data.ScheduleCode}</TableBodyCell>
                     <TableBodyCell
-                        >{data.ScheduleName} ({data.Type})</TableBodyCell
+                        >{data.ScheduleName}</TableBodyCell
                     >
+                    <TableBodyCell>{data.Type}</TableBodyCell>
                     <TableBodyCell
                         >({data.DepartureTime.toLocaleString().slice(2, -3)}) -
                         ({data.ArrivalTime.toLocaleString().slice(
@@ -199,7 +200,6 @@
                             -3,
                         )})</TableBodyCell
                     >
-                    <TableBodyCell>{data.Capacity}</TableBodyCell>
                     <TableBodyCell>
                         <button
                             on:click={() => goToPage(data.ScheduleID, "view")}
