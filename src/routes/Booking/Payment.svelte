@@ -19,10 +19,6 @@
   // Form data
   let firstName = "";
   let lastName = "";
-  let contactFirstName = "";
-  let contactLastName = "";
-  let phone = "";
-  let email = "";
 
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -62,21 +58,6 @@
   }
 
   async function handlePayment() {
-    if (
-      !firstName ||
-      !lastName ||
-      !contactFirstName ||
-      !contactLastName ||
-      !phone
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Please fill in all required fields!",
-      });
-      return;
-    }
-
     const result = await Swal.fire({
       title: "รอสักครู่... กำลังจ่ายเงินให้คุณ",
       imageUrl: qrcode,

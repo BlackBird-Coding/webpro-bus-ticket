@@ -219,6 +219,8 @@ router.get("/available-seats/:scheduleID", (req, res) => {
 router.post("/book-and-pay", (req, res) => {
   const { booking, payment } = req.body;
   const userId = req.session.user.details.userID;
+  booking.Name =
+    req.session.user.details.Fname + " " + req.session.user.details.Lname;
 
   saveBookingAndPayment(booking, payment, userId)
     .then((result) => {

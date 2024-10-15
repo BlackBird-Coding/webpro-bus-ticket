@@ -351,9 +351,9 @@ const deleteSchedule = (id) => {
 const historyEmp = () => {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT *
+      `SELECT *, B.Name AS CustomerName
       FROM BOOKINGS B
-      JOIN CUSTOMERS C ON B.CustomerID = C.UserID
+      LEFT JOIN CUSTOMERS C ON B.CustomerID = C.UserID
       JOIN SCHEDULES S ON S.ScheduleID = B.ScheduleID
       JOIN ROUTES R ON R.RouteID = S.RouteID
       JOIN BUSES BU ON BU.BusID = S.BusID
@@ -660,12 +660,12 @@ const saveBookingAndPayment = (bookingData, paymentData, userId) => {
     db.serialize(() => {
       db.run("BEGIN TRANSACTION");
 
-      const insertBooking = (scheduleID, seatId, paymentID) => {
+      const insertBooking = (scheduleID, seatId, paymentID, Name) => {
         return new Promise((resolve, reject) => {
           db.run(
-            `INSERT INTO Bookings (CustomerID, ScheduleID, BookingTime, SeatID, Status, PaymentID)
-             VALUES (?, ?, datetime('now'), ?, False, ?)`,
-            [userId, scheduleID, seatId, paymentID],
+            `INSERT INTO Bookings (CustomerID, ScheduleID, BookingTime, SeatID, Status, PaymentID, Name)
+             VALUES (?, ?, datetime('now'), ?, False, ?, ?)`,
+            [userId, scheduleID, seatId, paymentID, Name],
             function (err) {
               if (err) {
                 reject(err);
@@ -725,13 +725,15 @@ const saveBookingAndPayment = (bookingData, paymentData, userId) => {
             insertBooking(
               bookingData.goScheduleID,
               bookingData.goSeatId,
-              paymentID
+              paymentID,
+              bookingData.Name
             ),
             bookingData.returnScheduleID
               ? insertBooking(
                   bookingData.returnScheduleID,
                   bookingData.returnSeatId,
-                  paymentID
+                  paymentID,
+                  bookingData.Name
                 )
               : Promise.resolve(null),
           ]).then(([goBookingID, returnBookingID]) => ({
