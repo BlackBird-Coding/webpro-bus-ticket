@@ -20,11 +20,12 @@
   import EditSchedule from "./routes/ManageBus_Emp/EditSchedule.svelte";
   import Navbar from "./lib/Navbar.svelte";
   import Footer from "./lib/Footer.svelte";
-  import Reschedule from "./routes/BookingHistory/Reschedule.svelte";
+  import Reschedule from "./routes/ReBooking/Reschedule.svelte";
   import ReTrip from "./routes/ReBooking/ReTrip.svelte";
   import ReSeat from "./routes/ReBooking/ReSeat.svelte";
   import RePayment from "./routes/ReBooking/RePayment.svelte";
   import UserAuthCheck from "./lib/components/UserAuthCheck.svelte";
+  import Scan from "./routes/Scan.svelte";
 
   // import { onMount } from "svelte";
   // import { userStore } from "./lib/stores/userStore.svelte";
@@ -50,18 +51,20 @@
       <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
       <!-- <UserAuthCheck requiredUserType="employee"> -->
-        <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
-        <Route path="/AddStation" component={AddStation} />
-        <Route path="/AddBus" component={AddBus} />
-        <Route path="/AddRoute" component={AddRoute} />
-        <Route path="/History_Emp" component={History_Emp} />
-        <Route path="/EditSchedule" component={EditSchedule} />
+      <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
+      <Route path="/AddStation" component={AddStation} />
+      <Route path="/AddBus" component={AddBus} />
+      <Route path="/AddRoute" component={AddRoute} />
+      <Route path="/History_Emp" component={History_Emp} />
+      <Route path="/EditSchedule" component={EditSchedule} />
       <!-- </UserAuthCheck> -->
       <Route path="/ticket-details" component={TicketDetails} />
       <Route path="/reschedule" component={Reschedule} />
       <Route path="/rebooking/trip" component={ReTrip} />
       <Route path="/rebooking/seat" component={ReSeat} />
       <Route path="/rebooking/payment" component={RePayment} />
+
+      <Route path="/scan" component={Scan} />
     </Router>
   </main>
   <Footer></Footer>

@@ -8,10 +8,12 @@
   let unavailableSeats: string[] = [];
   let selectedSeat: string | null = null;
   let allSeats: string[] = [];
+  let bookingId: string;
 
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
     scheduleID = urlParams.get("goTrip") || "";
+    bookingId = urlParams.get("id") || "";
 
     fetchSeatData(scheduleID);
 
@@ -63,6 +65,8 @@
         "seatId",
         seatMap.find((seat) => seat.code === selectedSeat).id
       );
+
+      queryParams.set("bookingId", bookingId);
 
       navigate(`/rebooking/payment?${queryParams.toString()}`);
     }

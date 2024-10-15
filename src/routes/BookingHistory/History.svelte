@@ -119,7 +119,9 @@
               href={`/reschedule?code=` +
                 booking.BookingCode +
                 "&id=" +
-                booking.BookingID}>เลื่อนตั๋ว</a
+                booking.BookingID +
+                "&route=" +
+                booking.RouteID}>เลื่อนตั๋ว</a
             >
             <a
               class="text-green-500 hover:underline"

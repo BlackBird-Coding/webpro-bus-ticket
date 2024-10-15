@@ -41,7 +41,7 @@
 >
   <div class="flex flex-wrap items-center gap-5 w-full">
     <div class="ml-3 flex items-center space-x-4 rtl:space-x-reverse">
-      <img src="{logo}" class="h-12 w-12" alt="Boss Logo" />
+      <img src={logo} class="h-12 w-12" alt="Boss Logo" />
       <span
         class="text-white self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
         >BusBuss</span
@@ -120,6 +120,13 @@
               href="/History_Emp"
               class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
               >ตรวจสอบประวัติการจอง (พนักงาน)</a
+            >
+          </li>
+          <li class="max-lg:border-b max-lg:py-3 px-3">
+            <a
+              href="/scan"
+              class="hover:text-[#F5F5F5] text-[#333] font-semibold block text-[15px]"
+              >สแกนตั๋ว</a
             >
           </li>
         </UserAuthCheck>

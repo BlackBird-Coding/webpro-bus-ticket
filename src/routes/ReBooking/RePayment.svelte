@@ -7,53 +7,38 @@
 
   let scheduleID;
   let seatId;
+  let bookingId;
   let newPrice = 0;
   let oldPrice = 0;
   let priceDifference = 0;
   let showDetails = false;
 
-  // Form data
-  let firstName = "";
-  let lastName = "";
-  let contactFirstName = "";
-  let contactLastName = "";
-  let phone = "";
-  let email = "";
-
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
     scheduleID = urlParams.get("scheduleID");
     seatId = urlParams.get("seatId");
+    bookingId = urlParams.get("bookingId");
 
-    if (scheduleID && seatId) {
-      fetchPrices();
+    if (scheduleID && seatId && bookingId) {
+      fetchBookingDetails();
     }
-
-    fetch("/api/user")
-      .then((response) => response.json())
-      .then((userData) => {
-        firstName = userData.user.details.fname;
-        lastName = userData.user.details.lname;
-      });
   });
 
-  async function fetchPrices() {
+  async function fetchBookingDetails() {
     try {
+      const response = await fetch(`/api/booking/${bookingId}`);
+      const bookingData = await response.json();
+      oldPrice = bookingData.bookings.Price;
+
       const newPriceResponse = await fetch(
         `/api/getSchedulePrice/${scheduleID}`
       );
       const newPriceData = await newPriceResponse.json();
       newPrice = newPriceData.price;
 
-      const oldPriceResponse = await fetch(
-        `/api/getOldSchedulePrice/${scheduleID}`
-      );
-      const oldPriceData = await oldPriceResponse.json();
-      oldPrice = oldPriceData.price;
-
       calculatePriceDifference();
     } catch (error) {
-      console.error("Error fetching prices:", error);
+      console.error("Error fetching booking details:", error);
     }
   }
 
@@ -62,21 +47,6 @@
   }
 
   async function handlePayment() {
-    if (
-      !firstName ||
-      !lastName ||
-      !contactFirstName ||
-      !contactLastName ||
-      !phone
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Please fill in all required fields!",
-      });
-      return;
-    }
-
     if (priceDifference <= 0) {
       await handleSuccessfulRebooking();
       return;
@@ -131,6 +101,7 @@
       const rebookingData = {
         scheduleID,
         seatId,
+        bookingId,
       };
 
       const result = await saveRebookingAndPayment(rebookingData, null);
@@ -154,6 +125,7 @@
       const rebookingData = {
         scheduleID,
         seatId,
+        bookingId,
       };
 
       const paymentData = {
