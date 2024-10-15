@@ -22,6 +22,8 @@
   import Footer from "./lib/Footer.svelte";
   import Reschedule from "./routes/BookingHistory/Reschedule.svelte";
   import ReTrip from "./routes/ReBooking/ReTrip.svelte";
+  import ReSeat from "./routes/ReBooking/ReSeat.svelte";
+  import RePayment from "./routes/ReBooking/RePayment.svelte";
   import UserAuthCheck from "./lib/components/UserAuthCheck.svelte";
 
   // import { onMount } from "svelte";
@@ -58,6 +60,8 @@
       <Route path="/ticket-details" component={TicketDetails} />
       <Route path="/reschedule" component={Reschedule} />
       <Route path="/rebooking/trip" component={ReTrip} />
+      <Route path="/rebooking/seat" component={ReSeat} />
+      <Route path="/rebooking/payment" component={RePayment} />
     </Router>
   </main>
   <Footer></Footer>

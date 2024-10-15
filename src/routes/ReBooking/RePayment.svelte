@@ -1,0 +1,222 @@
+<script>
+  import { onMount } from "svelte";
+  import Swal from "sweetalert2";
+  import qrcode from "@/assets/QRCode.png";
+  import { fly } from "svelte/transition";
+  import { ArrowRight, Ticket, CreditCard } from "lucide-svelte";
+
+  let scheduleID;
+  let seatId;
+  let newPrice = 0;
+  let oldPrice = 0;
+  let priceDifference = 0;
+  let showDetails = false;
+
+  // Form data
+  let firstName = "";
+  let lastName = "";
+  let contactFirstName = "";
+  let contactLastName = "";
+  let phone = "";
+  let email = "";
+
+  onMount(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    scheduleID = urlParams.get("scheduleID");
+    seatId = urlParams.get("seatId");
+
+    if (scheduleID && seatId) {
+      fetchPrices();
+    }
+
+    fetch("/api/user")
+      .then((response) => response.json())
+      .then((userData) => {
+        firstName = userData.user.details.fname;
+        lastName = userData.user.details.lname;
+      });
+  });
+
+  async function fetchPrices() {
+    try {
+      const newPriceResponse = await fetch(
+        `/api/getSchedulePrice/${scheduleID}`
+      );
+      const newPriceData = await newPriceResponse.json();
+      newPrice = newPriceData.price;
+
+      const oldPriceResponse = await fetch(
+        `/api/getOldSchedulePrice/${scheduleID}`
+      );
+      const oldPriceData = await oldPriceResponse.json();
+      oldPrice = oldPriceData.price;
+
+      calculatePriceDifference();
+    } catch (error) {
+      console.error("Error fetching prices:", error);
+    }
+  }
+
+  function calculatePriceDifference() {
+    priceDifference = newPrice - oldPrice;
+  }
+
+  async function handlePayment() {
+    if (
+      !firstName ||
+      !lastName ||
+      !contactFirstName ||
+      !contactLastName ||
+      !phone
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please fill in all required fields!",
+      });
+      return;
+    }
+
+    if (priceDifference <= 0) {
+      await handleSuccessfulRebooking();
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "รอสักครู่... กำลังจ่ายเงินให้คุณ",
+      imageUrl: qrcode,
+      imageWidth: 300,
+      imageHeight: 300,
+      imageAlt: "QR Code",
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    if (result.dismiss === Swal.DismissReason.timer) {
+      await handleSuccessfulPayment();
+    }
+  }
+
+  async function saveRebookingAndPayment(rebookingData, paymentData) {
+    try {
+      const response = await fetch("/api/rebook-and-pay", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rebooking: rebookingData,
+          payment: paymentData,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save rebooking and payment");
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Error saving rebooking and payment:", error);
+      throw error;
+    }
+  }
+
+  async function handleSuccessfulRebooking() {
+    try {
+      const rebookingData = {
+        scheduleID,
+        seatId,
+      };
+
+      const result = await saveRebookingAndPayment(rebookingData, null);
+
+      Swal.fire({
+        icon: "success",
+        title: "Rebooking Successful!",
+        text: `Your new booking code is ${result.BookingCode}. No additional payment was required.`,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong with the rebooking process.",
+      });
+    }
+  }
+
+  async function handleSuccessfulPayment() {
+    try {
+      const rebookingData = {
+        scheduleID,
+        seatId,
+      };
+
+      const paymentData = {
+        amount: priceDifference,
+        paymentMethod: "QR Code",
+      };
+
+      const result = await saveRebookingAndPayment(rebookingData, paymentData);
+
+      Swal.fire({
+        icon: "success",
+        title: "Rebooking Successful!",
+        text: `Your new booking code is ${result.BookingCode}. Payment code: ${result.PaymentCode}`,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong with the rebooking and payment process.",
+      });
+    }
+  }
+</script>
+
+<div class="flex ml-16 gap-5">
+  <div class="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full mx-auto my-10">
+    <div class="flex flex-col space-y-4">
+      <h2 class="text-2xl font-bold text-gray-800">สรุปการชำระเงิน</h2>
+
+      <div class="flex justify-between items-center">
+        <span class="text-gray-600 font-medium">ส่วนต่างที่ต้องชำระ</span>
+        <span class="text-2xl font-bold text-blue-600"
+          >{priceDifference > 0 ? priceDifference.toFixed(2) : "0.00"} บาท</span
+        >
+      </div>
+
+      <div
+        transition:fly={{ y: 20, duration: 300 }}
+        class="bg-gray-50 rounded-md p-4 space-y-3"
+      >
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <Ticket size={18} class="text-gray-500 mr-2" />
+            <span class="text-gray-600">ราคาตั๋วใหม่</span>
+          </div>
+          <span class="font-medium">{newPrice.toFixed(2)} บาท</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <Ticket size={18} class="text-gray-500 mr-2" />
+            <span class="text-gray-600">ราคาตั๋วเดิม</span>
+          </div>
+          <span class="font-medium">{oldPrice.toFixed(2)} บาท</span>
+        </div>
+      </div>
+
+      <button
+        on:click={handlePayment}
+        class="bg-blue-500 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center"
+      >
+        {priceDifference > 0 ? "ดำเนินการชำระเงิน" : "ยืนยันการเปลี่ยนแปลง"}
+        <ArrowRight size={18} class="ml-2" />
+      </button>
+    </div>
+  </div>
+</div>
