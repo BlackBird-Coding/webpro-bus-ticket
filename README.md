@@ -6,12 +6,6 @@
 
 This project leverages Svelte as its frontend framework, Vite for fast builds and hot-reload during development, Tailwind CSS for utility-first styling, and Express for handling the server-side logic and routing.
 
-## Features
-
-- **User-friendly Interface:** Svelte ensures a reactive and smooth frontend experience.
-- **Efficient Development Workflow:** Vite offers fast builds and quick hot reload during development.
-- **Responsive Design:** Tailwind CSS provides pre-built responsive utility classes.
-
 ## Technologies Used
 
 - **[Svelte](https://svelte.dev/):** A component framework for building fast and responsive UIs.
@@ -100,8 +94,6 @@ The backend server is built using Express. It is responsible for:
 - Rendering the frontend via SSR (Server-side Rendering).
 - Serving static files in production.
 
-Check the `server.js` or `server.ts` file for server-related logic.
----
+## Check the `server` folder for server-related logic.
 
 **Happy coding!**
-
