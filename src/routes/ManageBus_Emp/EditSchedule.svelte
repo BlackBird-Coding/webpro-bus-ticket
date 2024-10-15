@@ -120,8 +120,6 @@
 
     async function saveChanges() {
         console.log("datatosent:", JSON.stringify(tripdata));
-        console.log("image", tripdata.Image);
-        console.log("image", base64(tripdata.Image));
 
         if (mode == "add") {
             api = `/api/AddSchedule`;
@@ -174,7 +172,6 @@
 
         if (result.isConfirmed) {
             try {
-                tripdata.Image = previewImage;
                 await saveChanges();
                 console.log("sussces");
                 await Swal.fire("บันทึกเรียบร้อย!", "", "success");
@@ -217,8 +214,7 @@
                 DepartureTime: "",
                 ArrivalTime: "",
                 DriverID: "",
-                Description: "",
-                Image: "",
+                Description: ""
             };
         }
 
@@ -239,8 +235,6 @@
                 .then((data) => {
                     console.log("fetch", data);
                     tripdata = data.routes[0];
-
-                    previewImage = tripdata.Image;
                 })
                 .catch((error) => {
                     console.error(

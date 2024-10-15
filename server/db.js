@@ -88,7 +88,6 @@ db.serialize(() => {
   ArrivalTime DATETIME NOT NULL,
   Price DECIMAL(10,2) NOT NULL,
   Description TEXT NOT NULL,
-  Image TEXT,
   FOREIGN KEY (RouteID) REFERENCES Routes(RouteID) ON DELETE CASCADE,
   FOREIGN KEY (BusID) REFERENCES Buses(BusID) ON DELETE CASCADE,
   FOREIGN KEY (EmployeeID) REFERENCES Employees(UserID) ON DELETE CASCADE
@@ -105,7 +104,7 @@ db.serialize(() => {
   BookingCode TEXT GENERATED ALWAYS AS (printf('K%03d', BookingID)),
   CustomerID INTEGER NOT NULL,
   ScheduleID INTEGER NOT NULL,
-  BookingDate DATETIME NOT NULL,
+  BookingTime DATETIME NOT NULL,
   SeatID INTEGER NOT NULL,
   Status VARCHAR(50) NOT NULL,
   PaymentID INTEGER,
