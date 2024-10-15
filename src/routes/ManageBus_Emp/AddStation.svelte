@@ -69,6 +69,19 @@
             navigate(`/ManageBus_Emp`, { replace: true });
         }
     }
+    function cancel() {
+        Swal.fire({
+            title: "คุณต้องการละทิ้งการแก้ไขใช่หรือไม่?",
+            showDenyButton: true,
+            confirmButtonText: "ใช่",
+            denyButtonText: `ไม่`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                navigate(`/ManageBus_Emp`, { replace: true });
+            }
+        });
+    }
 </script>
 
 <div>
@@ -164,6 +177,7 @@
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <button
+                on:click={cancel}
                     type="button"
                     class="text-sm font-semibold leading-6 text-gray-900"
                     >Cancel</button
