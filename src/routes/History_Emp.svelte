@@ -80,6 +80,10 @@
                 "&route=" +
                 data.RouteID}>เลื่อนตั๋ว</a
             >
+            <a
+              class="text-green-500 hover:underline"
+              href={`/ticket-details?id=` + data.BookingID}>แสดงตั๋ว</a
+            >
           </TableBodyCell>
         </TableBodyRow>
       {/each}
