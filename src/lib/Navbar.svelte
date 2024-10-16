@@ -167,6 +167,13 @@
               >สแกนตั๋วเดินทาง</a
             >
           </li>
+          <li>
+            <a
+              href="/History_Emp"
+              class="text-white hover:text-[#F5F5F5] font-semibold block text-[15px] py-2 lg:py-0"
+              >ตรวจสอบประวัติการจอง</a
+            >
+          </li>
         </UserAuthCheck>
         <li>
           <a
