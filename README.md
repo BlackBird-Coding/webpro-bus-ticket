@@ -55,6 +55,15 @@ To build the project for production:
 npm run build
 ```
 
+### Build for Production
+
+To insert mock data to the project for production:
+Please remove old main.db before run
+
+```bash
+npm run mock
+```
+
 This will generate production-ready assets in the `dist` directory for both the client and server.
 
 ### Preview the Build
