@@ -182,7 +182,7 @@
         >
         <input
           name="email"
-          type="text"
+          type="email"
           bind:value={email}
           required
           class="bg-gray-100 w-full text-gray-800 text-sm px-4 py-3.5 rounded-md focus:bg-transparent outline-blue-500 transition-all"

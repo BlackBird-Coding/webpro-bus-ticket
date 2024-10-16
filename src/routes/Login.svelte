@@ -68,13 +68,13 @@
         </h2>
         <form class="mt-8 space-y-4" on:submit={handelSubmit}>
           <div>
-            <label for="username" class="text-gray-800 text-sm mb-2 block"
+            <label for="email" class="text-gray-800 text-sm mb-2 block"
               >อีเมล</label
             >
             <div class="relative flex items-center">
               <input
-                name="username"
-                type="text"
+                name="email"
+                type="email"
                 required
                 bind:value={email}
                 class="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600"
