@@ -55,26 +55,25 @@
       <Route path="/booking/find" component={Find} />
       <Route path="/contact" component={ContactForm} />
       <Route path="/"><Home /></Route>
-      <!-- <UserAuthCheck requiredUserType="employee"> -->
-      <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
-      <Route path="/AddStation" component={AddStation} />
-      <Route path="/AddBus" component={AddBus} />
-      <Route path="/AddRoute" component={AddRoute} />
-      <Route path="/History_Emp" component={History_Emp} />
-      <Route path="/EditSchedule" component={EditSchedule} />
-      <!-- </UserAuthCheck> -->
+      <UserAuthCheck requiredUserType="employee">
+        <Route path="/ManageBus_Emp" component={ManageBus_Emp} />
+        <Route path="/AddStation" component={AddStation} />
+        <Route path="/AddBus" component={AddBus} />
+        <Route path="/AddRoute" component={AddRoute} />
+        <Route path="/History_Emp" component={History_Emp} />
+        <Route path="/EditSchedule" component={EditSchedule} />
+        <Route path="/booking_emp/trip" component={TripEmp} />
+        <Route path="/booking_emp/seat" component={SeatEmp} />
+        <Route path="/booking_emp/payment" component={PaymentEmp} />
+        <Route path="/booking_emp/find" component={FindEmp} />
+
+        <Route path="/scan" component={Scan} />
+      </UserAuthCheck>
       <Route path="/ticket-details" component={TicketDetails} />
       <Route path="/reschedule" component={Reschedule} />
       <Route path="/rebooking/trip" component={ReTrip} />
       <Route path="/rebooking/seat" component={ReSeat} />
       <Route path="/rebooking/payment" component={RePayment} />
-
-      <Route path="/booking_emp/trip" component={TripEmp} />
-      <Route path="/booking_emp/seat" component={SeatEmp} />
-      <Route path="/booking_emp/payment" component={PaymentEmp} />
-      <Route path="/booking_emp/find" component={FindEmp} />
-
-      <Route path="/scan" component={Scan} />
     </Router>
   </main>
   <Footer></Footer>
