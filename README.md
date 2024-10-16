@@ -1,17 +1,19 @@
-# WebPro Bus Booking System
+# ระบบจองตั๋วรถโดยสาร WebPro
+
+**ระบบนี้เป็นส่วนหนึ่งของรายวิชา Fundamental Web Programming**
 
 ## Overview
 
-**WebPro Bus Booking System** is a web application built using modern web technologies like **Svelte**, **Vite**, **Tailwind CSS**, and **Express**. It is designed to manage and streamline bus ticket bookings for users, providing a fast, responsive, and user-friendly interface.
+**ระบบจองตั๋วรถโดยสาร WebPro** เป็นแอปพลิเคชันเว็บที่สร้างขึ้นโดยใช้เทคโนโลยีเว็บสมัยใหม่ เช่น **Svelte**, **Vite**, **Tailwind CSS** และ **Express** ออกแบบมาเพื่อจัดการและปรับปรุงการจองตั๋วรถโดยสารสำหรับผู้ใช้ โดยมีอินเตอร์เฟซที่รวดเร็ว ตอบสนองได้ดี และใช้งานง่าย
 
-This project leverages Svelte as its frontend framework, Vite for fast builds and hot-reload during development, Tailwind CSS for utility-first styling, and Express for handling the server-side logic and routing.
+โปรเจคนี้ใช้ Svelte เป็นเฟรมเวิร์คฝั่งฟรอนต์เอนด์, Vite สำหรับการสร้างและโหลดซ้ำอย่างรวดเร็วในระหว่างการพัฒนา, Tailwind CSS สำหรับการจัดสไตล์แบบ utility-first และ Express สำหรับจัดการตรรกะและการจัดเส้นทางฝั่งเซิร์ฟเวอร์
 
 ## Technologies Used
 
-- **[Svelte](https://svelte.dev/):** A component framework for building fast and responsive UIs.
-- **[Vite](https://vitejs.dev/):** A next-generation frontend tool for building fast and optimized web applications.
-- **[Tailwind CSS](https://tailwindcss.com/):** A utility-first CSS framework to build custom designs.
-- **[Express](https://expressjs.com/):** A minimal and flexible Node.js web application framework for backend services.
+- **[Svelte](https://svelte.dev/):** เฟรมเวิร์คคอมโพเนนต์สำหรับสร้าง UI ที่รวดเร็วและตอบสนองได้ดี
+- **[Vite](https://vitejs.dev/):** เครื่องมือฟรอนต์เอนด์รุ่นใหม่สำหรับสร้างแอปพลิเคชันเว็บที่รวดเร็วและมีประสิทธิภาพ
+- **[Tailwind CSS](https://tailwindcss.com/):** เฟรมเวิร์ค CSS แบบ utility-first สำหรับสร้างการออกแบบที่ปรับแต่งได้
+- **[Express](https://expressjs.com/):** เฟรมเวิร์คแอปพลิเคชันเว็บ Node.js ที่มีความยืดหยุ่นและใช้งานง่าย สำหรับบริการฝั่งแบ็คเอนด์
 
 ## Getting Started
 
@@ -103,6 +105,15 @@ The backend server is built using Express. It is responsible for:
 - Rendering the frontend via SSR (Server-side Rendering).
 - Serving static files in production.
 
-## Check the `server` folder for server-related logic.
+---
 
-**Happy coding!**
+### จัดทำโดย
+
+- นายชวัล แซ่ยาง - 66070043
+- นายธนดล ดรุณศรี - 66070073
+- นางสาวพิมพ์มาดา จิระวัธน์ - 66070135
+- นางสาววิมลสิริ ปานมา - 66070187
+
+### อาจารย์ประจำวิชา
+
+- ผศ.ดร.มานพ พันธ์โคกกรวด
