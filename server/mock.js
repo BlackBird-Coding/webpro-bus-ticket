@@ -615,7 +615,7 @@ const mockEmployees = [
 const insertMockUsers = async () => {
   const insertUser = async (user, userType) => {
     try {
-      const hashedPassword = await bcrypt.hash("password", saltRounds);
+      const hashedPassword = await bcrypt.hash(user.password, saltRounds);
 
       return new Promise((resolve, reject) => {
         db.run(
