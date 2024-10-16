@@ -391,7 +391,7 @@ const mockEmployees = [
     hireDate: "2020-03-15",
     DOB: "1990-05-30",
     username: "wandee_s",
-    email: "wandee.s@example.com",
+    email: "ticketCheck@example.com",
     password: "ticketCheck789",
   },
   {
@@ -403,7 +403,7 @@ const mockEmployees = [
     hireDate: "2018-07-01",
     DOB: "1988-12-15",
     username: "prasit_j",
-    email: "prasit.j@example.com",
+    email: "counterStaff@example.com",
     password: "counterStaff101",
   },
   {
@@ -415,7 +415,7 @@ const mockEmployees = [
     hireDate: "2021-02-28",
     DOB: "1992-08-10",
     username: "napha_m",
-    email: "napha.m@example.com",
+    email: "scheduleManager@example.com",
     password: "scheduleManager202",
   },
   {
